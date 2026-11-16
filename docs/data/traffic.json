@@ -1,0 +1,55 @@
+{
+ "source": [
+  "results/full/aggregate.json"
+ ],
+ "rows": [
+  {
+   "traffic": "DeepSeek-V4.1-Flash",
+   "runs": 97,
+   "requests": 2016012,
+   "sla_rr": 96,
+   "sla_kv": 89,
+   "sla_kvp16": 97,
+   "sla_aff": 97,
+   "kv_vs_aff_prefill": 2.768,
+   "provider_cached_pct": 98.548,
+   "aff_reuse_pct": 98.536
+  },
+  {
+   "traffic": "GLM-5.3-Flash (zai-org)",
+   "runs": 80,
+   "requests": 1742037,
+   "sla_rr": 77,
+   "sla_kv": 76,
+   "sla_kvp16": 80,
+   "sla_aff": 80,
+   "kv_vs_aff_prefill": 3.0648,
+   "provider_cached_pct": 96.126,
+   "aff_reuse_pct": 98.679
+  },
+  {
+   "traffic": "Ripple-65B-Preview",
+   "runs": 16,
+   "requests": 1347250,
+   "sla_rr": 12,
+   "sla_kv": 12,
+   "sla_kvp16": 16,
+   "sla_aff": 16,
+   "kv_vs_aff_prefill": 3.1976,
+   "provider_cached_pct": 97.21,
+   "aff_reuse_pct": 98.597
+  },
+  {
+   "traffic": "flint",
+   "runs": 23,
+   "requests": 1511307,
+   "sla_rr": 16,
+   "sla_kv": 17,
+   "sla_kvp16": 22,
+   "sla_aff": 22,
+   "kv_vs_aff_prefill": 3.395,
+   "provider_cached_pct": 73.764,
+   "aff_reuse_pct": 98.781
+  }
+ ]
+}

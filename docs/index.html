@@ -1,0 +1,867 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dynamo replay of Harness Leaderboard agent traffic</title>
+<meta name="description" content="Every original trial of the public Harness Leaderboard dataset, 6.6 million model calls, replayed through NVIDIA Dynamo's CPU simulator under four routers. The default KV router recomputes 3.1x the prompt tokens that session affinity does.">
+<link rel="canonical" href="https://kumanday.github.io/dynamo-agent-traffic/">
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7;
+  --surface: #fcfcfb;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --ink-3: #6f6d68;
+  --line: #e1e0d9;
+  --axis: #c3c2b7;
+  --ring: rgba(11, 11, 11, 0.10);
+  --link: #1c5cab;
+  --code-bg: #efeee9;
+  --r-rr: #eb6834;
+  --r-kv: #2a78d6;
+  --r-kvp16: #eda100;
+  --r-aff: #1baf7a;
+  --s-reusable: #1baf7a;
+  --neutral-mark: #b9b7ae;
+  --critical: #d03b3b;
+  --limit-bg: #f4f1e8;
+  --shadow: 0 6px 24px rgba(11, 11, 11, 0.12);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --ink: #f0efec;
+    --ink-2: #c3c2b7;
+    --ink-3: #9d9b94;
+    --line: #2c2c2a;
+    --axis: #45453f;
+    --ring: rgba(255, 255, 255, 0.10);
+    --link: #86b6ef;
+    --code-bg: #262624;
+    --r-rr: #d95926;
+    --r-kv: #3987e5;
+    --r-kvp16: #c98500;
+    --r-aff: #199e70;
+    --s-reusable: #199e70;
+    --neutral-mark: #5c5b55;
+    --critical: #e66767;
+    --limit-bg: #201f1b;
+    --shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 16px; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  overflow-wrap: break-word;
+}
+main, .site-head, .site-foot { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+@media (max-width: 600px) { main, .site-head, .site-foot { padding: 0 16px; } }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; border-radius: 2px; }
+p, ul, ol, dl { margin: 0; }
+p, li, dd { max-width: 74ch; }
+code {
+  font: 0.875em/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: var(--code-bg); border-radius: 4px; padding: 0.1em 0.35em;
+  overflow-wrap: anywhere;
+}
+h1, h2, h3, h4 { margin: 0; line-height: 1.25; text-wrap: balance; }
+h1 { font-size: clamp(28px, 5vw, 40px); font-weight: 650; letter-spacing: -0.01em; }
+h2 { font-size: 24px; font-weight: 650; letter-spacing: -0.005em; }
+h3 { font-size: 18px; font-weight: 650; }
+h4 { font-size: 15px; font-weight: 650; }
+.anchor { margin-left: 8px; color: var(--ink-3); text-decoration: none; font-weight: 400; opacity: 0; }
+h2:hover .anchor, h3:hover .anchor, h4:hover .anchor, li:hover > .anchor, .anchor:focus-visible { opacity: 1; }
+@media (hover: none) { .anchor { opacity: 0.6; } }
+
+.site-head { padding-top: 40px; padding-bottom: 8px; display: flex; flex-direction: column; gap: 14px; }
+.eyebrow { font-size: 13px; font-weight: 400; }
+.kicker { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+.byline { font-size: 14px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.toc { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 10px 0; margin-top: 6px; }
+.toc ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 14px; }
+.toc li { max-width: none; }
+.toc a { color: var(--ink-2); text-decoration: none; }
+.toc a:hover { color: var(--ink); text-decoration: underline; }
+
+main { display: flex; flex-direction: column; gap: 56px; padding-top: 28px; padding-bottom: 56px; }
+section { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+section > section { gap: 14px; margin-top: 12px; }
+.hero { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; }
+.hero-num { font-size: clamp(64px, 14vw, 104px); font-weight: 650; line-height: 1; letter-spacing: -0.03em; white-space: nowrap; }
+.hero-text { font-size: clamp(18px, 2.4vw, 21px); line-height: 1.4; flex: 1 1 300px; min-width: 0; max-width: 46ch; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--ring); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.tile b { font-size: 24px; font-weight: 650; line-height: 1.2; }
+.tile span { font-size: 13px; color: var(--ink-2); line-height: 1.4; }
+dl.defs { display: grid; grid-template-columns: minmax(120px, max-content) 1fr; gap: 8px 20px; font-size: 15px; }
+dl.defs dt { font-weight: 600; }
+dl.defs dd { margin: 0; color: var(--ink-2); }
+@media (max-width: 600px) { dl.defs { grid-template-columns: 1fr; gap: 2px; } dl.defs dd { margin-bottom: 8px; } }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 7px; flex: none; }
+.sw.line { height: 3px; border-radius: 1px; vertical-align: middle; }
+.sw.diamond { transform: rotate(45deg) scale(0.8); border-radius: 1px; }
+.sw-rr { background: var(--r-rr); } .sw-kv { background: var(--r-kv); } .sw-kvp16 { background: var(--r-kvp16); } .sw-aff { background: var(--r-aff); }
+.sw-cached { background: var(--r-kv); } .sw-reusable { background: var(--s-reusable); } .sw-neutral { background: var(--neutral-mark); } .sw-critical { background: var(--critical); }
+
+.pair { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; }
+@media (min-width: 940px) { .pair { grid-template-columns: 1fr 1fr; } }
+.panel { background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; padding: 22px 24px 24px; }
+.panel.limits { background: var(--limit-bg); }
+@media (max-width: 600px) { .panel { padding: 18px 16px 20px; } }
+.panel ol { padding-left: 1.4em; display: flex; flex-direction: column; gap: 12px; }
+.panel li { padding-left: 2px; }
+.panel li::marker { font-weight: 650; color: var(--ink-2); }
+.panel .sub { font-size: 14px; color: var(--ink-2); }
+
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+@media (max-width: 600px) { .card { padding: 14px 14px 16px; } }
+.cap { font-size: 14px; color: var(--ink-2); line-height: 1.5; }
+.chart { position: relative; min-height: 120px; min-width: 0; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { font: 12px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; fill: var(--ink-3); font-variant-numeric: tabular-nums; }
+.chart text.strong, .chart tspan.strong { fill: var(--ink); }
+.chart text.mid { fill: var(--ink-2); }
+.legend { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 13px; color: var(--ink-2); }
+.legend li { display: flex; align-items: center; max-width: none; }
+.tip {
+  position: absolute; pointer-events: none; z-index: 3; max-width: 250px;
+  background: var(--surface); border: 1px solid var(--ring); border-radius: 8px; box-shadow: var(--shadow);
+  padding: 8px 10px; font-size: 12.5px; line-height: 1.45; color: var(--ink-2);
+}
+.tip b { color: var(--ink); font-weight: 650; }
+.tip .t { color: var(--ink); font-weight: 650; overflow-wrap: anywhere; }
+.tip .k { display: inline-block; width: 12px; height: 3px; border-radius: 1px; margin-right: 6px; vertical-align: middle; }
+
+.tablewrap { overflow-x: auto; min-width: 0; border: 1px solid var(--ring); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+th, td { padding: 7px 12px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+tbody tr:last-child td { border-bottom: 0; }
+th { color: var(--ink-2); font-weight: 600; vertical-align: bottom; white-space: normal; min-width: 72px; }
+th.l, td.l { text-align: left; }
+td.wrap { white-space: normal; min-width: 180px; overflow-wrap: anywhere; }
+td.miss { color: var(--critical); font-weight: 600; }
+td.total { font-weight: 650; }
+td code { background: none; padding: 0; font-size: 12px; }
+.note { font-size: 14px; color: var(--ink-2); }
+.callout { border-left: 3px solid var(--axis); padding: 2px 0 2px 14px; color: var(--ink-2); font-size: 15px; }
+.cite { background: var(--surface); border: 1px solid var(--ring); border-radius: 10px; padding: 14px 16px; font-size: 15px; }
+.site-foot { border-top: 1px solid var(--line); padding-top: 18px; padding-bottom: 40px; font-size: 14px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 6px 20px; }
+ul.plain { padding-left: 1.2em; display: flex; flex-direction: column; gap: 8px; }
+</style>
+</head>
+<body>
+
+<header class="site-head">
+  <p class="kicker">Simulation study</p>
+  <h1 id="top">Dynamo replay of Harness Leaderboard agent traffic</h1>
+  <p class="byline">
+    <span><a href="https://github.com/kumanday">Kumanday Intelligence</a></span>
+    <span>Study completed <time datetime="2026-11-14">2026-11-14</time></span>
+    <span><a href="https://github.com/kumanday/dynamo-agent-traffic">Code and tables</a></span>
+  </p>
+  <nav class="toc" aria-label="Contents">
+    <ul>
+      <li><a href="#summary">Summary</a></li>
+      <li><a href="#findings">Findings</a></li>
+      <li><a href="#limits">Limits</a></li>
+      <li><a href="#results">Results</a></li>
+      <li><a href="#method">Method</a></li>
+      <li><a href="#maintainer-notes">Notes for maintainers</a></li>
+      <li><a href="#files">Tables and code</a></li>
+      <li><a href="#cite">How to cite</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+
+<section id="summary" aria-labelledby="summary-h">
+  <h2 id="summary-h" class="kicker eyebrow">Summary</h2>
+  <div class="hero">
+    <span class="hero-num">3.1x</span>
+    <p class="hero-text">the prompt tokens that NVIDIA Dynamo's default KV router recomputes, relative to session affinity, on coding-agent traffic: 25.5B against 8.3B tokens in simulation.</p>
+  </div>
+  <p>The <a href="https://huggingface.co/buckets/joelniklaus/harness-leaderboard">Harness Leaderboard</a> runs coding-agent harnesses on open-weights models and publishes a per-call log for every trial. This study took every original trial in that public dataset, converted each one into a replayable agent session, and replayed all of them through Dynamo's CPU simulator (<code>aisimulate predict --stack dynamo</code>) under four routers. Every run replays on simulated GLM-5.3-Flash workers with two B300 GPUs each, and at least four workers.</p>
+  <p>The default KV router missed the latency target on 22 of 216 runs. Session affinity missed it on 1. Setting the KV router's <code>prefill_load_scale</code> to 16 brings it to 8.7B recomputed tokens and the same 215 runs within the target. Timing comes from the simulator's operator-level model, and no request ran on a GPU: read the <a href="#limits">limits</a> before using a number from this page.</p>
+  <div class="tiles">
+    <div class="tile"><b>69,588</b><span>original trials, 68,905 of them with at least one successful model call</span></div>
+    <div class="tile"><b>6,616,606</b><span>model calls replayed under each router</span></div>
+    <div class="tile"><b>216</b><span>leaderboard runs, plus 13 endpoint windows that merge concurrent runs</span></div>
+    <div class="tile"><b>916</b><span>replays across the four routers</span></div>
+  </div>
+  <dl class="defs">
+    <dt>Prefill tokens</dt><dd>Prompt tokens a worker had to compute because they were not in its KV cache. The text calls them recomputed tokens.</dd>
+    <dt>Prefix reuse</dt><dd>The share of prompt tokens a worker served from its KV cache.</dd>
+    <dt>SLA</dt><dd>A replay meets the SLA when at least 99% of its requests get their first token within 2 s (TTFT) and stay within 50 ms between output tokens (ITL).</dd>
+    <dt><span class="sw sw-rr"></span>Round-robin</dt><dd>Each request goes to the next worker in turn.</dd>
+    <dt><span class="sw sw-kv"></span>KV router, defaults</dt><dd>Dynamo's KV router as shipped. It scores a worker by the prefill a request would need there plus the decode load already on it.</dd>
+    <dt><span class="sw sw-kvp16"></span>KV router, <code>prefill_load_scale</code> 16</dt><dd>The same router with the prefill term weighted 16 times.</dd>
+    <dt><span class="sw sw-aff"></span>KV router with session affinity</dt><dd>The KV router with <code>conversation_affinity</code> in session mode and a 300-second TTL, which keeps a session on the worker that already served it.</dd>
+  </dl>
+</section>
+
+<div class="pair">
+  <section id="findings" class="panel" aria-labelledby="findings-h">
+    <h2 id="findings-h">Findings<a class="anchor" href="#findings" aria-label="Link to Findings">#</a></h2>
+    <ol>
+      <li id="finding-1"><b>The default KV router recomputes 3.1x the tokens that session affinity does.</b> Across the whole dataset it prefills 25.5B tokens against 8.3B, and misses the SLA on 22 of 216 runs against affinity's 1. In 21 runs the default router misses and affinity meets the SLA. No run goes the other way.</li>
+      <li id="finding-2"><b>The gap concentrates under load.</b> In the median run the default router prefills 1.5x what affinity does, and in the 90th-percentile run 3.2x. When runs that hit one endpoint at the same time are merged, the default KV router meets the SLA in 1 of 13 windows, with 91.2% of requests inside it. Affinity meets it in all 13 and prefills 2.9B tokens against the default router's 13.8B, a 4.8x gap.</li>
+      <li id="finding-3"><b>One parameter recovers most of it.</b> With <code>prefill_load_scale</code> 16, the KV router comes within 5% of affinity's prefill (8.7B against 8.3B) and meets the SLA on the same 215 runs.</li>
+      <li id="finding-4"><b>Round-robin prefills 5.9x what affinity does</b> and fails all 13 endpoint windows, with a mean TTFT of 60.9 s.</li>
+      <li id="finding-5"><b>The ordering holds across traffic sources and harnesses.</b> Hermes meets the SLA on 17 of 25 runs with the default KV router and on all 25 with affinity. DeepSeek Harness goes from 16 to 19 of 19, OpenCode 2.2.6 from 17 to 19 of 19, and Grok Build from 4 to 6 of 6.</li>
+      <li id="finding-6"><b>Simulated affinity reuses far more than the real endpoints did.</b> Over the same runs, the providers served 91.6% of prompt tokens from cache, and 73.8% of flint traffic. The simulated deployment with affinity reuses 98.6%.</li>
+      <li id="finding-7"><b>A native DeepSeek-V4.1-Flash replay ranks the routers the same way.</b> One DeepSeek run replayed on simulated DeepSeek-V4.1-Flash: default-router prefill is 3.1x affinity's (508M against 162M tokens), and p99 TTFT is 2.6 s against 571 ms. Its simulated decode speed fails the inter-token SLA under every router.</li>
+      <li id="finding-8"><b>One run misses the SLA under every router.</b> Flint run <code>20261109-163846-flint-full-default-0086</code> (Oh My Pi, 146 peak trials on four workers) reaches a p99 inter-token latency of 111 ms even with affinity. Oh My Pi issues parallel calls, and the pool sizing rule gives it too few workers.</li>
+    </ol>
+  </section>
+
+  <section id="limits" class="panel limits" aria-labelledby="limits-h">
+    <h2 id="limits-h">Limits<a class="anchor" href="#limits" aria-label="Link to Limits">#</a></h2>
+    <ol>
+      <li id="limit-1"><b>The timing is modelled.</b> AISimulate rates agentic replay as functional only. Every latency here comes from its operator-level model on measured B300 kernel data. No request ran on a GPU, so treat TTFT, ITL and SLA counts as simulator output that a hardware run still has to confirm.</li>
+      <li id="limit-2"><b>Three of the four models are projected onto GLM-5.3-Flash.</b> Every run replays on one target: GLM-5.3-Flash FP8 on vLLM 0.31.0, two B300 GPUs per worker. Traffic recorded on DeepSeek-V4.1-Flash, flint and Ripple-65B-Preview keeps its recorded token counts and takes GLM-5.3-Flash's timing. GLM-5.3-Flash keeps little KV cache per token, so a dense-attention model would run out of KV capacity sooner.</li>
+      <li id="limit-3"><b>Each run has one pool size.</b> The four routers serve a run on the same number of GPUs, so the comparison shows recomputed tokens and SLA attainment at a fixed size. How many GPUs each router would need is measured only for the two runs in the <a href="#pool-size">pool-size section</a>.</li>
+      <li id="limit-4"><b>Prompt blocks are synthesized.</b> The converter reads no prompt text. Blocks are rebuilt from token counts on the assumption that a context grows by appending. Each call's output counts as new prefill in the next call under every router.</li>
+      <li id="limit-5"><b>Pacing is closed-loop.</b> Each agent waits for its simulated completions and keeps its recorded tool gaps, so a faster or slower simulated server moves the agent's next call with it. The replay does not reproduce the recorded arrival times.</li>
+      <li id="limit-6"><b>Endpoint windows are a selected, overlapping set.</b> Of 33 groups of overlapping runs, 13 were replayed: those where merged concurrency rose well above any single run, plus all four flint groups. Their trials also appear in the per-run results, so the two sets of totals cannot be added.</li>
+      <li id="limit-7"><b>The provider logs show outcomes only.</b> Cached-token counts come from each provider's own reporting. The logs say nothing about the providers' hardware, pool sizes or routing.</li>
+    </ol>
+  </section>
+</div>
+
+<section id="results" aria-labelledby="results-h">
+  <h2 id="results-h">Results<a class="anchor" href="#results" aria-label="Link to Results">#</a></h2>
+  <p>All 216 runs cover 68,905 trials and 6,616,606 requests per router. The 13 endpoint windows cover 26,395 trials and 2,431,809 requests per router. Every replay completed all of its requests.</p>
+  <ul class="legend" aria-label="Router colours">
+    <li><span class="sw sw-rr"></span>Round-robin</li>
+    <li><span class="sw sw-kv"></span>KV router, defaults</li>
+    <li><span class="sw sw-kvp16"></span>KV router, prefill_load_scale 16</li>
+    <li><span class="sw sw-aff"></span>KV router with session affinity</li>
+  </ul>
+
+  <section id="all-runs" aria-labelledby="all-runs-h">
+    <h3 id="all-runs-h">All runs and endpoint windows<a class="anchor" href="#all-runs" aria-label="Link to All runs and endpoint windows">#</a></h3>
+    <div class="two">
+      <div class="card">
+        <h4 id="all-runs-chart">All 216 leaderboard runs</h4>
+        <p class="cap">Each run replayed by itself. Prefill tokens in billions, with the number of runs that meet the SLA.</p>
+        <div class="chart" data-chart="bars" data-scope="all"></div>
+      </div>
+      <div class="card">
+        <h4 id="endpoint-windows">13 endpoint windows</h4>
+        <p class="cap">Runs that loaded the same provider endpoint at the same time, merged into one replay. Prefill tokens in billions, with the number of windows that meet the SLA.</p>
+        <div class="chart" data-chart="bars" data-scope="windows"></div>
+      </div>
+    </div>
+    <div class="tablewrap"><table data-table="routers"><thead></thead><tbody></tbody></table></div>
+    <p class="note">Round-robin's mean TTFT is dominated by the replays where its queues collapse. Median p99 TTFT is the 99th-percentile time to first token of the middle run or window.</p>
+    <p>The KV router's cost adds <code>prefill_load_scale</code> times the uncached prefill blocks to the decode blocks already active on a worker. An active agent request carries about 100k tokens of context, roughly 1,500 blocks of 64 tokens. A worker that holds a request's cached prefix but serves one or two more long sessions therefore scores worse than a worker that has to recompute the whole prompt, and the router gives up the cached prefix. GLM-5.3-Flash's linear and sparse attention also makes long-context decode cheaper than that block count implies.</p>
+    <h4 id="per-window">Each endpoint window<a class="anchor" href="#per-window" aria-label="Link to Each endpoint window">#</a></h4>
+    <div class="tablewrap"><table data-table="windows"><thead></thead><tbody></tbody></table></div>
+    <p class="note">Requests meeting the SLA, by router. A window meets the SLA at 99.0% or more; cells below that are marked. Start is the first call of the window in UTC.</p>
+  </section>
+
+  <section id="load" aria-labelledby="load-h">
+    <h3 id="load-h">The gap grows with load<a class="anchor" href="#load" aria-label="Link to The gap grows with load">#</a></h3>
+    <div class="card">
+      <p class="cap">Each mark is one of the 216 runs. Vertical: default-router prefill divided by affinity prefill, where 1x means equal. Horizontal: peak concurrent agent trials in the run. All but two runs replay on four workers.</p>
+      <div class="chart" data-chart="scatter"></div>
+      <ul class="legend">
+        <li><span class="sw sw-kv" style="border-radius:50%"></span>Default KV router meets the SLA</li>
+        <li><span class="sw sw-critical diamond"></span>Default KV router misses the SLA</li>
+      </ul>
+    </div>
+    <p class="note">Per-run values are in <a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/results/full/units.csv">results/full/units.csv</a> and <a href="data/runs.json">data/runs.json</a>.</p>
+  </section>
+
+  <section id="traffic-source" aria-labelledby="traffic-source-h">
+    <h3 id="traffic-source-h">By traffic source<a class="anchor" href="#traffic-source" aria-label="Link to By traffic source">#</a></h3>
+    <div class="tablewrap"><table data-table="traffic"><thead></thead><tbody></tbody></table></div>
+    <p class="note">Runs meeting the SLA under each router; cells where a router misses it on at least one run are marked. Provider cached is the share of prompt tokens the real endpoint served from its own cache, from the leaderboard's per-call logs. All traffic replays on GLM-5.3-Flash.</p>
+  </section>
+
+  <section id="harness" aria-labelledby="harness-h">
+    <h3 id="harness-h">By harness<a class="anchor" href="#harness" aria-label="Link to By harness">#</a></h3>
+    <div class="tablewrap"><table data-table="harness"><thead></thead><tbody></tbody></table></div>
+    <p class="note">Runs meeting the SLA under each router, and prefill tokens in billions. A run is assigned to the harness version that made most of its calls. Cells where a router misses the SLA on at least one run are marked.</p>
+  </section>
+
+  <section id="pool-size" aria-labelledby="pool-size-h">
+    <h3 id="pool-size-h">Pool size and GPU count<a class="anchor" href="#pool-size" aria-label="Link to Pool size and GPU count">#</a></h3>
+    <p>Before the full replay, 39 pilot replays varied the pool size from 4 to 32 workers on two runs and on the first 100 trials of each: a Hermes run recorded on flint (526 trials, 84,444 requests, 273 trials at peak) and an OpenClaw run recorded on GLM-5.3-Flash (528 trials, 92,744 requests, 155 trials at peak). Both replay on the GLM-5.3-Flash target. These pilot traces leave out trials on 22 tasks that a separate analysis was holding back at the time, about 11% of each run's trials.</p>
+    <ul class="plain">
+      <li><b>Session affinity serves the Hermes run on half the GPUs.</b> On 8 GPUs with affinity, p99 TTFT is 889 ms, prefill is 130.4M tokens and the median trial takes 51.4 minutes. On 16 GPUs, the default KV router gives 5.0 s, 838.1M tokens and 54.9 minutes.</li>
+      <li><b>More workers make the default KV router worse on the OpenClaw run.</b> Prefill rises from 157.4M tokens on 4 workers to 276.9M on 8. With affinity it stays at 41.5M and 41.6M.</li>
+      <li><b>Round-robin loses reuse with every doubling of the pool.</b> From 4 to 32 workers on the 100-trial slices, its prefill grows from 18.7M to 125.5M tokens for OpenClaw and from 76.8M to 457.3M for Hermes. Affinity holds at 5.2M and at 19.6M to 21.0M.</li>
+      <li><b>Raising <code>prefill_load_scale</code> closes most of the gap on the Hermes run.</b> Prefix reuse goes from 90.0% at the default to 96.3% at 4 and 98.0% at 16, against affinity's 98.6%.</li>
+      <li><b>The reuse bound matters.</b> A trace of the OpenClaw run that treats the provider's own cache misses as prompt changes doubles prefill under the default KV router: 337.7M against 157.4M tokens.</li>
+    </ul>
+    <div class="two">
+      <div class="card">
+        <h4 id="pool-hermes">Hermes, first 100 trials</h4>
+        <p class="cap">Prefix reuse by worker count. Each worker is 2 GPUs.</p>
+        <div class="chart" data-chart="pool" data-trace="hermes_slice"></div>
+      </div>
+      <div class="card">
+        <h4 id="pool-openclaw">OpenClaw, first 100 trials</h4>
+        <p class="cap">Prefix reuse by worker count. Each worker is 2 GPUs.</p>
+        <div class="chart" data-chart="pool" data-trace="openclaw_slice"></div>
+      </div>
+    </div>
+    <ul class="legend">
+      <li><span class="sw line sw-rr"></span>Round-robin</li>
+      <li><span class="sw line sw-kv"></span>KV router, defaults</li>
+      <li><span class="sw line sw-aff"></span>KV router with session affinity</li>
+    </ul>
+    <h4 id="pool-slices">Prefix reuse on the 100-trial slices<a class="anchor" href="#pool-slices" aria-label="Link to Prefix reuse on the 100-trial slices">#</a></h4>
+    <div class="tablewrap"><table data-table="poolslices"><thead></thead><tbody></tbody></table></div>
+    <h4 id="pilot-hermes">Hermes run on flint, full trace<a class="anchor" href="#pilot-hermes" aria-label="Link to Hermes run">#</a></h4>
+    <div class="tablewrap"><table data-table="pilot" data-trace="hermes_run"><thead></thead><tbody></tbody></table></div>
+    <p class="note">For context, the flint endpoint's recorded median trial took 48.5 minutes, with a p99 time to first byte of 51.8 seconds. Its hardware is unknown, so that record does not calibrate the simulator.</p>
+    <h4 id="pilot-openclaw">OpenClaw run on GLM-5.3-Flash, full trace<a class="anchor" href="#pilot-openclaw" aria-label="Link to OpenClaw run">#</a></h4>
+    <div class="tablewrap"><table data-table="pilot" data-trace="openclaw_run"><thead></thead><tbody></tbody></table></div>
+  </section>
+
+  <section id="endpoint-cache" aria-labelledby="endpoint-cache-h">
+    <h3 id="endpoint-cache-h">A real endpoint losing its cache under load<a class="anchor" href="#endpoint-cache" aria-label="Link to A real endpoint losing its cache under load">#</a></h3>
+    <p>The per-call logs record how many prompt tokens each provider served from its own cache. On DeepInfra's DeepSeek-V4.1-Flash endpoint, all 12 harnesses got 97-99% of prompt tokens from cache, and the provider recomputed at most 0.4% of the prefix an append-only context could reuse. On zai-org's GLM-5.3-Flash endpoint the provider recomputed 0.7-0.9%. The flint and Ripple-65B-Preview endpoints recomputed far more: Kimi Code on flint got 24.0% of prompt tokens from cache against 98.9% reusable, and Hermes on flint got 80.1%.</p>
+    <p>The flint endpoint shows when that happened. Between 16:00 and 18:00 UTC on 2026-11-09, with up to 195 trials active, it served 97.3-98.8% of prompt tokens from cache. At 22:30 two runs overlapped and active trials reached 395; the cached share fell to 87.7%. It stayed between 45.9% and 78.9% until 03:00, then fell to 14.7% at 04:30 with 73 trials active. The reusable share stayed between 97.2% and 99.5% throughout. The logs cannot show the provider's internals. The pattern is consistent with a pool that grew under load and routes without regard to cached prefixes.</p>
+    <div class="card">
+      <p class="cap">flint endpoint, 30-minute buckets, 2026-11-09 16:00 to 2026-11-10 06:00 UTC. Top: share of prompt tokens the provider served from cache, and the share an append-only context could reuse. Bottom: trials with a call in flight or between calls. The trial count covers only part of the endpoint's traffic, so it is a lower bound.</p>
+      <div class="chart" data-chart="timeline"></div>
+      <ul class="legend">
+        <li><span class="sw line sw-cached"></span>Served from cache by the provider</li>
+        <li><span class="sw line sw-reusable"></span>Reusable with an append-only context</li>
+        <li><span class="sw sw-neutral"></span>Active trials</li>
+      </ul>
+    </div>
+    <p class="note">The buckets are in <a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/results/pilot/endpoint-timeline.md">results/pilot/endpoint-timeline.md</a>, and the per-harness table in <a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/results/pilot/provider-cache-gap.md">results/pilot/provider-cache-gap.md</a>. Both come from the pilot extraction of 15,017 trials in 119 runs.</p>
+  </section>
+
+  <section id="native-check" aria-labelledby="native-check-h">
+    <h3 id="native-check-h">Native DeepSeek-V4.1-Flash cross-check<a class="anchor" href="#native-check" aria-label="Link to Native cross-check">#</a></h3>
+    <p>Run <code>20261108-105222-deepseek-v4-1-flash-full-high-f9c1</code> (1,170 trials, 96,583 requests, 38 trials at peak) also replayed on simulated DeepSeek-V4.1-Flash itself: four workers of four B300 GPUs. The routers rank the same way as on the GLM-5.3-Flash target. Simulated decode averages 57-62 ms per token under every router, above the 50 ms bound, so 1.2-1.4% of requests meet the SLA. That is why the main replay projects DeepSeek traffic onto GLM-5.3-Flash.</p>
+    <div class="tablewrap"><table data-table="native"><thead></thead><tbody></tbody></table></div>
+  </section>
+
+  <section id="slice-check" aria-labelledby="slice-check-h">
+    <h3 id="slice-check-h">Slice check<a class="anchor" href="#slice-check" aria-label="Link to Slice check">#</a></h3>
+    <p>Six long runs at low concurrency (63-75 hours of agent time each) took eight hours or more per replay, so they were also replayed as six consecutive slices of trials and recombined. Flint run <code>20261025-161003-flint-full-default-5596</code> uses the recombined slices in the results above; the other five use their full replays. On those five, the sliced and full replays agree within 0.1 points of prefix reuse, 3.9% of prefill and 0.1 points of SLA attainment. Sliced p99 TTFT runs up to 25% higher because it takes the worst slice.</p>
+    <div class="tablewrap"><table data-table="slices"><thead></thead><tbody></tbody></table></div>
+  </section>
+</section>
+
+<section id="method" aria-labelledby="method-h">
+  <h2 id="method-h">Method<a class="anchor" href="#method" aria-label="Link to Method">#</a></h2>
+
+  <section id="data" aria-labelledby="data-h">
+    <h3 id="data-h">Data<a class="anchor" href="#data" aria-label="Link to Data">#</a></h3>
+    <p>The Harness Leaderboard is Joel Niklaus's public benchmark of coding-agent harnesses on open-weights models. Trials in its bucket carry a meter log (<code>agent/hlb-meter.jsonl</code>) with one row per model call: start time, time to first byte, latency, and input, cached, output and reasoning tokens. The replay traces are built from those logs and each trial's <code>config.json</code> alone. No prompt text, trajectory content or task result goes into a trace.</p>
+    <p>The data came from an archived mirror of the bucket, built in two passes: a first snapshot, then every object published after it, found by listing the bucket again and keeping objects whose path and Xet hash were missing from the first snapshot's manifest. The mirror holds runs with IDs dated 2026-10-18 to 2026-11-11. They call four endpoint families: DeepSeek-V4.1-Flash (97 runs), GLM-5.3-Flash served by zai-org (80), flint (23) and Ripple-65B-Preview (16).</p>
+  </section>
+
+  <section id="trial-identity" aria-labelledby="trial-identity-h">
+    <h3 id="trial-identity-h">Trial identity<a class="anchor" href="#trial-identity" aria-label="Link to Trial identity">#</a></h3>
+    <p>Leaderboard runs reuse trials from earlier runs, so a run directory lists trials that did not execute in that run, and a copied trial's meter log carries the original run's timestamps. Replaying copies would count the same traffic several times. A trial's identity is the Xet hash of its meter log, or of its trajectory when the meter log is missing or under 256 bytes. The first trial that holds an identity, in run ID order, is the original.</p>
+    <div class="tablewrap"><table data-table="scope"><thead></thead><tbody></tbody></table></div>
+    <p>Every original has a meter log. The 69,588 originals span 216 runs and hold 6,616,606 successful calls. 683 of them made no successful call, which leaves 68,905 replayable trials.</p>
+  </section>
+
+  <section id="trace-conversion" aria-labelledby="trace-conversion-h">
+    <h3 id="trace-conversion-h">Trace conversion<a class="anchor" href="#trace-conversion" aria-label="Link to Trace conversion">#</a></h3>
+    <p><a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/scripts/hlb_to_agentic.py">hlb_to_agentic.py</a> converts a run's meter logs to Dynamo's agentic Mooncake v2 trace format (<code>schema: dynamo.agentic_mooncake</code>, <code>version: 2</code>, 64-token blocks).</p>
+    <ul class="plain">
+      <li><b>Plays and requests.</b> Each trial is one play and each successful call is one request, with <code>recorded_api_time_ms</code> from the logged latency.</li>
+      <li><b>Streams.</b> A call continues the idle stream whose last prompt it extends. A call that starts while that stream is busy, or whose prompt is shorter than every stream's (a compaction or a subagent), opens a new stream. Each stream is one session. In the 15,017 trials of the pilot extraction, calls overlap in at most 5% of cases (Oh My Pi) and prompts shrink in about 1%.</li>
+      <li><b>Dependencies.</b> A stream's next call depends on the completion of its previous call, delayed by the recorded gap, which is tool and harness time. A call also joins another stream that finished after its own predecessor. A new stream spawns from the latest completed call, or from the dispatch of an in-flight call.</li>
+      <li><b>Pacing.</b> Dependent requests are released on their dependencies alone, so an agent's next call moves with the simulated server's latency.</li>
+      <li><b>Prompt blocks.</b> Block hashes are built from token counts. A call reuses the whole prompt of its parent when it extends it, which models an append-only context. A trial's first call draws from one prefix chain shared by all trials of the same harness version: the system prompt and tool definitions.</li>
+    </ul>
+    <p>The append-only assumption is an upper bound on reuse, and it is the replay input. On DeepInfra's DeepSeek-V4.1-Flash endpoint the provider's cached share lands within half a point of that bound for every harness, which confirms that these harnesses grow their context by appending. The converter can also build a lower bound, where a call reuses only as many leading blocks as the provider reported cached. That bound encodes the provider's own cache misses as if the prompts had changed.</p>
+  </section>
+
+  <section id="replay-design" aria-labelledby="replay-design-h">
+    <h3 id="replay-design-h">Replay design<a class="anchor" href="#replay-design" aria-label="Link to Replay design">#</a></h3>
+    <ul class="plain">
+      <li><b>Target.</b> Every run replays on GLM-5.3-Flash FP8 served by vLLM 0.31.0 on B300 SXM, two GPUs per aggregated worker, with default KV capacity (90% memory fraction). GLM-5.3-Flash traffic replays natively. AISimulate has no model for flint or Ripple-65B-Preview, so their traffic is projected onto GLM-5.3-Flash. DeepSeek-V4.1-Flash traffic is projected too. Its measured B300 tables do not cover agent-sized attention shapes; the first miss was one request extending an 8,192-token cached prefix by 178 tokens. In AISimulate's <code>HYBRID</code> mode the missing shapes are priced with speed-of-light estimates, which put decode at 57-92 ms per token against DeepInfra's recorded 5.8 ms median, so every request would miss the inter-token bound. One DeepSeek run replays natively as a <a href="#native-check">cross-check</a>.</li>
+      <li><b>Pool size.</b> Workers = max(4, ceil(peak concurrent trials / 50)). Four workers are one 8-GPU node, so every run below 200 concurrent trials gets one node and a real routing decision. 884 of the 916 replays used four workers and the rest five to eight.</li>
+      <li><b>Endpoint windows.</b> <a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/scripts/make_windows.py">make_windows.py</a> groups runs by the endpoint they called and merges runs whose active spans overlapped, which rebuilds the load each endpoint carried.</li>
+      <li><b>Compute.</b> The 916 replays (9.05M requests per router) took about 9.5 hours on a 176-vCPU machine. Simulation time tracks decode steps more than request count.</li>
+    </ul>
+  </section>
+
+  <section id="routers" aria-labelledby="routers-h">
+    <h3 id="routers-h">Routers<a class="anchor" href="#routers" aria-label="Link to Routers">#</a></h3>
+    <p>Each replay sets one of four router configurations on the same base configuration:</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th class="l">Router</th><th class="l">Simulator setting</th></tr></thead>
+      <tbody>
+        <tr><td class="l">Round-robin</td><td class="l wrap"><code>router.policy=round_robin</code></td></tr>
+        <tr><td class="l">KV router, defaults</td><td class="l wrap"><code>router.policy=kv_router</code></td></tr>
+        <tr><td class="l">KV router, prefill_load_scale 16</td><td class="l wrap"><code>router.policy=kv_router</code>, <code>router.prefill_load_scale=16</code></td></tr>
+        <tr><td class="l">KV router with session affinity</td><td class="l wrap"><code>router.policy=kv_router</code>, <code>router.conversation_affinity={mode: session, ttl_seconds: 300}</code></td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="sla" aria-labelledby="sla-h">
+    <h3 id="sla-h">SLA definition<a class="anchor" href="#sla" aria-label="Link to SLA definition">#</a></h3>
+    <p>The base configuration sets <code>evaluation.sla</code> to <code>ttft_ms: 2000</code> and <code>itl_ms: 50</code>. AISimulate counts the requests that meet both bounds (its goodput count). A replay meets the SLA when at least 99% of its requests do. "Runs meeting SLA" counts replays, and "requests meeting SLA" is the share of all requests in a group.</p>
+  </section>
+
+  <section id="simulator" aria-labelledby="simulator-h">
+    <h3 id="simulator-h">Simulator<a class="anchor" href="#simulator" aria-label="Link to Simulator">#</a></h3>
+    <p>The replays ran on Dynamo commit <code>3e84909a</code> (ai-dynamo 1.7.0) with the AISimulate release it pins, <code>0.13.0.dev202610290000000087</code>. Dynamo's Python bindings were built with <code>--features ais-forward-pass</code>, which operator-level timing needs. The configuration sets <code>estimation_mode: op_level</code> and <code>enable_shared_layer: false</code>. The published GLM-5.3-Flash whole-forward profiles are 360-point calibration grids, and agent prefills fall outside them: the first failure was one request prefilling 7,962 new tokens on a short cached prefix. Operator-level timing prices any shape from per-kernel measurements. The base configuration is <a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/scripts/sim/glm-b300-op.yaml">scripts/sim/glm-b300-op.yaml</a>.</p>
+  </section>
+</section>
+
+<section id="maintainer-notes" aria-labelledby="maintainer-notes-h">
+  <h2 id="maintainer-notes-h">Notes for Dynamo and AISimulate maintainers<a class="anchor" href="#maintainer-notes" aria-label="Link to Notes for maintainers">#</a></h2>
+  <p>The work turned up four technical points, written up in <a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/docs/upstream-notes.md">upstream-notes.md</a>:</p>
+  <ul class="plain">
+    <li>Dynamo's replay runner does not advertise engine model controls, so <code>--stack dynamo</code> rejects <code>kvcache_quant_mode</code> and <code>fmha_quant_mode</code>. A small patch forwards them.</li>
+    <li>The KV router's default cost gives up long cached prefixes on agent traffic, with the numbers from this study and three possible directions.</li>
+    <li>Harness Leaderboard meter logs convert to agentic Mooncake v2 traces, with a description of the converter.</li>
+    <li>The <code>aisimulate predict</code> supervisor used about 41% of a core per replay in a 160-replay sweep, SIGTERM left execution processes running, and the 60-second initialization timeout was too short for large traces.</li>
+  </ul>
+</section>
+
+<section id="files" aria-labelledby="files-h">
+  <h2 id="files-h">Tables and code<a class="anchor" href="#files" aria-label="Link to Tables and code">#</a></h2>
+  <ul class="plain">
+    <li><a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/results/full/RESULTS.md">results/full/RESULTS.md</a>: every table of the full replay, including each traffic source under all four routers.</li>
+    <li><a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/results/full/units.csv">results/full/units.csv</a>: one row per run or window and router. <a href="https://github.com/kumanday/dynamo-agent-traffic/tree/main/results/full">results/full</a> also holds the aggregates as JSON and every replay's summary and configuration.</li>
+    <li><a href="https://github.com/kumanday/dynamo-agent-traffic/tree/main/results/pilot">results/pilot</a>: the 39 pilot replays, the provider cache tables and the endpoint timeline.</li>
+    <li><a href="https://github.com/kumanday/dynamo-agent-traffic/tree/main/scripts">scripts</a>: the pipeline, from the bucket mirror to these tables.</li>
+    <li><a href="https://github.com/kumanday/dynamo-agent-traffic/tree/main/docs/data">docs/data</a>: the JSON files this page draws from, built from the tables by <a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/scripts/build_report_data.py">build_report_data.py</a>.</li>
+  </ul>
+  <p class="note">The repository holds aggregates only. It contains no meter logs, no per-call records and no prompt text.</p>
+</section>
+
+<section id="cite" aria-labelledby="cite-h">
+  <h2 id="cite-h">How to cite or link<a class="anchor" href="#cite" aria-label="Link to How to cite or link">#</a></h2>
+  <p class="cite">Kumanday Intelligence. "Dynamo replay of Harness Leaderboard agent traffic." Study completed 2026-11-14. https://kumanday.github.io/dynamo-agent-traffic/</p>
+  <p>Every heading on this page has a stable anchor. Link to a section by its id, for example <a href="#limits">https://kumanday.github.io/dynamo-agent-traffic/#limits</a>, or to one finding or limit, for example <a href="#finding-3">#finding-3</a> and <a href="#limit-2">#limit-2</a>.</p>
+</section>
+
+<section id="credits" aria-labelledby="credits-h">
+  <h2 id="credits-h">Credits<a class="anchor" href="#credits" aria-label="Link to Credits">#</a></h2>
+  <p>Study by <a href="https://github.com/kumanday">Kumanday Intelligence</a>. The traffic comes from the <a href="https://huggingface.co/buckets/joelniklaus/harness-leaderboard">Harness Leaderboard dataset</a> (<code>joelniklaus/harness-leaderboard</code>), which Joel Niklaus publishes with the <a href="https://huggingface.co/spaces/joelniklaus/harness-leaderboard">Harness Leaderboard</a>. The simulator is NVIDIA's <a href="https://github.com/ai-dynamo/dynamo">Dynamo</a> with <a href="https://github.com/ai-dynamo/aisimulate">AISimulate</a>.</p>
+</section>
+
+</main>
+
+<footer class="site-foot">
+  <span><a href="https://github.com/kumanday">Kumanday Intelligence</a></span>
+  <span>Study completed 2026-11-14</span>
+  <span><a href="https://github.com/kumanday/dynamo-agent-traffic">github.com/kumanday/dynamo-agent-traffic</a></span>
+</footer>
+
+<noscript><p style="max-width:1080px;margin:0 auto;padding:0 24px 40px">The charts and tables on this page are drawn from the JSON files in data/ and need JavaScript. Every table is also in results/full/RESULTS.md in the repository.</p></noscript>
+
+<script>
+(() => {
+  'use strict';
+  const NS = 'http://www.w3.org/2000/svg';
+  const DATASETS = ['routers', 'traffic', 'harness', 'runs', 'windows', 'pilot', 'timeline', 'scope', 'slices'];
+  const ROUTERS = ['rr', 'kv', 'kvp16', 'aff'];
+  const ORDER = ['rr', 'kv', 'kvp4', 'kvp16', 'aff'];
+  const LABEL = {
+    rr: 'Round-robin', kv: 'KV router, defaults', kvp4: 'KV router, prefill_load_scale 4',
+    kvp16: 'KV router, prefill_load_scale 16', aff: 'KV router with session affinity',
+  };
+  const COLOR = { rr: 'var(--r-rr)', kv: 'var(--r-kv)', kvp4: 'var(--r-kvp16)', kvp16: 'var(--r-kvp16)', aff: 'var(--r-aff)' };
+
+  // Number formats. One rule per quantity, used by every table, chart and tooltip.
+  const nf = (d) => new Intl.NumberFormat('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+  const F0 = nf(0), F1 = nf(1), F2 = nf(2);
+  const int = (v) => F0.format(v);
+  const pct = (v) => `${F1.format(v)}%`;
+  const bn = (v) => `${F1.format(v)}B`;
+  const bn2 = (v) => F2.format(v);
+  const mInt = (v) => `${F0.format(v)}M`;
+  const m1 = (v) => `${F1.format(v)}M`;
+  const ratio = (v) => `${F1.format(v)}x`;
+  const min1 = (v) => `${F1.format(v)} min`;
+  const ms = (v) => (v < 2000 ? `${F0.format(v)} ms` : v < 100000 ? `${F1.format(v / 1000)} s` : `${F0.format(v / 1000)} s`);
+
+  const el = (tag, attrs, parent) => {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  };
+  const text = (parent, x, y, str, attrs) => {
+    const t = el('text', Object.assign({ x, y }, attrs || {}), parent);
+    t.textContent = str;
+    return t;
+  };
+  const ticks = (max, n) => {
+    const raw = max / n, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    const step = [1, 2, 2.5, 5, 10].map((s) => s * mag).find((s) => s >= raw);
+    const out = [];
+    for (let v = 0; v < max + step; v += step) out.push(+v.toFixed(6));
+    return out;
+  };
+  const tipFor = (host) => {
+    const tip = document.createElement('div');
+    tip.className = 'tip';
+    tip.hidden = true;
+    host.appendChild(tip);
+    return {
+      show(event, title, lines) {
+        tip.replaceChildren();
+        const t = document.createElement('div');
+        t.className = 't';
+        t.textContent = title;
+        tip.appendChild(t);
+        for (const [key, value, color] of lines) {
+          const row = document.createElement('div');
+          if (color) { const k = document.createElement('span'); k.className = 'k'; k.style.background = color; row.appendChild(k); }
+          const b = document.createElement('b');
+          b.textContent = value;
+          row.appendChild(b);
+          row.appendChild(document.createTextNode(` ${key}`));
+          tip.appendChild(row);
+        }
+        tip.hidden = false;
+        const box = host.getBoundingClientRect();
+        const x = event.clientX - box.left, y = event.clientY - box.top;
+        const w = tip.offsetWidth, h = tip.offsetHeight;
+        tip.style.left = `${Math.max(0, Math.min(box.width - w, x + 14))}px`;
+        tip.style.top = `${Math.max(0, y - h - 12 < 0 ? y + 16 : y - h - 12)}px`;
+      },
+      hide() { tip.hidden = true; },
+    };
+  };
+  const start = (host, W, H, label) => {
+    host.replaceChildren();
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': label });
+    host.appendChild(svg);
+    return svg;
+  };
+  const widthOf = (host) => Math.max(240, Math.floor(host.clientWidth));
+
+  // Horizontal bars: prefill tokens per router, value and SLA count at the bar end.
+  function bars(host, D) {
+    const scope = host.dataset.scope;
+    const rows = ROUTERS.map((r) => D.routers.find((x) => x.scope === scope && x.router === r));
+    const W = widthOf(host), rowH = 46, H = rows.length * rowH;
+    const unit = scope === 'windows' ? 'windows' : 'runs';
+    const svg = start(host, W, H, `Prefill tokens by router: ${rows.map((r) => `${LABEL[r.router]} ${bn(r.prefill_tokens_b)}, ${r.units_meeting_sla} of ${r.units} ${unit} meet the SLA`).join('; ')}`);
+    const groups = rows.map((r, i) => {
+      const g = el('g', { transform: `translate(0,${i * rowH})` }, svg);
+      text(g, 0, 13, LABEL[r.router], { class: 'mid' });
+      const val = text(g, 0, 33, '', {});
+      const a = el('tspan', { class: 'strong', 'font-weight': 650 }, val); a.textContent = bn(r.prefill_tokens_b);
+      const b = el('tspan', { dx: 8 }, val); b.textContent = `SLA ${r.units_meeting_sla} of ${r.units}`;
+      return { g, val, r };
+    });
+    const labelW = Math.max(...groups.map((x) => x.val.getComputedTextLength()));
+    const max = Math.max(...rows.map((r) => r.prefill_tokens_b));
+    const span = Math.max(30, W - labelW - 10);
+    const tip = tipFor(host);
+    for (const { g, val, r } of groups) {
+      const w = Math.max(2, (r.prefill_tokens_b / max) * span), rad = Math.min(4, w);
+      el('path', { d: `M0 20h${w - rad}a${rad} ${rad} 0 0 1 ${rad} ${rad}v${14 - 2 * rad}a${rad} ${rad} 0 0 1 -${rad} ${rad}h-${w - rad}z`, style: `fill:${COLOR[r.router]}` }, g);
+      val.setAttribute('x', w + 8);
+      const hit = el('rect', { x: 0, y: 0, width: W, height: rowH, fill: 'transparent' }, g);
+      hit.addEventListener('pointermove', (e) => tip.show(e, LABEL[r.router], [
+        ['prefill tokens', bn(r.prefill_tokens_b)], ['prefix reuse', pct(r.prefix_reuse_pct)],
+        [`${unit} meet the SLA`, `${r.units_meeting_sla} of ${r.units}`], ['of requests meet the SLA', pct(r.requests_meeting_sla_pct)],
+      ]));
+      hit.addEventListener('pointerleave', tip.hide);
+    }
+  }
+
+  // One mark per run: default-router prefill over affinity prefill, against peak concurrent trials.
+  function scatter(host, D) {
+    const rows = D.runs.filter((r) => r.kv_vs_aff_prefill != null);
+    const W = widthOf(host), H = Math.round(Math.max(250, Math.min(380, W * 0.48)));
+    const m = { t: 10, r: 12, b: 40, l: 38 };
+    const xMax = Math.max(...rows.map((r) => r.peak_trials)), yMax = Math.max(...rows.map((r) => r.kv_vs_aff_prefill));
+    const xt = ticks(xMax, Math.max(3, Math.floor(W / 110))), yt = ticks(yMax, 4);
+    const xTop = xt[xt.length - 1], yTop = yt[yt.length - 1];
+    const x = (v) => m.l + (v / xTop) * (W - m.l - m.r), y = (v) => H - m.b - (v / yTop) * (H - m.t - m.b);
+    const misses = rows.filter((r) => r.sla_kv === 'misses').length;
+    const svg = start(host, W, H, `Scatter of ${rows.length} runs. Default-router prefill relative to affinity rises with peak concurrent trials. The default KV router misses the SLA on ${misses} runs.`);
+    for (const v of yt) {
+      el('line', { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), style: `stroke:${v === 1 ? 'var(--axis)' : 'var(--line)'}` }, svg);
+      text(svg, m.l - 6, y(v) + 4, `${v}x`, { 'text-anchor': 'end' });
+    }
+    el('line', { x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, style: 'stroke:var(--axis)' }, svg);
+    for (const v of xt) text(svg, x(v), H - m.b + 16, int(v), { 'text-anchor': 'middle' });
+    text(svg, (m.l + W - m.r) / 2, H - 6, 'Peak concurrent trials', { 'text-anchor': 'middle' });
+    text(svg, W - m.r, y(1) - 5, 'equal', { 'text-anchor': 'end' });
+    const marks = el('g', {}, svg);
+    const pts = rows.map((r) => ({ r, px: x(r.peak_trials), py: y(r.kv_vs_aff_prefill) }));
+    for (const p of pts.slice().sort((a, b) => (a.r.sla_kv === 'misses') - (b.r.sla_kv === 'misses'))) {
+      if (p.r.sla_kv === 'misses') {
+        p.node = el('path', { d: `M${p.px} ${p.py - 5.5}l5.5 5.5l-5.5 5.5l-5.5 -5.5z`, style: 'fill:var(--critical);stroke:var(--surface);stroke-width:1.5' }, marks);
+      } else {
+        p.node = el('circle', { cx: p.px, cy: p.py, r: 4, style: 'fill:var(--r-kv);fill-opacity:0.8;stroke:var(--surface);stroke-width:1.5' }, marks);
+      }
+    }
+    const tip = tipFor(host);
+    const halo = el('circle', { r: 9, style: 'fill:none;stroke:var(--ink);stroke-width:1.5', visibility: 'hidden' }, svg);
+    const hit = el('rect', { x: 0, y: 0, width: W, height: H, fill: 'transparent' }, svg);
+    hit.addEventListener('pointermove', (e) => {
+      const box = svg.getBoundingClientRect(), k = W / box.width;
+      const mx = (e.clientX - box.left) * k, my = (e.clientY - box.top) * k;
+      let best = null, bd = 28 * 28;
+      for (const p of pts) { const d = (p.px - mx) ** 2 + (p.py - my) ** 2; if (d < bd) { bd = d; best = p; } }
+      if (!best) { tip.hide(); halo.setAttribute('visibility', 'hidden'); return; }
+      halo.setAttribute('cx', best.px); halo.setAttribute('cy', best.py); halo.setAttribute('visibility', 'visible');
+      const r = best.r;
+      tip.show(e, r.unit, [
+        ['default / affinity prefill', ratio(r.kv_vs_aff_prefill)], ['peak trials', int(r.peak_trials)],
+        [`workers (${r.gpus} GPUs)`, int(r.workers)], ['harness', r.harness], ['traffic', r.traffic],
+        ['the SLA, default KV router', r.sla_kv], ['the SLA, affinity', r.sla_aff],
+      ]);
+    });
+    hit.addEventListener('pointerleave', () => { tip.hide(); halo.setAttribute('visibility', 'hidden'); });
+  }
+
+  // Prefix reuse against worker count on a 100-trial slice, one line per router.
+  function pool(host, D) {
+    const trace = host.dataset.trace, routers = ['rr', 'kv', 'aff'];
+    const rows = D.pilot.filter((r) => r.trace === trace && routers.includes(r.router));
+    const workers = [...new Set(rows.map((r) => r.workers))].sort((a, b) => a - b);
+    const W = widthOf(host), H = 220, m = { t: 12, r: 16, b: 40, l: 42 };
+    const lo = 60, hi = 100;
+    const x = (w) => m.l + (workers.indexOf(w) / (workers.length - 1)) * (W - m.l - m.r);
+    const y = (v) => H - m.b - ((v - lo) / (hi - lo)) * (H - m.t - m.b);
+    const rrEnd = rows.find((r) => r.router === 'rr' && r.workers === workers[workers.length - 1]);
+    const svg = start(host, W, H, `Prefix reuse by worker count. Round-robin falls to ${pct(rrEnd.prefix_reuse_pct)} at ${rrEnd.workers} workers; the KV router and session affinity stay above 93%.`);
+    for (const v of [60, 70, 80, 90, 100]) {
+      el('line', { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), style: `stroke:${v === lo ? 'var(--axis)' : 'var(--line)'}` }, svg);
+      text(svg, m.l - 6, y(v) + 4, `${v}%`, { 'text-anchor': 'end' });
+    }
+    for (const w of workers) text(svg, x(w), H - m.b + 16, String(w), { 'text-anchor': 'middle' });
+    text(svg, (m.l + W - m.r) / 2, H - 6, 'Workers', { 'text-anchor': 'middle' });
+    const cross = el('line', { y1: m.t, y2: H - m.b, style: 'stroke:var(--axis)', visibility: 'hidden' }, svg);
+    for (const r of routers) {
+      const pts = rows.filter((p) => p.router === r).sort((a, b) => a.workers - b.workers);
+      el('path', { d: pts.map((p, i) => `${i ? 'L' : 'M'}${x(p.workers)} ${y(p.prefix_reuse_pct)}`).join(''), style: `fill:none;stroke:${COLOR[r]};stroke-width:2;stroke-linejoin:round;stroke-linecap:round` }, svg);
+      for (const p of pts) el('circle', { cx: x(p.workers), cy: y(p.prefix_reuse_pct), r: 4, style: `fill:${COLOR[r]};stroke:var(--surface);stroke-width:2` }, svg);
+    }
+    text(svg, x(rrEnd.workers) - 8, y(rrEnd.prefix_reuse_pct) + 16, `Round-robin ${pct(rrEnd.prefix_reuse_pct)}`, { 'text-anchor': 'end', class: 'mid' });
+    const tip = tipFor(host);
+    const hit = el('rect', { x: 0, y: 0, width: W, height: H, fill: 'transparent' }, svg);
+    hit.addEventListener('pointermove', (e) => {
+      const box = svg.getBoundingClientRect(), mx = (e.clientX - box.left) * (W / box.width);
+      const w = workers.reduce((a, b) => (Math.abs(x(b) - mx) < Math.abs(x(a) - mx) ? b : a));
+      cross.setAttribute('x1', x(w)); cross.setAttribute('x2', x(w)); cross.setAttribute('visibility', 'visible');
+      const lines = routers.map((r) => rows.find((p) => p.router === r && p.workers === w)).filter(Boolean)
+        .map((p) => [`${LABEL[p.router]}, ${m1(p.prefill_tokens_m)} prefill`, pct(p.prefix_reuse_pct), COLOR[p.router]]);
+      tip.show(e, `${w} workers (${2 * w} GPUs)`, lines);
+    });
+    hit.addEventListener('pointerleave', () => { tip.hide(); cross.setAttribute('visibility', 'hidden'); });
+  }
+
+  // flint endpoint: cache shares over time in the top panel, active trials in the bottom panel.
+  function timeline(host, D) {
+    const rows = D.timeline.map((r) => Object.assign({ t: Date.parse(r.bucket_start) }, r)).sort((a, b) => a.t - b.t);
+    const step = 30 * 60 * 1000, t0 = rows[0].t, t1 = rows[rows.length - 1].t + step;
+    const W = widthOf(host), m = { t: 22, r: 12, b: 38, l: 42 }, top = 170, gap = 34, bottom = 84, H = m.t + top + gap + bottom + m.b;
+    const x = (t) => m.l + ((t - t0) / (t1 - t0)) * (W - m.l - m.r);
+    const y1 = (v) => m.t + top - (v / 100) * top;
+    const aMax = Math.max(...rows.map((r) => r.active_trials)), at = ticks(aMax, 2), aTop = at[at.length - 1];
+    const base2 = m.t + top + gap + bottom, y2 = (v) => base2 - (v / aTop) * bottom;
+    const low = rows.reduce((a, b) => (b.provider_cached_pct < a.provider_cached_pct ? b : a));
+    const hhmm = (t) => new Date(t).toISOString().slice(11, 16);
+    const day = (t) => new Date(t).toISOString().slice(0, 10);
+    const svg = start(host, W, H, `flint endpoint in 30-minute buckets. The share of prompt tokens served from cache falls from about 98% to ${pct(low.provider_cached_pct)} at ${hhmm(low.t)} UTC on ${day(low.t)}, while the reusable share stays above 97%. Active trials peak at ${aMax}.`);
+    text(svg, m.l, 12, 'Share of prompt tokens', { class: 'mid' });
+    text(svg, m.l, m.t + top + gap - 8, 'Active trials', { class: 'mid' });
+    for (const v of [0, 25, 50, 75, 100]) {
+      el('line', { x1: m.l, x2: W - m.r, y1: y1(v), y2: y1(v), style: `stroke:${v ? 'var(--line)' : 'var(--axis)'}` }, svg);
+      text(svg, m.l - 6, y1(v) + 4, `${v}%`, { 'text-anchor': 'end' });
+    }
+    for (const v of at) {
+      el('line', { x1: m.l, x2: W - m.r, y1: y2(v), y2: y2(v), style: `stroke:${v ? 'var(--line)' : 'var(--axis)'}` }, svg);
+      text(svg, m.l - 6, y2(v) + 4, int(v), { 'text-anchor': 'end' });
+    }
+    const every = W < 520 ? 4 : 2;
+    for (let t = t0; t <= t1; t += every * 3600 * 1000) {
+      text(svg, x(t), base2 + 16, hhmm(t), { 'text-anchor': 'middle' });
+      if (t === t0 || hhmm(t) === '00:00') text(svg, x(t), base2 + 31, day(t), { 'text-anchor': t === t0 ? 'start' : 'middle' });
+    }
+    for (const r of rows) {
+      const bw = Math.max(1, x(r.t + step) - x(r.t) - 2), h = base2 - y2(r.active_trials), rad = Math.min(3, bw / 2, h);
+      el('path', { d: `M${x(r.t) + 1} ${base2}v-${h - rad}a${rad} ${rad} 0 0 1 ${rad} -${rad}h${bw - 2 * rad}a${rad} ${rad} 0 0 1 ${rad} ${rad}v${h - rad}z`, style: 'fill:var(--neutral-mark)' }, svg);
+    }
+    const mid = (r) => x(r.t + step / 2);
+    const line = (key, color) => el('path', { d: rows.map((r, i) => `${i ? 'L' : 'M'}${mid(r)} ${y1(r[key])}`).join(''), style: `fill:none;stroke:${color};stroke-width:2;stroke-linejoin:round;stroke-linecap:round` }, svg);
+    line('reusable_pct', 'var(--s-reusable)');
+    line('provider_cached_pct', 'var(--r-kv)');
+    el('circle', { cx: mid(low), cy: y1(low.provider_cached_pct), r: 4, style: 'fill:var(--r-kv);stroke:var(--surface);stroke-width:2' }, svg);
+    text(svg, mid(low), y1(low.provider_cached_pct) + 18, pct(low.provider_cached_pct), { 'text-anchor': 'middle', class: 'strong' });
+    const cross = el('line', { y1: m.t, y2: base2, style: 'stroke:var(--axis)', visibility: 'hidden' }, svg);
+    const tip = tipFor(host);
+    const hit = el('rect', { x: m.l, y: 0, width: W - m.l - m.r, height: H, fill: 'transparent' }, svg);
+    hit.addEventListener('pointermove', (e) => {
+      const box = svg.getBoundingClientRect(), mx = (e.clientX - box.left) * (W / box.width);
+      const r = rows.reduce((a, b) => (Math.abs(mid(b) - mx) < Math.abs(mid(a) - mx) ? b : a));
+      cross.setAttribute('x1', mid(r)); cross.setAttribute('x2', mid(r)); cross.setAttribute('visibility', 'visible');
+      tip.show(e, `${day(r.t)} ${hhmm(r.t)} UTC`, [
+        ['served from cache', pct(r.provider_cached_pct), 'var(--r-kv)'], ['reusable', pct(r.reusable_pct), 'var(--s-reusable)'],
+        ['active trials', int(r.active_trials), 'var(--neutral-mark)'], ['calls', int(r.calls)],
+      ]);
+    });
+    hit.addEventListener('pointerleave', () => { tip.hide(); cross.setAttribute('visibility', 'hidden'); });
+  }
+
+  // Tables. Column: [header, cell(row) -> string | {v, cls}, 'l' for left-aligned].
+  function table(node, cols, rows) {
+    const head = node.querySelector('thead'), body = node.querySelector('tbody');
+    head.replaceChildren(); body.replaceChildren();
+    const tr = document.createElement('tr');
+    for (const [h, , align] of cols) {
+      const th = document.createElement('th');
+      th.scope = 'col';
+      if (align) th.className = 'l';
+      th.textContent = h;
+      tr.appendChild(th);
+    }
+    head.appendChild(tr);
+    for (const r of rows) {
+      const row = document.createElement('tr');
+      for (const [, cell, align] of cols) {
+        const td = document.createElement('td');
+        let v = cell(r), cls = align ? [align === 'wrap' ? 'l wrap' : 'l'] : [];
+        if (v && typeof v === 'object') { if (v.cls) cls.push(v.cls); v = v.v; }
+        if (cls.length) td.className = cls.join(' ');
+        if (align === 'code') { const c = document.createElement('code'); c.textContent = v; td.appendChild(c); td.className = 'l wrap'; }
+        else td.textContent = v;
+        row.appendChild(td);
+      }
+      body.appendChild(row);
+    }
+  }
+  const slaCell = (key) => (r) => ({ v: `${r[key]} of ${r.runs}`, cls: r[key] < r.runs ? 'miss' : '' });
+  const shareCell = (key) => (r) => ({ v: pct(r[key]), cls: r[key] < 99 ? 'miss' : '' });
+  const byRouter = (a, b) => ORDER.indexOf(a.router) - ORDER.indexOf(b.router);
+
+  const TABLES = {
+    routers: (n, D) => table(n, [
+      ['Replay', (r) => r.scope_label, 'l'], ['Router', (r) => LABEL[r.router], 'l'],
+      ['Prefix reuse', (r) => pct(r.prefix_reuse_pct)], ['Prefill tokens', (r) => bn(r.prefill_tokens_b)],
+      ['Meeting SLA', (r) => `${r.units_meeting_sla} of ${r.units}`],
+      ['Requests meeting SLA', (r) => pct(r.requests_meeting_sla_pct)],
+      ['Mean TTFT', (r) => ms(r.mean_ttft_ms)], ['Median p99 TTFT', (r) => ms(r.median_unit_p99_ttft_ms)],
+    ], D.routers.filter((r) => r.scope === 'all' || r.scope === 'windows')),
+    windows: (n, D) => table(n, [
+      ['Endpoint', (r) => r.endpoint, 'l'], ['Start (UTC)', (r) => new Date(r.start_unix * 1000).toISOString().slice(0, 16).replace('T', ' '), 'l'],
+      ['Runs merged', (r) => int(r.merged_runs)], ['Trials', (r) => int(r.trials)], ['Peak trials', (r) => int(r.peak_trials)],
+      ['Workers', (r) => int(r.workers)],
+      ['Round-robin', shareCell('sla_share_rr_pct')], ['KV, defaults', shareCell('sla_share_kv_pct')],
+      ['KV, scale 16', shareCell('sla_share_kvp16_pct')], ['Affinity', shareCell('sla_share_aff_pct')],
+      ['Default / affinity prefill', (r) => ratio(r.kv_vs_aff_prefill)],
+    ], D.windows),
+    traffic: (n, D) => table(n, [
+      ['Traffic', (r) => r.traffic, 'l'], ['Runs', (r) => int(r.runs)],
+      ['Round-robin', slaCell('sla_rr')], ['KV, defaults', slaCell('sla_kv')], ['KV, scale 16', slaCell('sla_kvp16')], ['Affinity', slaCell('sla_aff')],
+      ['Default / affinity prefill', (r) => ratio(r.kv_vs_aff_prefill)], ['Provider cached', (r) => pct(r.provider_cached_pct)],
+      ['Affinity prefix reuse', (r) => pct(r.aff_reuse_pct)],
+    ], D.traffic),
+    harness: (n, D) => table(n, [
+      ['Harness', (r) => r.harness, 'l'], ['Runs', (r) => int(r.runs)], ['Requests', (r) => int(r.requests)],
+      ['Round-robin', slaCell('sla_rr')], ['KV, defaults', slaCell('sla_kv')], ['KV, scale 16', slaCell('sla_kvp16')], ['Affinity', slaCell('sla_aff')],
+      ['Prefill, KV defaults (B)', (r) => bn2(r.prefill_kv_b)], ['Prefill, affinity (B)', (r) => bn2(r.prefill_aff_b)],
+      ['Default / affinity prefill', (r) => ratio(r.kv_vs_aff_prefill)],
+    ], D.harness),
+    poolslices: (n, D) => {
+      const out = [];
+      for (const [trace, label] of [['hermes_slice', 'Hermes'], ['openclaw_slice', 'OpenClaw']]) {
+        for (const w of [4, 8, 16, 32]) {
+          const get = (router) => { const p = D.pilot.find((r) => r.trace === trace && r.workers === w && r.router === router); return p ? pct(p.prefix_reuse_pct) : 'not run'; };
+          out.push({ label, w, rr: get('rr'), kv: get('kv'), aff: get('aff') });
+        }
+      }
+      table(n, [['Slice', (r) => r.label, 'l'], ['Workers (GPUs)', (r) => `${r.w} (${2 * r.w})`], ['Round-robin', (r) => r.rr], ['KV router, defaults', (r) => r.kv], ['Session affinity', (r) => r.aff]], out);
+    },
+    pilot: (n, D) => table(n, [
+      ['Workers (GPUs)', (r) => `${r.workers} (${r.gpus})`], ['Router', (r) => LABEL[r.router], 'l'],
+      ['Prefix reuse', (r) => pct(r.prefix_reuse_pct)], ['Prefill tokens', (r) => m1(r.prefill_tokens_m)],
+      ['Mean TTFT', (r) => ms(r.ttft_mean_ms)], ['p99 TTFT', (r) => ms(r.ttft_p99_ms)], ['p99 ITL', (r) => ms(r.itl_p99_ms)],
+      ['Median trial', (r) => min1(r.median_trial_min)],
+    ], D.pilot.filter((r) => r.trace === n.dataset.trace).sort((a, b) => a.workers - b.workers || byRouter(a, b))),
+    native: (n, D) => table(n, [
+      ['Router', (r) => LABEL[r.router], 'l'], ['Prefix reuse', (r) => pct(r.prefix_reuse_pct)],
+      ['Prefill tokens', (r) => mInt(r.prefill_tokens_b * 1000)], ['Relative to affinity', (r) => ratio(r.prefill_vs_affinity)],
+      ['Requests meeting SLA', (r) => pct(r.requests_meeting_sla_pct)], ['Mean TTFT', (r) => ms(r.mean_ttft_ms)], ['p99 TTFT', (r) => ms(r.median_unit_p99_ttft_ms)],
+    ], D.routers.filter((r) => r.scope === 'deepseek_native')),
+    scope: (n, D) => table(n, [
+      ['Archive', (r) => ({ v: r.archive, cls: r.archive === 'Total' ? 'total' : '' }), 'l'], ['Trial directories', (r) => int(r.trial_dirs)],
+      ['Original executions', (r) => int(r.originals)], ['Copies of an earlier trial', (r) => int(r.copies)], ['No identity', (r) => int(r.no_identity)],
+    ], D.scope),
+    slices: (n, D) => table(n, [
+      ['Run', (r) => r.run, 'code'], ['Router', (r) => LABEL[r.router], 'l'],
+      ['Prefix reuse, full / sliced', (r) => `${pct(r.full_reuse_pct)} / ${pct(r.sliced_reuse_pct)}`],
+      ['Prefill, full / sliced', (r) => `${mInt(r.full_prefill_m)} / ${mInt(r.sliced_prefill_m)}`],
+      ['Requests meeting SLA, full / sliced', (r) => `${pct(r.full_sla_pct)} / ${pct(r.sliced_sla_pct)}`],
+      ['p99 TTFT, full / sliced', (r) => `${int(r.full_ttft_p99_ms)} / ${int(r.sliced_ttft_p99_ms)} ms`],
+    ], D.slices),
+  };
+  const CHARTS = { bars, scatter, pool, timeline };
+
+  function drawCharts(D) {
+    document.querySelectorAll('[data-chart]').forEach((host) => {
+      try { CHARTS[host.dataset.chart](host, D); } catch (err) { console.error(err); fail(host); }
+    });
+  }
+  function fail(host) {
+    host.replaceChildren();
+    const p = document.createElement('p');
+    p.className = 'cap';
+    p.textContent = 'The data for this figure did not load. The tables are in results/ in the repository.';
+    host.appendChild(p);
+  }
+
+  async function main() {
+    const D = {};
+    try {
+      await Promise.all(DATASETS.map(async (name) => {
+        const res = await fetch(`data/${name}.json`);
+        if (!res.ok) throw new Error(`data/${name}.json: HTTP ${res.status}`);
+        D[name] = (await res.json()).rows;
+      }));
+    } catch (err) {
+      console.error(err);
+      document.querySelectorAll('[data-chart]').forEach(fail);
+      return;
+    }
+    document.querySelectorAll('table[data-table]').forEach((n) => TABLES[n.dataset.table](n, D));
+    drawCharts(D);
+    // Redraw a chart when its container changes width (also covers a page that loaded while hidden).
+    const widths = new Map();
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const host = entry.target, w = Math.floor(entry.contentRect.width);
+        if (w === widths.get(host)) continue;
+        widths.set(host, w);
+        if (w === 0) continue;
+        try { CHARTS[host.dataset.chart](host, D); } catch (err) { console.error(err); fail(host); }
+      }
+    });
+    document.querySelectorAll('[data-chart]').forEach((host) => {
+      widths.set(host, Math.floor(host.clientWidth));
+      observer.observe(host);
+    });
+  }
+  main();
+})();
+</script>
+</body>
+</html>
