@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Build the report page's data files (docs/data/*.json) from the tables in results/.
 
-Inputs: results/full/aggregate.json, units.csv, windows.json, index-summary.json, slice-check.json,
-results/pilot/sweep-summaries.json and endpoint-timeline.md.
+Inputs: results/full/aggregate.json, units.csv, windows.json, index-summary.json, extract-summary.json,
+slice-check.json, results/pilot/sweep-summaries.json and endpoint-timeline.md.
 Each output is {"source": [...], "rows": [...]}. Values keep more digits than the page prints;
 the page does the rounding.
 """
@@ -42,15 +42,15 @@ for sid, label, blk in scopes:
         rows.append(dict(scope=sid, scope_label=label, router=rid, router_label=rlabel, units=x["units"],
                          requests=x["requests"], trials=x["trials"],
                          units_meeting_sla=x["unitsMeetingSla"], units_missing_sla=x["units"] - x["unitsMeetingSla"],
-                         requests_meeting_sla_pct=round(100 * x["requestsMeetingSla"], 3),
-                         prefix_reuse_pct=round(100 * x["prefixReuse"], 3), prefill_tokens_b=round(x["prefillTokens"] / 1e9, 4),
+                         requests_meeting_sla_pct=round(100 * x["requestsMeetingSla"], 5),
+                         prefix_reuse_pct=round(100 * x["prefixReuse"], 5), prefill_tokens_b=round(x["prefillTokens"] / 1e9, 6),
                          prefill_vs_affinity=round(x["prefillTokens"] / pol["aff"]["prefillTokens"], 4),
                          prefill_vs_affinity_run_median=round(ratio["median"], 4),
                          prefill_vs_affinity_run_p90=round(ratio["p90"], 4),
-                         mean_ttft_ms=round(x["ttftMeanWeighted"], 1), median_unit_p99_ttft_ms=round(x["medianUnitTtftP99"], 1),
-                         worst_unit_p99_ttft_ms=round(x["worstUnitTtftP99"], 1),
-                         median_trial_p50_min=round(x["medianTrialP50Min"], 2), gpu_hours=round(x["gpuHours"]),
-                         provider_cached_pct=round(100 * x["providerCachedRatio"], 3)))
+                         mean_ttft_ms=round(x["ttftMeanWeighted"], 3), median_unit_p99_ttft_ms=round(x["medianUnitTtftP99"], 3),
+                         worst_unit_p99_ttft_ms=round(x["worstUnitTtftP99"], 3),
+                         median_trial_p50_min=round(x["medianTrialP50Min"], 4), gpu_hours=round(x["gpuHours"]),
+                         provider_cached_pct=round(100 * x["providerCachedRatio"], 5)))
 write("routers", rows, ["results/full/aggregate.json"])
 
 # Traffic source: one row per model family.
@@ -61,8 +61,8 @@ for fam, sid, label in FAMILIES:
                      sla_rr=pol["rr"]["unitsMeetingSla"], sla_kv=pol["kv"]["unitsMeetingSla"],
                      sla_kvp16=pol["kvp16"]["unitsMeetingSla"], sla_aff=pol["aff"]["unitsMeetingSla"],
                      kv_vs_aff_prefill=round(pol["kv"]["prefillTokens"] / pol["aff"]["prefillTokens"], 4),
-                     provider_cached_pct=round(100 * pol["aff"]["providerCachedRatio"], 3),
-                     aff_reuse_pct=round(100 * pol["aff"]["prefixReuse"], 3)))
+                     provider_cached_pct=round(100 * pol["aff"]["providerCachedRatio"], 5),
+                     aff_reuse_pct=round(100 * pol["aff"]["prefixReuse"], 5)))
 write("traffic", rows, ["results/full/aggregate.json"])
 
 # Harness: one row per harness version. A run belongs to the harness that made most of its calls.
@@ -74,27 +74,35 @@ for h, blk in agg["byHarness"].items():
     rows.append(dict(harness=h, runs=pol["aff"]["units"], requests=pol["aff"]["requests"],
                      sla_rr=pol["rr"]["unitsMeetingSla"], sla_kv=pol["kv"]["unitsMeetingSla"],
                      sla_kvp16=pol["kvp16"]["unitsMeetingSla"], sla_aff=pol["aff"]["unitsMeetingSla"],
-                     prefill_rr_b=round(pol["rr"]["prefillTokens"] / 1e9, 4), prefill_kv_b=round(pol["kv"]["prefillTokens"] / 1e9, 4),
-                     prefill_kvp16_b=round(pol["kvp16"]["prefillTokens"] / 1e9, 4), prefill_aff_b=round(pol["aff"]["prefillTokens"] / 1e9, 4),
+                     prefill_rr_b=round(pol["rr"]["prefillTokens"] / 1e9, 6), prefill_kv_b=round(pol["kv"]["prefillTokens"] / 1e9, 6),
+                     prefill_kvp16_b=round(pol["kvp16"]["prefillTokens"] / 1e9, 6), prefill_aff_b=round(pol["aff"]["prefillTokens"] / 1e9, 6),
                      kv_vs_aff_prefill=round(pol["kv"]["prefillTokens"] / pol["aff"]["prefillTokens"], 4)))
 rows.sort(key=lambda r: -r["requests"])
 write("harness", rows, ["results/full/aggregate.json"])
 
 # Runs and endpoint windows: one row per unit, the four routers side by side.
 per = {"run": {}, "window": {}}
+native, replays = {}, 0
 with open(RES / "full/units.csv") as f:
     for r in csv.DictReader(f):
+        if r["kind"] == "dsvcheck":
+            native[r["policy"]] = r
         if r["kind"] not in per:
             continue
+        replays += 1
         d = per[r["kind"]].setdefault(r["unit"], dict(unit=r["unit"], traffic=r["family"], harness=r["harness"],
                                                      trials=int(r["plays"]), peak_trials=int(r["peakTrials"]),
                                                      requests=int(r["requests"]), workers=int(r["workers"]),
                                                      gpus=int(r["gpus"]), replayed_as=r["replayedAs"]))
         p = r["policy"]
         d[f"prefill_{p}_tokens"] = int(r["prefillTokens"])
-        d[f"sla_share_{p}_pct"] = round(100 * float(r["goodputShare"]), 2)
+        d[f"sla_share_{p}_pct"] = round(100 * float(r["goodputShare"]), 4)
         d[f"sla_{p}"] = "meets" if float(r["goodputShare"]) >= SLA_SHARE else "misses"
-        d[f"ttft_p99_{p}_ms"] = round(float(r["ttftP99"]))
+        d[f"ttft_p99_{p}_ms"] = round(float(r["ttftP99"]), 2)
+# A run ID starts with the date and time the leaderboard gave it (UTC), which the page plots as the run's date.
+for d in per["run"].values():
+    m = re.match(r"(\d{4})(\d\d)(\d\d)-", d["unit"])
+    d["id_date"] = f"{m[1]}-{m[2]}-{m[3]}" if m else None
 for kind in per:
     for d in per[kind].values():
         d["kv_vs_aff_prefill"] = round(d["prefill_kv_tokens"] / d["prefill_aff_tokens"], 3) if d["prefill_aff_tokens"] else None
@@ -107,6 +115,24 @@ for u, d in sorted(per["window"].items(), key=lambda kv: (win[kv[0]]["endpoint"]
     rows.append(dict(d, endpoint=w["endpoint"], merged_runs=len(w["runs"]), start_unix=w["start"], end_unix=w["end"],
                      hours=round((w["end"] - w["start"]) / 3600, 1)))
 write("windows", rows, ["results/full/units.csv", "results/full/windows.json"])
+
+# Native cross-check: the one run replayed on simulated DeepSeek-V4.1-Flash, next to the same run on the
+# GLM-5.3-Flash target that every other result uses.
+rows = []
+for rid, rlabel in ROUTERS:
+    n = native[rid]
+    run = n["unit"].removeprefix("dsvcheck-")
+    g = per["run"][run]
+    rows.append(dict(router=rid, router_label=rlabel, run=run, trials=int(n["plays"]), requests=int(n["requests"]),
+                     peak_trials=int(n["peakTrials"]), native_workers=int(n["workers"]), native_gpus=int(n["gpus"]),
+                     native_prefill_tokens=int(n["prefillTokens"]),
+                     native_prefill_vs_affinity=round(int(n["prefillTokens"]) / int(native["aff"]["prefillTokens"]), 4),
+                     native_ttft_p99_ms=round(float(n["ttftP99"]), 3), native_itl_mean_ms=round(float(n["itlMean"]), 4),
+                     native_sla_share_pct=round(100 * float(n["goodputShare"]), 4),
+                     target_workers=g["workers"], target_gpus=g["gpus"], target_prefill_tokens=g[f"prefill_{rid}_tokens"],
+                     target_prefill_vs_affinity=round(g[f"prefill_{rid}_tokens"] / g["prefill_aff_tokens"], 4),
+                     target_ttft_p99_ms=g[f"ttft_p99_{rid}_ms"], target_sla_share_pct=g[f"sla_share_{rid}_pct"]))
+write("native", rows, ["results/full/units.csv"])
 
 # Pilot: two full runs and their 100-trial slices, by worker count and router.
 TRACES = {"flint-hermes-upper": ("hermes_run", "Hermes run (flint)"), "glm-openclaw-upper": ("openclaw_run", "OpenClaw run (GLM-5.3-Flash)"),
@@ -121,10 +147,10 @@ for k, v in json.loads((RES / "pilot/sweep-summaries.json").read_text()).items()
     tid, tlabel = TRACES[m[1]]
     rows.append(dict(trace=tid, trace_label=tlabel, workers=int(m[2]), gpus=2 * int(m[2]), router=m[3],
                      requests=s["num_requests"], completed_requests=s["completed_requests"],
-                     prefix_reuse_pct=round(100 * s["prefix_cache_reused_ratio"], 3),
-                     prefill_tokens_m=round(s["committed_prefill_tokens"] / 1e6, 1),
-                     ttft_mean_ms=round(s["mean_ttft_ms"], 1), ttft_p99_ms=round(s["p99_ttft_ms"], 1),
-                     itl_p99_ms=round(s["p99_itl_ms"], 1), median_trial_min=round(s["p50_trajectory_e2e_latency_ms"] / 60000, 2)))
+                     prefix_reuse_pct=round(100 * s["prefix_cache_reused_ratio"], 5),
+                     prefill_tokens_m=round(s["committed_prefill_tokens"] / 1e6, 4),
+                     ttft_mean_ms=round(s["mean_ttft_ms"], 3), ttft_p99_ms=round(s["p99_ttft_ms"], 3),
+                     itl_p99_ms=round(s["p99_itl_ms"], 3), median_trial_min=round(s["p50_trajectory_e2e_latency_ms"] / 60000, 4)))
 rows.sort(key=lambda r: (r["trace"], r["workers"], r["router"]))
 write("pilot", rows, ["results/pilot/sweep-summaries.json"])
 
@@ -150,14 +176,25 @@ for src, label in (("base", "First snapshot of the bucket"), ("delta", "Objects 
 rows.append(dict(archive="Total", **{k: sum(r[k] for r in rows) for k in ("trial_dirs", "originals", "copies", "no_identity")}))
 write("scope", rows, ["results/full/index-summary.json"])
 
+# Study totals: from trial directories to replays. One row.
+ext = json.loads((RES / "full/extract-summary.json").read_text())
+tot, a, w = rows[-1], agg["all"]["policies"]["aff"], agg["windows"]["policies"]["aff"]
+write("study", [dict(trial_dirs=tot["trial_dirs"], originals=tot["originals"], copies=tot["copies"],
+                     no_identity=tot["no_identity"], extracted_trials=ext["trials"], logged_calls=ext["calls"],
+                     replayable_trials=a["trials"], originals_without_successful_call=tot["originals"] - a["trials"],
+                     requests=a["requests"], runs=a["units"], windows=w["units"], window_trials=w["trials"],
+                     window_requests=w["requests"], routers=len(ROUTERS), replays=replays)],
+      ["results/full/index-summary.json", "results/full/extract-summary.json", "results/full/aggregate.json",
+       "results/full/units.csv"])
+
 # Slice check: runs with both a full replay and a recombined six-slice replay.
 rows = []
 for c in json.loads((RES / "full/slice-check.json").read_text()):
-    rows.append(dict(run=c["unit"], router=c["policy"], full_reuse_pct=round(100 * c["fullReuse"], 3),
-                     sliced_reuse_pct=round(100 * c["slicedReuse"], 3),
-                     full_prefill_m=round(c["fullPrefill"] / 1e6, 1), sliced_prefill_m=round(c["slicedPrefill"] / 1e6, 1),
-                     full_sla_pct=round(100 * c["fullGoodput"], 3), sliced_sla_pct=round(100 * c["slicedGoodput"], 3),
-                     full_ttft_p99_ms=round(c["fullTtftP99"]), sliced_ttft_p99_ms=round(c["slicedTtftP99"])))
+    rows.append(dict(run=c["unit"], router=c["policy"], full_reuse_pct=round(100 * c["fullReuse"], 5),
+                     sliced_reuse_pct=round(100 * c["slicedReuse"], 5),
+                     full_prefill_m=round(c["fullPrefill"] / 1e6, 4), sliced_prefill_m=round(c["slicedPrefill"] / 1e6, 4),
+                     full_sla_pct=round(100 * c["fullGoodput"], 5), sliced_sla_pct=round(100 * c["slicedGoodput"], 5),
+                     full_ttft_p99_ms=round(c["fullTtftP99"], 2), sliced_ttft_p99_ms=round(c["slicedTtftP99"], 2)))
 order = [r for r, _ in ROUTERS]
 rows.sort(key=lambda r: (r["run"], order.index(r["router"])))
 write("slices", rows, ["results/full/slice-check.json"])

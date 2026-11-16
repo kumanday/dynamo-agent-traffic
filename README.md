@@ -36,6 +36,7 @@ These are simulator results. Read the [limits](#limits) before using them.
 | --- | --- |
 | [docs/index.html](docs/index.html) | The report page, served by GitHub Pages from `docs/`. Method, results, findings and limits, with stable section anchors. |
 | [docs/data/](docs/data) | The JSON files the page draws its charts and tables from. |
+| [docs/assets/](docs/assets) | The page's stylesheet and the script that draws its charts and tables. |
 | [docs/upstream-notes.md](docs/upstream-notes.md) | Technical notes for Dynamo and AISimulate maintainers. |
 | [results/full/RESULTS.md](results/full/RESULTS.md) | Every table of the full replay. |
 | [results/full/](results/full) | `units.csv` (one row per unit and router), the aggregates as JSON, and every replay's summary and configuration. |
@@ -48,6 +49,8 @@ To read the page locally, serve `docs/` over HTTP. It loads its data with relati
 ```sh
 python3 -m http.server --directory docs
 ```
+
+`scripts/check_report_numbers.py` compares the numbers on the rendered page with `results/full/RESULTS.md`. Its docstring has the two commands that dump the rendered page for it.
 
 ## How the pipeline runs
 

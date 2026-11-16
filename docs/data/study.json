@@ -1,0 +1,27 @@
+{
+ "source": [
+  "results/full/index-summary.json",
+  "results/full/extract-summary.json",
+  "results/full/aggregate.json",
+  "results/full/units.csv"
+ ],
+ "rows": [
+  {
+   "trial_dirs": 149189,
+   "originals": 69588,
+   "copies": 76500,
+   "no_identity": 3101,
+   "extracted_trials": 69588,
+   "logged_calls": 6616617,
+   "replayable_trials": 68905,
+   "originals_without_successful_call": 683,
+   "requests": 6616606,
+   "runs": 216,
+   "windows": 13,
+   "window_trials": 26395,
+   "window_requests": 2431809,
+   "routers": 4,
+   "replays": 916
+  }
+ ]
+}

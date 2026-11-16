@@ -11,10 +11,10 @@
    "sla_kv": 9,
    "sla_kvp16": 9,
    "sla_aff": 9,
-   "prefill_rr_b": 5.9484,
-   "prefill_kv_b": 4.8805,
-   "prefill_kvp16_b": 1.6931,
-   "prefill_aff_b": 1.7078,
+   "prefill_rr_b": 5.948437,
+   "prefill_kv_b": 4.880511,
+   "prefill_kvp16_b": 1.693082,
+   "prefill_aff_b": 1.707761,
    "kv_vs_aff_prefill": 2.8578
   },
   {
@@ -25,10 +25,10 @@
    "sla_kv": 20,
    "sla_kvp16": 20,
    "sla_aff": 20,
-   "prefill_rr_b": 2.013,
-   "prefill_kv_b": 1.8022,
-   "prefill_kvp16_b": 0.6477,
-   "prefill_aff_b": 0.5506,
+   "prefill_rr_b": 2.013038,
+   "prefill_kv_b": 1.802203,
+   "prefill_kvp16_b": 0.647671,
+   "prefill_aff_b": 0.550563,
    "kv_vs_aff_prefill": 3.2734
   },
   {
@@ -39,10 +39,10 @@
    "sla_kv": 13,
    "sla_kvp16": 13,
    "sla_aff": 13,
-   "prefill_rr_b": 2.3278,
-   "prefill_kv_b": 1.7299,
-   "prefill_kvp16_b": 0.7156,
-   "prefill_aff_b": 0.6451,
+   "prefill_rr_b": 2.327756,
+   "prefill_kv_b": 1.729852,
+   "prefill_kvp16_b": 0.715556,
+   "prefill_aff_b": 0.645142,
    "kv_vs_aff_prefill": 2.6814
   },
   {
@@ -53,10 +53,10 @@
    "sla_kv": 6,
    "sla_kvp16": 6,
    "sla_aff": 6,
-   "prefill_rr_b": 2.1363,
-   "prefill_kv_b": 1.8254,
-   "prefill_kvp16_b": 0.6422,
-   "prefill_aff_b": 0.6055,
+   "prefill_rr_b": 2.13629,
+   "prefill_kv_b": 1.825379,
+   "prefill_kvp16_b": 0.64217,
+   "prefill_aff_b": 0.605494,
    "kv_vs_aff_prefill": 3.0147
   },
   {
@@ -67,10 +67,10 @@
    "sla_kv": 4,
    "sla_kvp16": 6,
    "sla_aff": 6,
-   "prefill_rr_b": 2.257,
-   "prefill_kv_b": 1.7843,
-   "prefill_kvp16_b": 0.6506,
-   "prefill_aff_b": 0.6346,
+   "prefill_rr_b": 2.257045,
+   "prefill_kv_b": 1.784342,
+   "prefill_kvp16_b": 0.650607,
+   "prefill_aff_b": 0.634578,
    "kv_vs_aff_prefill": 2.8119
   },
   {
@@ -81,10 +81,10 @@
    "sla_kv": 16,
    "sla_kvp16": 19,
    "sla_aff": 19,
-   "prefill_rr_b": 7.6987,
-   "prefill_kv_b": 1.7091,
-   "prefill_kvp16_b": 0.5121,
-   "prefill_aff_b": 0.4737,
+   "prefill_rr_b": 7.698713,
+   "prefill_kv_b": 1.709078,
+   "prefill_kvp16_b": 0.512073,
+   "prefill_aff_b": 0.473675,
    "kv_vs_aff_prefill": 3.6081
   },
   {
@@ -95,10 +95,10 @@
    "sla_kv": 9,
    "sla_kvp16": 9,
    "sla_aff": 9,
-   "prefill_rr_b": 2.1547,
-   "prefill_kv_b": 1.7482,
-   "prefill_kvp16_b": 0.6124,
-   "prefill_aff_b": 0.6078,
+   "prefill_rr_b": 2.154715,
+   "prefill_kv_b": 1.748243,
+   "prefill_kvp16_b": 0.612373,
+   "prefill_aff_b": 0.60784,
    "kv_vs_aff_prefill": 2.8762
   },
   {
@@ -109,10 +109,10 @@
    "sla_kv": 17,
    "sla_kvp16": 25,
    "sla_aff": 25,
-   "prefill_rr_b": 4.9906,
-   "prefill_kv_b": 2.4142,
-   "prefill_kvp16_b": 0.6106,
-   "prefill_aff_b": 0.6069,
+   "prefill_rr_b": 4.99061,
+   "prefill_kv_b": 2.414162,
+   "prefill_kvp16_b": 0.610633,
+   "prefill_aff_b": 0.606862,
    "kv_vs_aff_prefill": 3.9781
   },
   {
@@ -123,10 +123,10 @@
    "sla_kv": 17,
    "sla_kvp16": 19,
    "sla_aff": 19,
-   "prefill_rr_b": 4.986,
-   "prefill_kv_b": 1.7316,
-   "prefill_kvp16_b": 0.5433,
-   "prefill_aff_b": 0.5194,
+   "prefill_rr_b": 4.985953,
+   "prefill_kv_b": 1.731623,
+   "prefill_kvp16_b": 0.543324,
+   "prefill_aff_b": 0.519432,
    "kv_vs_aff_prefill": 3.3337
   },
   {
@@ -137,10 +137,10 @@
    "sla_kv": 12,
    "sla_kvp16": 14,
    "sla_aff": 14,
-   "prefill_rr_b": 5.3084,
-   "prefill_kv_b": 1.6285,
-   "prefill_kvp16_b": 0.5779,
-   "prefill_aff_b": 0.4852,
+   "prefill_rr_b": 5.308357,
+   "prefill_kv_b": 1.628512,
+   "prefill_kvp16_b": 0.577866,
+   "prefill_aff_b": 0.485249,
    "kv_vs_aff_prefill": 3.356
   },
   {
@@ -152,9 +152,9 @@
    "sla_kvp16": 22,
    "sla_aff": 22,
    "prefill_rr_b": 1.3914,
-   "prefill_kv_b": 1.1042,
-   "prefill_kvp16_b": 0.3933,
-   "prefill_aff_b": 0.3783,
+   "prefill_kv_b": 1.104212,
+   "prefill_kvp16_b": 0.393274,
+   "prefill_aff_b": 0.378341,
    "kv_vs_aff_prefill": 2.9186
   },
   {
@@ -165,10 +165,10 @@
    "sla_kv": 5,
    "sla_kvp16": 5,
    "sla_aff": 5,
-   "prefill_rr_b": 1.576,
-   "prefill_kv_b": 1.2237,
-   "prefill_kvp16_b": 0.4458,
-   "prefill_aff_b": 0.4425,
+   "prefill_rr_b": 1.575975,
+   "prefill_kv_b": 1.223732,
+   "prefill_kvp16_b": 0.445829,
+   "prefill_aff_b": 0.44245,
    "kv_vs_aff_prefill": 2.7658
   },
   {
@@ -179,10 +179,10 @@
    "sla_kv": 18,
    "sla_kvp16": 19,
    "sla_aff": 19,
-   "prefill_rr_b": 1.1226,
-   "prefill_kv_b": 0.8339,
-   "prefill_kvp16_b": 0.3103,
-   "prefill_aff_b": 0.3135,
+   "prefill_rr_b": 1.122623,
+   "prefill_kv_b": 0.833909,
+   "prefill_kvp16_b": 0.310321,
+   "prefill_aff_b": 0.313543,
    "kv_vs_aff_prefill": 2.6596
   },
   {
@@ -193,10 +193,10 @@
    "sla_kv": 10,
    "sla_kvp16": 11,
    "sla_aff": 11,
-   "prefill_rr_b": 4.6335,
-   "prefill_kv_b": 0.6755,
-   "prefill_kvp16_b": 0.2087,
-   "prefill_aff_b": 0.1779,
+   "prefill_rr_b": 4.633471,
+   "prefill_kv_b": 0.675499,
+   "prefill_kvp16_b": 0.208689,
+   "prefill_aff_b": 0.177932,
    "kv_vs_aff_prefill": 3.7964
   },
   {
@@ -207,10 +207,10 @@
    "sla_kv": 9,
    "sla_kvp16": 11,
    "sla_aff": 11,
-   "prefill_rr_b": 0.5289,
-   "prefill_kv_b": 0.3698,
-   "prefill_kvp16_b": 0.148,
-   "prefill_aff_b": 0.1455,
+   "prefill_rr_b": 0.528942,
+   "prefill_kv_b": 0.369775,
+   "prefill_kvp16_b": 0.148037,
+   "prefill_aff_b": 0.145545,
    "kv_vs_aff_prefill": 2.5406
   },
   {
@@ -221,10 +221,10 @@
    "sla_kv": 3,
    "sla_kvp16": 3,
    "sla_aff": 3,
-   "prefill_rr_b": 0.0719,
-   "prefill_kv_b": 0.0548,
-   "prefill_kvp16_b": 0.0204,
-   "prefill_aff_b": 0.0202,
+   "prefill_rr_b": 0.071944,
+   "prefill_kv_b": 0.054828,
+   "prefill_kvp16_b": 0.020426,
+   "prefill_aff_b": 0.020236,
    "kv_vs_aff_prefill": 2.7094
   },
   {
@@ -235,10 +235,10 @@
    "sla_kv": 1,
    "sla_kvp16": 1,
    "sla_aff": 1,
-   "prefill_rr_b": 0.0166,
-   "prefill_kv_b": 0.0091,
-   "prefill_kvp16_b": 0.0044,
-   "prefill_aff_b": 0.0044,
+   "prefill_rr_b": 0.016632,
+   "prefill_kv_b": 0.00906,
+   "prefill_kvp16_b": 0.004449,
+   "prefill_aff_b": 0.004447,
    "kv_vs_aff_prefill": 2.0373
   },
   {
@@ -249,10 +249,10 @@
    "sla_kv": 1,
    "sla_kvp16": 1,
    "sla_aff": 1,
-   "prefill_rr_b": 0.0089,
-   "prefill_kv_b": 0.0054,
-   "prefill_kvp16_b": 0.0025,
-   "prefill_aff_b": 0.0028,
+   "prefill_rr_b": 0.008899,
+   "prefill_kv_b": 0.005379,
+   "prefill_kvp16_b": 0.002497,
+   "prefill_aff_b": 0.002801,
    "kv_vs_aff_prefill": 1.9206
   },
   {
@@ -263,10 +263,10 @@
    "sla_kv": 2,
    "sla_kvp16": 2,
    "sla_aff": 2,
-   "prefill_rr_b": 0.0052,
-   "prefill_kv_b": 0.0019,
-   "prefill_kvp16_b": 0.0015,
-   "prefill_aff_b": 0.0015,
+   "prefill_rr_b": 0.005213,
+   "prefill_kv_b": 0.001935,
+   "prefill_kvp16_b": 0.001457,
+   "prefill_aff_b": 0.001452,
    "kv_vs_aff_prefill": 1.3322
   }
  ]
