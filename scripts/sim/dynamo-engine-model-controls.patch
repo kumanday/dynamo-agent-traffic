@@ -1,0 +1,16 @@
+diff --git a/components/src/dynamo/replay/simulation.py b/components/src/dynamo/replay/simulation.py
+index 5614747..5bdf226 100644
+--- a/components/src/dynamo/replay/simulation.py
++++ b/components/src/dynamo/replay/simulation.py
+@@ -75,6 +75,11 @@ class DynamoReplayRunnerFactory:
+                 and topology in ("agg", "disagg")
+             ),
+             supported_hooks=(_PLANNER_HOOK, _ROUTER_HOOK),
++            # Quantization and kernel selectors reach the shared AISimulate engine
++            # unchanged, so measured FPM profiles can match their exact identity.
++            supported_engine_model_controls=(
++                engine_capabilities.supported_engine_model_controls
++            ),
+             supports_disaggregated_attention_dp=(
+                 engine_capabilities.supports_disaggregated_attention_dp
+             ),

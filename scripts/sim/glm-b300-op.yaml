@@ -1,0 +1,48 @@
+traffic:
+  source:
+    type: trace
+    format: agentic_mooncake
+    paths:
+    - TRACE
+  load:
+    type: trace_timestamps
+engine:
+  mode: aggregated
+  model: zai-org/GLM-5.3-Flash
+  hardware: b300_sxm
+  backend: vllm
+  backend_version: 0.31.0
+  context_length: max
+  workers:
+    aggregated:
+      parallelism:
+        replicas: 4
+        tensor: 2
+        pipeline: 1
+        attention_data: 1
+        moe_tensor: 2
+        moe_expert: 1
+      scheduler:
+        max_batched_tokens: 8192
+        max_sequences: 256
+      kv_cache:
+        block_size: 64
+        prefix_caching: true
+        capacity:
+          type: default
+          memory_fraction: 0.9
+      timing:
+        type: default
+      startup_seconds: 0
+  estimation_mode: op_level
+  enable_shared_layer: false
+router:
+  policy: kv_router
+  prefill_load_model:
+    type: none
+planner:
+  policy: disabled
+evaluation:
+  sla:
+    ttft_ms: 2000
+    itl_ms: 50
