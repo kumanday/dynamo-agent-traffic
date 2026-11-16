@@ -1,0 +1,95 @@
+{
+ "source": "meters/20261111-222218-glm-5-3-flash-full-high-b7ba.jsonl.gz",
+ "trace": "stats2/20261111-222218-glm-5-3-flash-full-high-b7ba.jsonl",
+ "hashes": "lower",
+ "pacing": "closed",
+ "blockSize": 64,
+ "plays": 7,
+ "requests": 366,
+ "peakConcurrentPlays": 5,
+ "spanHours": 0.079,
+ "inputTokens": 39472134,
+ "outputTokens": 256705,
+ "providerCachedTokens": 38788736,
+ "reusedTokens": 38788736,
+ "lowerReuseTokens": 38788736,
+ "upperReuseTokens": 38803338,
+ "providerCachedRatio": 0.9827,
+ "traceReuseRatio": 0.9827,
+ "upperReuseRatio": 0.9831,
+ "providerShortfallTokens": 14602,
+ "callsWithShortfall": 2,
+ "streams": 8,
+ "forks": 1,
+ "parallelForks": 0,
+ "resets": 1,
+ "joins": 0,
+ "sharedPrefixTokens": {
+  "lower": {
+   "pi@1.2.0": 1408,
+   "kimi-code@2.2.0": 0,
+   "deepseek-harness@0.2.2-rc.1": 0
+  },
+  "upper": {
+   "pi@1.2.0": 1408,
+   "kimi-code@2.2.0": 0,
+   "deepseek-harness@0.2.2-rc.1": 0
+  }
+ },
+ "byHarness": {
+  "pi@1.2.0|zai-org/GLM-5.3-Flash:zai-org": {
+   "calls": 52,
+   "input": 1662889,
+   "output": 54596,
+   "providerCached": 1524160,
+   "lowerReuse": 1524160,
+   "upperReuse": 1528694,
+   "traceReuse": 1524160,
+   "providerShortfall": 4534,
+   "callsShortfall": 2,
+   "plays": 3
+  },
+  "kimi-code@2.2.0|zai-org/GLM-5.3-Flash:zai-org": {
+   "calls": 294,
+   "input": 37131770,
+   "output": 193779,
+   "providerCached": 36675328,
+   "lowerReuse": 36675328,
+   "upperReuse": 36684849,
+   "traceReuse": 36675328,
+   "providerShortfall": 9521,
+   "callsShortfall": 0,
+   "plays": 3
+  },
+  "deepseek-harness@0.2.2-rc.1|zai-org/GLM-5.3-Flash:zai-org": {
+   "calls": 20,
+   "input": 677475,
+   "output": 8330,
+   "providerCached": 589248,
+   "lowerReuse": 589248,
+   "upperReuse": 589795,
+   "traceReuse": 589248,
+   "providerShortfall": 547,
+   "callsShortfall": 0,
+   "plays": 1
+  }
+ },
+ "model": [
+  "hlb/zai-org/GLM-5.3-Flash:zai-org",
+  "openai/zai-org/GLM-5.3-Flash:zai-org",
+  "zai-org/GLM-5.3-Flash:zai-org"
+ ],
+ "meanInput": 107847,
+ "medianInput": 118139.5,
+ "meanOutput": 701,
+ "header": {
+  "schema": "dynamo.agentic_mooncake",
+  "version": 2,
+  "block_size": 64,
+  "hash_id_scope": "local",
+  "source": {
+   "format": "harness_leaderboard_hlb_meter",
+   "digest": "sha256:4abd444305bb3929c8a43456cc59571d2d1bdd7a381a665bcca3c0f91b46e715"
+  }
+ }
+}

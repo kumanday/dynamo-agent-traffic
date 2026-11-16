@@ -1,0 +1,65 @@
+{
+ "source": "meters/20261109-214507-flint-full-default-f9d0.jsonl.gz",
+ "trace": "stats2/20261109-214507-flint-full-default-f9d0.jsonl",
+ "hashes": "lower",
+ "pacing": "closed",
+ "blockSize": 64,
+ "plays": 526,
+ "requests": 84444,
+ "peakConcurrentPlays": 273,
+ "spanHours": 4.676,
+ "inputTokens": 9147138398,
+ "outputTokens": 54975036,
+ "providerCachedTokens": 7320739123,
+ "reusedTokens": 7289099776,
+ "lowerReuseTokens": 7291647135,
+ "upperReuseTokens": 9041256749,
+ "providerCachedRatio": 0.8003,
+ "traceReuseRatio": 0.7969,
+ "upperReuseRatio": 0.9884,
+ "providerShortfallTokens": 1749609614,
+ "callsWithShortfall": 16674,
+ "streams": 1066,
+ "forks": 540,
+ "parallelForks": 2,
+ "resets": 538,
+ "joins": 140,
+ "sharedPrefixTokens": {
+  "lower": {
+   "hermes@v0.22.1": 11732
+  },
+  "upper": {
+   "hermes@v0.22.1": 10133
+  }
+ },
+ "byHarness": {
+  "hermes@v0.22.1|RecursiveSI/flint": {
+   "calls": 84444,
+   "input": 9147138398,
+   "output": 54975036,
+   "providerCached": 7320739123,
+   "lowerReuse": 7291647135,
+   "upperReuse": 9041256749,
+   "traceReuse": 7289099776,
+   "providerShortfall": 1749609614,
+   "callsShortfall": 16674,
+   "plays": 526
+  }
+ },
+ "model": [
+  "openai/RecursiveSI/flint"
+ ],
+ "meanInput": 108322,
+ "medianInput": 109770.0,
+ "meanOutput": 651,
+ "header": {
+  "schema": "dynamo.agentic_mooncake",
+  "version": 2,
+  "block_size": 64,
+  "hash_id_scope": "local",
+  "source": {
+   "format": "harness_leaderboard_hlb_meter",
+   "digest": "sha256:e2d8faff8ec169f0727883b263f9345e5e6bb1fdb5109aa1bb4e67a9b22329f4"
+  }
+ }
+}

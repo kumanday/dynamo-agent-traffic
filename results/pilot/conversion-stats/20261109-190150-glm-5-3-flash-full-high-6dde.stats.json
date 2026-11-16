@@ -1,0 +1,65 @@
+{
+ "source": "meters/20261109-190150-glm-5-3-flash-full-high-6dde.jsonl.gz",
+ "trace": "stats2/20261109-190150-glm-5-3-flash-full-high-6dde.jsonl",
+ "hashes": "lower",
+ "pacing": "closed",
+ "blockSize": 64,
+ "plays": 528,
+ "requests": 92744,
+ "peakConcurrentPlays": 155,
+ "spanHours": 6.426,
+ "inputTokens": 9021781402,
+ "outputTokens": 44299681,
+ "providerCachedTokens": 8912380376,
+ "reusedTokens": 8912272640,
+ "lowerReuseTokens": 8912273679,
+ "upperReuseTokens": 8983587161,
+ "providerCachedRatio": 0.9879,
+ "traceReuseRatio": 0.9879,
+ "upperReuseRatio": 0.9958,
+ "providerShortfallTokens": 71313482,
+ "callsWithShortfall": 8423,
+ "streams": 544,
+ "forks": 16,
+ "parallelForks": 3,
+ "resets": 13,
+ "joins": 18,
+ "sharedPrefixTokens": {
+  "lower": {
+   "openclaw@2026.11.1": 15744
+  },
+  "upper": {
+   "openclaw@2026.11.1": 15744
+  }
+ },
+ "byHarness": {
+  "openclaw@2026.11.1|zai-org/GLM-5.3-Flash:zai-org": {
+   "calls": 92744,
+   "input": 9021781402,
+   "output": 44299681,
+   "providerCached": 8912380376,
+   "lowerReuse": 8912273679,
+   "upperReuse": 8983587161,
+   "traceReuse": 8912272640,
+   "providerShortfall": 71313482,
+   "callsShortfall": 8423,
+   "plays": 528
+  }
+ },
+ "model": [
+  "openai/zai-org/GLM-5.3-Flash:zai-org"
+ ],
+ "meanInput": 97276,
+ "medianInput": 86788.0,
+ "meanOutput": 478,
+ "header": {
+  "schema": "dynamo.agentic_mooncake",
+  "version": 2,
+  "block_size": 64,
+  "hash_id_scope": "local",
+  "source": {
+   "format": "harness_leaderboard_hlb_meter",
+   "digest": "sha256:80c8b824c59ff2149c4cc0135b9850cd9e8c5946a5453a88e317aa1daf57c7d4"
+  }
+ }
+}

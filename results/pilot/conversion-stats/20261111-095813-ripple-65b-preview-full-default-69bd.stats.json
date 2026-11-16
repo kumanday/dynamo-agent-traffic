@@ -1,0 +1,95 @@
+{
+ "source": "meters/20261111-095813-ripple-65b-preview-full-default-69bd.jsonl.gz",
+ "trace": "stats2/20261111-095813-ripple-65b-preview-full-default-69bd.jsonl",
+ "hashes": "lower",
+ "pacing": "closed",
+ "blockSize": 64,
+ "plays": 323,
+ "requests": 54775,
+ "peakConcurrentPlays": 107,
+ "spanHours": 5.62,
+ "inputTokens": 7121826784,
+ "outputTokens": 39317945,
+ "providerCachedTokens": 6588322944,
+ "reusedTokens": 6556146240,
+ "lowerReuseTokens": 6557659404,
+ "upperReuseTokens": 7052460909,
+ "providerCachedRatio": 0.9251,
+ "traceReuseRatio": 0.9206,
+ "upperReuseRatio": 0.9903,
+ "providerShortfallTokens": 494801505,
+ "callsWithShortfall": 4944,
+ "streams": 647,
+ "forks": 324,
+ "parallelForks": 7,
+ "resets": 317,
+ "joins": 125,
+ "sharedPrefixTokens": {
+  "lower": {
+   "deepseek-harness@0.2.2-rc.1": 10112,
+   "opencode@2.2.6": 0,
+   "pi@1.2.0": 0
+  },
+  "upper": {
+   "deepseek-harness@0.2.2-rc.1": 7040,
+   "opencode@2.2.6": 0,
+   "pi@1.2.0": 0
+  }
+ },
+ "byHarness": {
+  "deepseek-harness@0.2.2-rc.1|ricursiveAI/Ripple-65B-Preview": {
+   "calls": 54403,
+   "input": 7076998030,
+   "output": 38967066,
+   "providerCached": 6544040128,
+   "lowerReuse": 6513620743,
+   "upperReuse": 7008350065,
+   "traceReuse": 6512118592,
+   "providerShortfall": 494729322,
+   "callsShortfall": 4934,
+   "plays": 321
+  },
+  "opencode@2.2.6|ricursiveAI/Ripple-65B-Preview": {
+   "calls": 131,
+   "input": 11247679,
+   "output": 194593,
+   "providerCached": 10942080,
+   "lowerReuse": 10827352,
+   "upperReuse": 10899274,
+   "traceReuse": 10823744,
+   "providerShortfall": 71922,
+   "callsShortfall": 10,
+   "plays": 1
+  },
+  "pi@1.2.0|ricursiveAI/Ripple-65B-Preview": {
+   "calls": 241,
+   "input": 33581075,
+   "output": 156286,
+   "providerCached": 33340736,
+   "lowerReuse": 33211309,
+   "upperReuse": 33211570,
+   "traceReuse": 33203904,
+   "providerShortfall": 261,
+   "callsShortfall": 0,
+   "plays": 1
+  }
+ },
+ "model": [
+  "hlb/ricursiveAI/Ripple-65B-Preview",
+  "huggingface/ricursiveAI/Ripple-65B-Preview",
+  "openai/ricursiveAI/Ripple-65B-Preview"
+ ],
+ "meanInput": 130020,
+ "medianInput": 135504,
+ "meanOutput": 718,
+ "header": {
+  "schema": "dynamo.agentic_mooncake",
+  "version": 2,
+  "block_size": 64,
+  "hash_id_scope": "local",
+  "source": {
+   "format": "harness_leaderboard_hlb_meter",
+   "digest": "sha256:fd75872df4184994b8056a1ee64321e06c191f312c6e127214cf3ef7f87fc419"
+  }
+ }
+}

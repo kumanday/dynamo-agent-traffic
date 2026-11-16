@@ -1,0 +1,80 @@
+{
+ "source": "meters/20261109-093723-deepseek-v4-1-flash-full-low-4a8e.jsonl.gz",
+ "trace": "stats2/20261109-093723-deepseek-v4-1-flash-full-low-4a8e.jsonl",
+ "hashes": "lower",
+ "pacing": "closed",
+ "blockSize": 64,
+ "plays": 148,
+ "requests": 17085,
+ "peakConcurrentPlays": 29,
+ "spanHours": 4.444,
+ "inputTokens": 2013007756,
+ "outputTokens": 13444143,
+ "providerCachedTokens": 1993059968,
+ "reusedTokens": 1988666688,
+ "lowerReuseTokens": 1988834249,
+ "upperReuseTokens": 1989993742,
+ "providerCachedRatio": 0.9901,
+ "traceReuseRatio": 0.9879,
+ "upperReuseRatio": 0.9886,
+ "providerShortfallTokens": 1159493,
+ "callsWithShortfall": 24,
+ "streams": 293,
+ "forks": 145,
+ "parallelForks": 19,
+ "resets": 126,
+ "joins": 45,
+ "sharedPrefixTokens": {
+  "lower": {
+   "None@None": 6144,
+   "deepseek-harness@0.2.2-rc.1": 10112
+  },
+  "upper": {
+   "None@None": 5888,
+   "deepseek-harness@0.2.2-rc.1": 6272
+  }
+ },
+ "byHarness": {
+  "None@None|deepseek-ai/DeepSeek-V4.1-Flash:deepinfra": {
+   "calls": 2349,
+   "input": 280964710,
+   "output": 1833388,
+   "providerCached": 278579456,
+   "lowerReuse": 277732426,
+   "upperReuse": 277822646,
+   "traceReuse": 277699008,
+   "providerShortfall": 90220,
+   "callsShortfall": 2,
+   "plays": 21
+  },
+  "deepseek-harness@0.2.2-rc.1|deepseek-ai/DeepSeek-V4.1-Flash:deepinfra": {
+   "calls": 14736,
+   "input": 1732043046,
+   "output": 11610755,
+   "providerCached": 1714480512,
+   "lowerReuse": 1711101823,
+   "upperReuse": 1712171096,
+   "traceReuse": 1710967680,
+   "providerShortfall": 1069273,
+   "callsShortfall": 22,
+   "plays": 127
+  }
+ },
+ "model": [
+  "None",
+  "hlb/deepseek-ai/DeepSeek-V4.1-Flash:deepinfra"
+ ],
+ "meanInput": 117823,
+ "medianInput": 114512,
+ "meanOutput": 787,
+ "header": {
+  "schema": "dynamo.agentic_mooncake",
+  "version": 2,
+  "block_size": 64,
+  "hash_id_scope": "local",
+  "source": {
+   "format": "harness_leaderboard_hlb_meter",
+   "digest": "sha256:b939b03abbce5efa5800a3b10d037e46e12163ef49fd51cd757bbb0e96a0ad44"
+  }
+ }
+}

@@ -1,0 +1,80 @@
+{
+ "source": "meters/20261109-093728-deepseek-v4-1-flash-full-high-d9d2.jsonl.gz",
+ "trace": "stats2/20261109-093728-deepseek-v4-1-flash-full-high-d9d2.jsonl",
+ "hashes": "lower",
+ "pacing": "closed",
+ "blockSize": 64,
+ "plays": 154,
+ "requests": 19907,
+ "peakConcurrentPlays": 33,
+ "spanHours": 5.532,
+ "inputTokens": 2661510139,
+ "outputTokens": 16505028,
+ "providerCachedTokens": 2637663360,
+ "reusedTokens": 2632061504,
+ "lowerReuseTokens": 2632288125,
+ "upperReuseTokens": 2633484613,
+ "providerCachedRatio": 0.991,
+ "traceReuseRatio": 0.9889,
+ "upperReuseRatio": 0.9895,
+ "providerShortfallTokens": 1196488,
+ "callsWithShortfall": 25,
+ "streams": 308,
+ "forks": 154,
+ "parallelForks": 29,
+ "resets": 125,
+ "joins": 45,
+ "sharedPrefixTokens": {
+  "lower": {
+   "None@None": 8192,
+   "deepseek-harness@0.2.2-rc.1": 9984
+  },
+  "upper": {
+   "None@None": 6016,
+   "deepseek-harness@0.2.2-rc.1": 6272
+  }
+ },
+ "byHarness": {
+  "None@None|deepseek-ai/DeepSeek-V4.1-Flash:deepinfra": {
+   "calls": 2877,
+   "input": 386946613,
+   "output": 2441186,
+   "providerCached": 383584896,
+   "lowerReuse": 382736037,
+   "upperReuse": 382857436,
+   "traceReuse": 382700160,
+   "providerShortfall": 121399,
+   "callsShortfall": 3,
+   "plays": 24
+  },
+  "deepseek-harness@0.2.2-rc.1|deepseek-ai/DeepSeek-V4.1-Flash:deepinfra": {
+   "calls": 17030,
+   "input": 2274563526,
+   "output": 14063842,
+   "providerCached": 2254078464,
+   "lowerReuse": 2249552088,
+   "upperReuse": 2250627177,
+   "traceReuse": 2249361344,
+   "providerShortfall": 1075089,
+   "callsShortfall": 22,
+   "plays": 130
+  }
+ },
+ "model": [
+  "None",
+  "hlb/deepseek-ai/DeepSeek-V4.1-Flash:deepinfra"
+ ],
+ "meanInput": 133697,
+ "medianInput": 132800,
+ "meanOutput": 829,
+ "header": {
+  "schema": "dynamo.agentic_mooncake",
+  "version": 2,
+  "block_size": 64,
+  "hash_id_scope": "local",
+  "source": {
+   "format": "harness_leaderboard_hlb_meter",
+   "digest": "sha256:43c97485727d3c6627d620f28ffa34ab5f797169674e92ca6fe12e391547c40a"
+  }
+ }
+}

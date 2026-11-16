@@ -1,0 +1,79 @@
+{
+ "source": "meters/20261108-105222-deepseek-v4-1-flash-full-high-f9c1.jsonl.gz",
+ "trace": "stats2/20261108-105222-deepseek-v4-1-flash-full-high-f9c1.jsonl",
+ "hashes": "lower",
+ "pacing": "closed",
+ "blockSize": 64,
+ "plays": 908,
+ "requests": 77820,
+ "peakConcurrentPlays": 35,
+ "spanHours": 13.8,
+ "inputTokens": 9148280162,
+ "outputTokens": 73773639,
+ "providerCachedTokens": 9047565312,
+ "reusedTokens": 9019336064,
+ "lowerReuseTokens": 9020261006,
+ "upperReuseTokens": 9024774843,
+ "providerCachedRatio": 0.989,
+ "traceReuseRatio": 0.9859,
+ "upperReuseRatio": 0.9865,
+ "providerShortfallTokens": 4513837,
+ "callsWithShortfall": 135,
+ "streams": 1464,
+ "forks": 556,
+ "parallelForks": 552,
+ "resets": 4,
+ "joins": 134,
+ "sharedPrefixTokens": {
+  "lower": {
+   "fx@0.0.16": 11392,
+   "grok-build@1.0.77": 1536
+  },
+  "upper": {
+   "fx@0.0.16": 7168,
+   "grok-build@1.0.77": 1024
+  }
+ },
+ "byHarness": {
+  "fx@0.0.16|deepseek-ai/DeepSeek-V4.1-Flash:deepinfra": {
+   "calls": 37296,
+   "input": 4627762616,
+   "output": 38166170,
+   "providerCached": 4574543104,
+   "lowerReuse": 4562337691,
+   "upperReuse": 4564427994,
+   "traceReuse": 4561903744,
+   "providerShortfall": 2090303,
+   "callsShortfall": 84,
+   "plays": 453
+  },
+  "grok-build@1.0.77|deepseek-ai/DeepSeek-V4.1-Flash:deepinfra": {
+   "calls": 40524,
+   "input": 4520517546,
+   "output": 35607469,
+   "providerCached": 4473022208,
+   "lowerReuse": 4457923315,
+   "upperReuse": 4460346849,
+   "traceReuse": 4457432320,
+   "providerShortfall": 2423534,
+   "callsShortfall": 51,
+   "plays": 455
+  }
+ },
+ "model": [
+  "hlb/deepseek-ai/DeepSeek-V4.1-Flash:deepinfra"
+ ],
+ "meanInput": 117557,
+ "medianInput": 113299.5,
+ "meanOutput": 948,
+ "header": {
+  "schema": "dynamo.agentic_mooncake",
+  "version": 2,
+  "block_size": 64,
+  "hash_id_scope": "local",
+  "source": {
+   "format": "harness_leaderboard_hlb_meter",
+   "digest": "sha256:09d91b30927fd467322b5802abcc5018b184498dc19cff4ff3ee6c1a2372500f"
+  }
+ }
+}

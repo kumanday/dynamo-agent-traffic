@@ -1,0 +1,80 @@
+{
+ "source": "meters/20261109-220819-glm-5-3-flash-full-low-a654.jsonl.gz",
+ "trace": "stats2/20261109-220819-glm-5-3-flash-full-low-a654.jsonl",
+ "hashes": "lower",
+ "pacing": "closed",
+ "blockSize": 64,
+ "plays": 4,
+ "requests": 298,
+ "peakConcurrentPlays": 4,
+ "spanHours": 0.19,
+ "inputTokens": 18719084,
+ "outputTokens": 222018,
+ "providerCachedTokens": 17972672,
+ "reusedTokens": 17972672,
+ "lowerReuseTokens": 17972672,
+ "upperReuseTokens": 18313599,
+ "providerCachedRatio": 0.9601,
+ "traceReuseRatio": 0.9601,
+ "upperReuseRatio": 0.9783,
+ "providerShortfallTokens": 340927,
+ "callsWithShortfall": 40,
+ "streams": 4,
+ "forks": 0,
+ "parallelForks": 0,
+ "resets": 0,
+ "joins": 0,
+ "sharedPrefixTokens": {
+  "lower": {
+   "mini-swe-agent@2.4.6": 0,
+   "claude-code@2.1.300": 0
+  },
+  "upper": {
+   "mini-swe-agent@2.4.6": 0,
+   "claude-code@2.1.300": 0
+  }
+ },
+ "byHarness": {
+  "mini-swe-agent@2.4.6|zai-org/GLM-5.3-Flash:zai-org": {
+   "calls": 185,
+   "input": 11995900,
+   "output": 149119,
+   "providerCached": 11720640,
+   "lowerReuse": 11720640,
+   "upperReuse": 11736505,
+   "traceReuse": 11720640,
+   "providerShortfall": 15865,
+   "callsShortfall": 2,
+   "plays": 2
+  },
+  "claude-code@2.1.300|zai-org/GLM-5.3-Flash:zai-org": {
+   "calls": 113,
+   "input": 6723184,
+   "output": 72899,
+   "providerCached": 6252032,
+   "lowerReuse": 6252032,
+   "upperReuse": 6577094,
+   "traceReuse": 6252032,
+   "providerShortfall": 325062,
+   "callsShortfall": 38,
+   "plays": 2
+  }
+ },
+ "model": [
+  "openai/zai-org/GLM-5.3-Flash:zai-org",
+  "zai-org/GLM-5.3-Flash:zai-org"
+ ],
+ "meanInput": 62816,
+ "medianInput": 62183.0,
+ "meanOutput": 745,
+ "header": {
+  "schema": "dynamo.agentic_mooncake",
+  "version": 2,
+  "block_size": 64,
+  "hash_id_scope": "local",
+  "source": {
+   "format": "harness_leaderboard_hlb_meter",
+   "digest": "sha256:403d7d76aa77943678cb59c03120a9c3e9c4ab657bed65bd9e60e77870d89f7d"
+  }
+ }
+}

@@ -1,0 +1,11 @@
+{
+ "trials": 69588,
+ "calls": 6616617,
+ "runs": 216,
+ "missingMeter": {},
+ "bySource": {
+  "base": 52650,
+  "delta": 16938
+ },
+ "sealedTrials": 7651
+}

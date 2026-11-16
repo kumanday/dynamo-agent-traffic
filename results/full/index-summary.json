@@ -1,0 +1,21 @@
+{
+ "base": {
+  "trials": 79499,
+  "original": 52650,
+  "sealed": 8659,
+  "originalWithMeter": 52650,
+  "originalSealedWithMeter": 5730,
+  "withoutIdentity": 2351,
+  "runs": 110
+ },
+ "delta": {
+  "trials": 69690,
+  "original": 16938,
+  "sealed": 7840,
+  "originalWithMeter": 16938,
+  "originalSealedWithMeter": 1921,
+  "withoutIdentity": 750,
+  "runs": 123
+ },
+ "runsInBoth": 11
+}

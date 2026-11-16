@@ -1,0 +1,94 @@
+{
+ "source": "meters/20261110-083114-deepseek-v4-1-flash-full-high-af88.jsonl.gz",
+ "trace": "stats2/20261110-083114-deepseek-v4-1-flash-full-high-af88.jsonl",
+ "hashes": "lower",
+ "pacing": "closed",
+ "blockSize": 64,
+ "plays": 139,
+ "requests": 14172,
+ "peakConcurrentPlays": 33,
+ "spanHours": 4.827,
+ "inputTokens": 1955423275,
+ "outputTokens": 12914284,
+ "providerCachedTokens": 1930643456,
+ "reusedTokens": 1927485120,
+ "lowerReuseTokens": 1927598112,
+ "upperReuseTokens": 1930262319,
+ "providerCachedRatio": 0.9873,
+ "traceReuseRatio": 0.9857,
+ "upperReuseRatio": 0.9871,
+ "providerShortfallTokens": 2664207,
+ "callsWithShortfall": 182,
+ "streams": 240,
+ "forks": 101,
+ "parallelForks": 1,
+ "resets": 100,
+ "joins": 8,
+ "sharedPrefixTokens": {
+  "lower": {
+   "hermes@v0.22.1": 13824,
+   "kimi-code@2.2.0": 23552,
+   "qwen-code@0.25.2": 15744
+  },
+  "upper": {
+   "hermes@v0.22.1": 12928,
+   "kimi-code@2.2.0": 22912,
+   "qwen-code@0.25.2": 15616
+  }
+ },
+ "byHarness": {
+  "hermes@v0.22.1|deepseek-ai/DeepSeek-V4.1-Flash:deepinfra": {
+   "calls": 8551,
+   "input": 1232971710,
+   "output": 7899002,
+   "providerCached": 1217642752,
+   "lowerReuse": 1215501084,
+   "upperReuse": 1216657718,
+   "traceReuse": 1215428096,
+   "providerShortfall": 1156634,
+   "callsShortfall": 73,
+   "plays": 84
+  },
+  "kimi-code@2.2.0|deepseek-ai/DeepSeek-V4.1-Flash:deepinfra": {
+   "calls": 4399,
+   "input": 583838927,
+   "output": 3912642,
+   "providerCached": 577054464,
+   "lowerReuse": 576164343,
+   "upperReuse": 577154797,
+   "traceReuse": 576124672,
+   "providerShortfall": 990454,
+   "callsShortfall": 40,
+   "plays": 42
+  },
+  "qwen-code@0.25.2|deepseek-ai/DeepSeek-V4.1-Flash:deepinfra": {
+   "calls": 1222,
+   "input": 138612638,
+   "output": 1102640,
+   "providerCached": 135946240,
+   "lowerReuse": 135932685,
+   "upperReuse": 136449804,
+   "traceReuse": 135932352,
+   "providerShortfall": 517119,
+   "callsShortfall": 69,
+   "plays": 13
+  }
+ },
+ "model": [
+  "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+  "openai/deepseek-ai/DeepSeek-V4.1-Flash:deepinfra"
+ ],
+ "meanInput": 137978,
+ "medianInput": 137521.0,
+ "meanOutput": 911,
+ "header": {
+  "schema": "dynamo.agentic_mooncake",
+  "version": 2,
+  "block_size": 64,
+  "hash_id_scope": "local",
+  "source": {
+   "format": "harness_leaderboard_hlb_meter",
+   "digest": "sha256:7118207b8ec7f89b77093ed867b9c6e73bc36ea7723c004f2ea609f0b5345933"
+  }
+ }
+}

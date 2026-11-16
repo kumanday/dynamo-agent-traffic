@@ -1,0 +1,80 @@
+{
+ "source": "meters/20261109-153709-deepseek-v4-1-flash-full-high-88e5.jsonl.gz",
+ "trace": "stats2/20261109-153709-deepseek-v4-1-flash-full-high-88e5.jsonl",
+ "hashes": "lower",
+ "pacing": "closed",
+ "blockSize": 64,
+ "plays": 60,
+ "requests": 2515,
+ "peakConcurrentPlays": 7,
+ "spanHours": 6.981,
+ "inputTokens": 163340265,
+ "outputTokens": 2752484,
+ "providerCachedTokens": 158930688,
+ "reusedTokens": 158852288,
+ "lowerReuseTokens": 158855806,
+ "upperReuseTokens": 159349915,
+ "providerCachedRatio": 0.973,
+ "traceReuseRatio": 0.9725,
+ "upperReuseRatio": 0.9756,
+ "providerShortfallTokens": 494109,
+ "callsWithShortfall": 80,
+ "streams": 62,
+ "forks": 2,
+ "parallelForks": 1,
+ "resets": 1,
+ "joins": 3,
+ "sharedPrefixTokens": {
+  "lower": {
+   "pi@1.2.0": 2176,
+   "claude-code@2.1.300": 16128
+  },
+  "upper": {
+   "pi@1.2.0": 1792,
+   "claude-code@2.1.300": 15744
+  }
+ },
+ "byHarness": {
+  "pi@1.2.0|deepseek-ai/DeepSeek-V4.1-Flash:deepinfra": {
+   "calls": 1030,
+   "input": 60790877,
+   "output": 1136483,
+   "providerCached": 59015808,
+   "lowerReuse": 58940941,
+   "upperReuse": 59010356,
+   "traceReuse": 58937472,
+   "providerShortfall": 69415,
+   "callsShortfall": 5,
+   "plays": 28
+  },
+  "claude-code@2.1.300|deepseek-ai/DeepSeek-V4.1-Flash:deepinfra": {
+   "calls": 1485,
+   "input": 102549388,
+   "output": 1616001,
+   "providerCached": 99914880,
+   "lowerReuse": 99914865,
+   "upperReuse": 100339559,
+   "traceReuse": 99914816,
+   "providerShortfall": 424694,
+   "callsShortfall": 75,
+   "plays": 32
+  }
+ },
+ "model": [
+  "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+  "openai/deepseek-ai/DeepSeek-V4.1-Flash:deepinfra"
+ ],
+ "meanInput": 64946,
+ "medianInput": 46189,
+ "meanOutput": 1094,
+ "header": {
+  "schema": "dynamo.agentic_mooncake",
+  "version": 2,
+  "block_size": 64,
+  "hash_id_scope": "local",
+  "source": {
+   "format": "harness_leaderboard_hlb_meter",
+   "digest": "sha256:21f99687beecb6bc11a17a72cb3ac4f423a9fe51a6a0f7e99f97f05aaa71bb94"
+  }
+ }
+}

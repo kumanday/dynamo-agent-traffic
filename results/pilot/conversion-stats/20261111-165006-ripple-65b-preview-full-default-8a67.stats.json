@@ -1,0 +1,80 @@
+{
+ "source": "meters/20261111-165006-ripple-65b-preview-full-default-8a67.jsonl.gz",
+ "trace": "stats2/20261111-165006-ripple-65b-preview-full-default-8a67.jsonl",
+ "hashes": "lower",
+ "pacing": "closed",
+ "blockSize": 64,
+ "plays": 112,
+ "requests": 33120,
+ "peakConcurrentPlays": 91,
+ "spanHours": 3.116,
+ "inputTokens": 4067383881,
+ "outputTokens": 16756290,
+ "providerCachedTokens": 3753658368,
+ "reusedTokens": 3740488768,
+ "lowerReuseTokens": 3741411404,
+ "upperReuseTokens": 4018586372,
+ "providerCachedRatio": 0.9229,
+ "traceReuseRatio": 0.9196,
+ "upperReuseRatio": 0.988,
+ "providerShortfallTokens": 277174968,
+ "callsWithShortfall": 3000,
+ "streams": 370,
+ "forks": 258,
+ "parallelForks": 36,
+ "resets": 222,
+ "joins": 301,
+ "sharedPrefixTokens": {
+  "lower": {
+   "oh-my-pi@18.18.3": 10688,
+   "kimi-code@2.2.0": 0
+  },
+  "upper": {
+   "oh-my-pi@18.18.3": 9280,
+   "kimi-code@2.2.0": 0
+  }
+ },
+ "byHarness": {
+  "oh-my-pi@18.18.3|ricursiveAI/Ripple-65B-Preview": {
+   "calls": 32888,
+   "input": 4043387451,
+   "output": 16406369,
+   "providerCached": 3730350720,
+   "lowerReuse": 3718324004,
+   "upperReuse": 3995111266,
+   "traceReuse": 3717408000,
+   "providerShortfall": 276787262,
+   "callsShortfall": 2993,
+   "plays": 109
+  },
+  "kimi-code@2.2.0|ricursiveAI/Ripple-65B-Preview": {
+   "calls": 232,
+   "input": 23996430,
+   "output": 349921,
+   "providerCached": 23307648,
+   "lowerReuse": 23087400,
+   "upperReuse": 23475106,
+   "traceReuse": 23080768,
+   "providerShortfall": 387706,
+   "callsShortfall": 7,
+   "plays": 3
+  }
+ },
+ "model": [
+  "hlb/ricursiveAI/Ripple-65B-Preview",
+  "ricursiveAI/Ripple-65B-Preview"
+ ],
+ "meanInput": 122807,
+ "medianInput": 124569.0,
+ "meanOutput": 506,
+ "header": {
+  "schema": "dynamo.agentic_mooncake",
+  "version": 2,
+  "block_size": 64,
+  "hash_id_scope": "local",
+  "source": {
+   "format": "harness_leaderboard_hlb_meter",
+   "digest": "sha256:af54895e168c3b6aa5027fb2ea8f95e03068d13f9b48c833627ff3724fd91e88"
+  }
+ }
+}

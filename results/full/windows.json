@@ -1,0 +1,487 @@
+[
+ {
+  "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261016-1730",
+  "endpoint": "zai-org/GLM-5.3-Flash:zai-org",
+  "runs": [
+   "20261018-191100-glm-5-3-flash-full-low-3c31",
+   "20261018-191102-glm-5-3-flash-full-high-0df9"
+  ],
+  "trials": 8567,
+  "start": 1792171801.476,
+  "end": 1792453799.876
+ },
+ {
+  "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261023-1135",
+  "endpoint": "zai-org/GLM-5.3-Flash:zai-org",
+  "runs": [
+   "20261023-105147-glm-5-3-flash-full-low-242a",
+   "20261023-105150-glm-5-3-flash-full-high-2b66"
+  ],
+  "trials": 26,
+  "start": 1792755349.531,
+  "end": 1792775045.44
+ },
+ {
+  "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261029-1014",
+  "endpoint": "zai-org/GLM-5.3-Flash:zai-org",
+  "runs": [
+   "20261029-101315-glm-5-3-flash-full-low-7601",
+   "20261029-101318-glm-5-3-flash-full-high-93f7"
+  ],
+  "trials": 2513,
+  "start": 1793268867.223,
+  "end": 1793313992.825
+ },
+ {
+  "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261029-2328",
+  "endpoint": "zai-org/GLM-5.3-Flash:zai-org",
+  "runs": [
+   "20261029-230124-glm-5-3-flash-full-low-45d6",
+   "20261029-230128-glm-5-3-flash-full-high-30ad"
+  ],
+  "trials": 69,
+  "start": 1793316495.696,
+  "end": 1793327324.634
+ },
+ {
+  "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261107-1200",
+  "endpoint": "zai-org/GLM-5.3-Flash:zai-org",
+  "runs": [
+   "20261107-115705-glm-5-3-flash-full-low-065b",
+   "20261107-115709-glm-5-3-flash-full-high-14dd",
+   "20261107-130934-glm-5-3-flash-smoke-max-15de",
+   "20261107-174211-glm-5-3-flash-smoke-low-94ee",
+   "20261107-183414-glm-5-3-flash-full-high-38f4",
+   "20261107-183314-glm-5-3-flash-full-low-b96c",
+   "20261107-190253-glm-5-3-flash-full-low-ca3e",
+   "20261107-190354-glm-5-3-flash-full-high-17a2",
+   "20261107-202939-glm-5-3-flash-smoke-low-eedb",
+   "20261107-205835-glm-5-3-flash-full-low-de4d",
+   "20261107-205922-glm-5-3-flash-full-high-f31a",
+   "20261107-222408-glm-5-3-flash-smoke-low-e03d"
+  ],
+  "trials": 3904,
+  "start": 1794052814.689,
+  "end": 1794103833.211
+ },
+ {
+  "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261108-0632",
+  "endpoint": "zai-org/GLM-5.3-Flash:zai-org",
+  "runs": [
+   "20261108-063145-glm-5-3-flash-full-low-74a5",
+   "20261108-063149-glm-5-3-flash-full-high-3057",
+   "20261108-064417-glm-5-3-flash-pilot-low-a1ee",
+   "20261108-064404-glm-5-3-flash-pilot-low-71d5",
+   "20261108-064415-glm-5-3-flash-smoke-low-2e0b"
+  ],
+  "trials": 2447,
+  "start": 1794119555.639,
+  "end": 1794141924.013
+ },
+ {
+  "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261108-1302",
+  "endpoint": "zai-org/GLM-5.3-Flash:zai-org",
+  "runs": [
+   "20261108-125742-glm-5-3-flash-full-high-2fd7",
+   "20261108-125742-glm-5-3-flash-full-low-2101"
+  ],
+  "trials": 36,
+  "start": 1794142931.366,
+  "end": 1794147188.366
+ },
+ {
+  "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261109-0938",
+  "endpoint": "zai-org/GLM-5.3-Flash:zai-org",
+  "runs": [
+   "20261109-093716-glm-5-3-flash-full-high-eb54",
+   "20261109-093711-glm-5-3-flash-full-low-bfde",
+   "20261109-100621-glm-5-3-flash-smoke-low-f8da",
+   "20261109-115559-glm-5-3-flash-full-high-5230",
+   "20261109-110747-glm-5-3-flash-full-high-3cc9",
+   "20261109-113239-glm-5-3-flash-full-high-e1b4",
+   "20261109-113343-glm-5-3-flash-full-low-d4d8",
+   "20261109-111048-glm-5-3-flash-full-low-e58b",
+   "20261109-131828-glm-5-3-flash-full-low-fa07",
+   "20261109-152017-glm-5-3-flash-full-low-8deb",
+   "20261109-152128-glm-5-3-flash-full-low-54c5",
+   "20261109-152132-glm-5-3-flash-full-high-9f93",
+   "20261109-152901-glm-5-3-flash-full-high-ccf0"
+  ],
+  "trials": 2765,
+  "start": 1794217129.481,
+  "end": 1794241974.4520001
+ },
+ {
+  "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261109-1643",
+  "endpoint": "zai-org/GLM-5.3-Flash:zai-org",
+  "runs": [
+   "20261109-164148-glm-5-3-flash-full-low-d1dc",
+   "20261109-164158-glm-5-3-flash-full-high-d293",
+   "20261109-165223-glm-5-3-flash-full-high-6f80",
+   "20261109-165214-glm-5-3-flash-full-low-c6f3",
+   "20261109-170028-glm-5-3-flash-full-high-3bef",
+   "20261109-165241-glm-5-3-flash-full-high-ebdd",
+   "20261109-170023-glm-5-3-flash-full-low-cbc6",
+   "20261109-165232-glm-5-3-flash-full-low-9d42",
+   "20261109-190139-glm-5-3-flash-full-low-1560",
+   "20261109-190150-glm-5-3-flash-full-high-6dde",
+   "20261109-220819-glm-5-3-flash-full-low-a654",
+   "20261109-220856-glm-5-3-flash-full-low-f9f9",
+   "20261109-220911-glm-5-3-flash-full-high-8c20",
+   "20261109-220936-glm-5-3-flash-full-high-1eda",
+   "20261109-220831-glm-5-3-flash-full-high-5a07",
+   "20261109-221014-glm-5-3-flash-full-high-3c08",
+   "20261109-220954-glm-5-3-flash-full-low-f313",
+   "20261109-220922-glm-5-3-flash-full-low-887d",
+   "20261109-192407-glm-5-3-flash-full-high-2936",
+   "20261109-232842-glm-5-3-flash-full-high-8a28",
+   "20261109-234930-glm-5-3-flash-full-low-1ace",
+   "20261110-004920-glm-5-3-flash-full-high-4268"
+  ],
+  "trials": 3697,
+  "start": 1794242593.635,
+  "end": 1794275557.825
+ },
+ {
+  "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261110-0814",
+  "endpoint": "zai-org/GLM-5.3-Flash:zai-org",
+  "runs": [
+   "20261110-081223-glm-5-3-flash-full-low-efe6",
+   "20261110-082921-glm-5-3-flash-full-high-8e46"
+  ],
+  "trials": 4,
+  "start": 1794298454.617,
+  "end": 1794304907.027
+ },
+ {
+  "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261110-2353",
+  "endpoint": "zai-org/GLM-5.3-Flash:zai-org",
+  "runs": [
+   "20261110-235014-glm-5-3-flash-full-low-2e32",
+   "20261110-235105-glm-5-3-flash-full-high-4f9d"
+  ],
+  "trials": 3,
+  "start": 1794354822.884,
+  "end": 1794357208.953
+ },
+ {
+  "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261111-1040",
+  "endpoint": "zai-org/GLM-5.3-Flash:zai-org",
+  "runs": [
+   "20261111-103728-glm-5-3-flash-full-low-5e77",
+   "20261111-103710-glm-5-3-flash-full-high-2728"
+  ],
+  "trials": 3,
+  "start": 1794393620.208,
+  "end": 1794397981.667
+ },
+ {
+  "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261111-2224",
+  "endpoint": "zai-org/GLM-5.3-Flash:zai-org",
+  "runs": [
+   "20261111-222218-glm-5-3-flash-full-high-b7ba",
+   "20261111-222244-glm-5-3-flash-full-low-90f1"
+  ],
+  "trials": 8,
+  "start": 1794435891.638,
+  "end": 1794439509.304
+ },
+ {
+  "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-deepinfra-20261019-0254",
+  "endpoint": "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+  "runs": [
+   "20261020-011837-deepseek-v4-1-flash-full-low-7d5f",
+   "20261020-011839-deepseek-v4-1-flash-full-high-23dc"
+  ],
+  "trials": 8268,
+  "start": 1792378459.203,
+  "end": 1792635636.361
+ },
+ {
+  "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-deepinfra-20261023-0732",
+  "endpoint": "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+  "runs": [
+   "20261023-065049-deepseek-v4-1-flash-full-high-3d35",
+   "20261023-065046-deepseek-v4-1-flash-full-low-92cb"
+  ],
+  "trials": 19,
+  "start": 1792740736.099,
+  "end": 1792743004.277
+ },
+ {
+  "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-deepinfra-20261029-1028",
+  "endpoint": "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+  "runs": [
+   "20261029-102535-deepseek-v4-1-flash-full-low-2550",
+   "20261029-102538-deepseek-v4-1-flash-full-high-4caf"
+  ],
+  "trials": 568,
+  "start": 1793269681.999,
+  "end": 1793324564.579
+ },
+ {
+  "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-deepinfra-20261030-0209",
+  "endpoint": "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+  "runs": [
+   "20261030-015111-deepseek-v4-1-flash-full-low-1200",
+   "20261030-015116-deepseek-v4-1-flash-full-high-6f85"
+  ],
+  "trials": 312,
+  "start": 1793326147.195,
+  "end": 1793344188.9359999
+ },
+ {
+  "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-deepinfra-20261030-0735",
+  "endpoint": "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+  "runs": [
+   "20261030-071632-deepseek-v4-1-flash-full-low-8c2f",
+   "20261030-071636-deepseek-v4-1-flash-full-high-3a38"
+  ],
+  "trials": 103,
+  "start": 1793345709.396,
+  "end": 1793365111.1049998
+ },
+ {
+  "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-deepinfra-20261030-1333",
+  "endpoint": "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+  "runs": [
+   "20261030-130311-deepseek-v4-1-flash-full-high-f8e6",
+   "20261030-130307-deepseek-v4-1-flash-full-low-45b5"
+  ],
+  "trials": 1695,
+  "start": 1793367182.965,
+  "end": 1793594356.0419998
+ },
+ {
+  "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-deepinfra-20261107-1200",
+  "endpoint": "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+  "runs": [
+   "20261107-115714-deepseek-v4-1-flash-full-low-c99b",
+   "20261107-115718-deepseek-v4-1-flash-full-high-ee33",
+   "20261107-183515-deepseek-v4-1-flash-full-low-573e",
+   "20261107-183615-deepseek-v4-1-flash-full-high-4765",
+   "20261107-190454-deepseek-v4-1-flash-full-low-f967",
+   "20261107-131035-deepseek-v4-1-flash-smoke-max-00eb",
+   "20261107-190514-deepseek-v4-1-flash-full-high-c6aa",
+   "20261107-210227-deepseek-v4-1-flash-full-high-341e",
+   "20261107-210054-deepseek-v4-1-flash-full-low-a24b"
+  ],
+  "trials": 1017,
+  "start": 1794052831.313,
+  "end": 1794125144.5909998
+ },
+ {
+  "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-deepinfra-20261108-0915",
+  "endpoint": "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+  "runs": [
+   "20261108-080939-deepseek-v4-1-flash-full-low-4da5",
+   "20261108-081256-deepseek-v4-1-flash-full-high-9df8",
+   "20261108-081736-deepseek-v4-1-flash-full-high-d38d",
+   "20261108-081551-deepseek-v4-1-flash-full-low-6c62",
+   "20261108-081952-deepseek-v4-1-flash-full-low-1e11",
+   "20261108-091527-deepseek-v4-1-flash-full-high-f9b1",
+   "20261109-010940-deepseek-v4-1-flash-full-low-2547",
+   "20261109-071012-deepseek-v4-1-flash-full-low-e0fc",
+   "20261108-105204-deepseek-v4-1-flash-full-low-d650",
+   "20261108-105222-deepseek-v4-1-flash-full-high-f9c1",
+   "20261109-093723-deepseek-v4-1-flash-full-low-4a8e",
+   "20261109-093728-deepseek-v4-1-flash-full-high-d9d2",
+   "20261109-112451-deepseek-v4-1-flash-full-high-6bd0",
+   "20261109-112518-deepseek-v4-1-flash-full-low-058b",
+   "20261109-113417-deepseek-v4-1-flash-full-high-dd52",
+   "20261109-164053-deepseek-v4-1-flash-full-high-0e68",
+   "20261109-164059-deepseek-v4-1-flash-full-low-9bdf",
+   "20261109-153714-deepseek-v4-1-flash-full-low-6913",
+   "20261109-153709-deepseek-v4-1-flash-full-high-88e5",
+   "20261109-174434-deepseek-v4-1-flash-full-low-afa3",
+   "20261109-164117-deepseek-v4-1-flash-full-low-6672",
+   "20261109-111741-deepseek-v4-1-flash-full-high-40d6",
+   "20261109-111633-deepseek-v4-1-flash-full-low-bd89",
+   "20261109-164104-deepseek-v4-1-flash-full-high-1a2f",
+   "20261109-213916-deepseek-v4-1-flash-full-high-80fb",
+   "20261109-220732-deepseek-v4-1-flash-full-low-d1a0",
+   "20261109-223043-deepseek-v4-1-flash-full-high-695c",
+   "20261109-131915-deepseek-v4-1-flash-full-low-826a",
+   "20261109-132029-deepseek-v4-1-flash-full-high-7a07",
+   "20261110-015037-deepseek-v4-1-flash-full-low-b146",
+   "20261109-210159-deepseek-v4-1-flash-full-low-a243",
+   "20261109-210211-deepseek-v4-1-flash-full-high-b12b",
+   "20261109-161104-deepseek-v4-1-flash-full-low-0241",
+   "20261109-161119-deepseek-v4-1-flash-full-high-acfd",
+   "20261109-165543-deepseek-v4-1-flash-full-low-2d3d",
+   "20261109-165613-deepseek-v4-1-flash-full-high-ab1b",
+   "20261109-165639-deepseek-v4-1-flash-full-low-831d",
+   "20261109-165657-deepseek-v4-1-flash-full-high-dae8",
+   "20261109-165717-deepseek-v4-1-flash-full-low-4528",
+   "20261109-165739-deepseek-v4-1-flash-full-high-de3f",
+   "20261110-080304-deepseek-v4-1-flash-full-high-5f69",
+   "20261110-081246-deepseek-v4-1-flash-full-low-eb5d",
+   "20261110-083114-deepseek-v4-1-flash-full-high-af88",
+   "20261110-083056-deepseek-v4-1-flash-full-low-0db4",
+   "20261110-100133-deepseek-v4-1-flash-full-high-7357"
+  ],
+  "trials": 8410,
+  "start": 1794129311.354,
+  "end": 1794334122.75
+ },
+ {
+  "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-deepinfra-20261110-1832",
+  "endpoint": "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+  "runs": [
+   "20261110-182941-deepseek-v4-1-flash-full-low-683b",
+   "20261110-183022-deepseek-v4-1-flash-full-high-bc6d",
+   "20261111-000444-deepseek-v4-1-flash-full-low-ca89",
+   "20261111-000508-deepseek-v4-1-flash-full-high-98b1"
+  ],
+  "trials": 1275,
+  "start": 1794335526.441,
+  "end": 1794380431.361
+ },
+ {
+  "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-deepinfra-20261111-1037",
+  "endpoint": "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+  "runs": [
+   "20261111-103531-deepseek-v4-1-flash-full-low-562d",
+   "20261111-103549-deepseek-v4-1-flash-full-high-7f51",
+   "20261111-103401-deepseek-v4-1-flash-full-low-d81b",
+   "20261111-103626-deepseek-v4-1-flash-full-high-c4bf",
+   "20261111-103602-deepseek-v4-1-flash-full-low-b1ee",
+   "20261111-103518-deepseek-v4-1-flash-full-high-0b78"
+  ],
+  "trials": 1785,
+  "start": 1794393441.754,
+  "end": 1794412839.161
+ },
+ {
+  "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-deepinfra-20261111-1610",
+  "endpoint": "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+  "runs": [
+   "20261111-160804-deepseek-v4-1-flash-full-low-2607",
+   "20261111-160755-deepseek-v4-1-flash-full-low-7aa4",
+   "20261111-160744-deepseek-v4-1-flash-full-low-26d8",
+   "20261111-160853-deepseek-v4-1-flash-full-high-3c81",
+   "20261111-160835-deepseek-v4-1-flash-full-high-e8bc",
+   "20261111-160815-deepseek-v4-1-flash-full-high-9b32"
+  ],
+  "trials": 1523,
+  "start": 1794413426.955,
+  "end": 1794431252.134
+ },
+ {
+  "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-deepinfra-20261111-2109",
+  "endpoint": "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+  "runs": [
+   "20261111-210609-deepseek-v4-1-flash-full-high-d4ef",
+   "20261111-212259-deepseek-v4-1-flash-full-low-8ee8",
+   "20261111-212119-deepseek-v4-1-flash-full-low-4e9d",
+   "20261111-212954-deepseek-v4-1-flash-full-low-88f1",
+   "20261111-213110-deepseek-v4-1-flash-full-high-c542",
+   "20261111-213146-deepseek-v4-1-flash-full-high-f721",
+   "20261111-213222-deepseek-v4-1-flash-full-low-cbe2"
+  ],
+  "trials": 18,
+  "start": 1794431375.221,
+  "end": 1794434726.315
+ },
+ {
+  "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-deepinfra-20261111-2226",
+  "endpoint": "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+  "runs": [
+   "20261111-222329-deepseek-v4-1-flash-full-low-91a8",
+   "20261111-222401-deepseek-v4-1-flash-full-high-d95b"
+  ],
+  "trials": 5,
+  "start": 1794435970.357,
+  "end": 1794440362.9950001
+ },
+ {
+  "unit": "endpoint-recursivesi-flint-20261107-1211",
+  "endpoint": "RecursiveSI/flint",
+  "runs": [
+   "20261107-120231-flint-full-default-c62d",
+   "20261107-190835-flint-full-default-3496",
+   "20261107-203634-flint-full-default-f98d",
+   "20261108-063020-flint-full-default-9473"
+  ],
+  "trials": 1895,
+  "start": 1794053518.408,
+  "end": 1794145535.832
+ },
+ {
+  "unit": "endpoint-recursivesi-flint-20261108-1625",
+  "endpoint": "RecursiveSI/flint",
+  "runs": [
+   "20261108-161905-flint-full-default-50fc",
+   "20261108-222008-flint-full-default-8c99"
+  ],
+  "trials": 1275,
+  "start": 1794155136.378,
+  "end": 1794202733.395
+ },
+ {
+  "unit": "endpoint-recursivesi-flint-20261109-0947",
+  "endpoint": "RecursiveSI/flint",
+  "runs": [
+   "20261109-093753-flint-full-default-e893",
+   "20261109-134300-flint-full-default-3e3a"
+  ],
+  "trials": 940,
+  "start": 1794217660.207,
+  "end": 1794242353.0479999
+ },
+ {
+  "unit": "endpoint-recursivesi-flint-20261109-1648",
+  "endpoint": "RecursiveSI/flint",
+  "runs": [
+   "20261109-163846-flint-full-default-0086",
+   "20261109-170159-flint-full-default-61c2",
+   "20261109-174517-flint-full-default-18c2",
+   "20261109-193018-flint-full-default-6c10",
+   "20261109-214507-flint-full-default-f9d0",
+   "20261110-000042-flint-full-default-608f"
+  ],
+  "trials": 1200,
+  "start": 1794242925.552,
+  "end": 1794292515.974
+ },
+ {
+  "unit": "endpoint-ricursiveai-ripple-65b-preview-20261106-1743",
+  "endpoint": "ricursiveAI/Ripple-65B-Preview",
+  "runs": [
+   "20261106-173114-ripple-65b-preview-full-default-0cf6",
+   "20261107-163736-ripple-65b-preview-full-default-6412",
+   "20261108-140249-ripple-65b-preview-full-default-0de0",
+   "20261108-223800-ripple-65b-preview-full-default-2f63",
+   "20261109-071139-ripple-65b-preview-full-default-cea2"
+  ],
+  "trials": 4856,
+  "start": 1793987008.826,
+  "end": 1794236904.963
+ },
+ {
+  "unit": "endpoint-ricursiveai-ripple-65b-preview-20261110-0020",
+  "endpoint": "ricursiveAI/Ripple-65B-Preview",
+  "runs": [
+   "20261110-001208-ripple-65b-preview-full-default-ee41",
+   "20261110-020957-ripple-65b-preview-full-default-d973",
+   "20261110-031742-ripple-65b-preview-full-default-3ede",
+   "20261110-052337-ripple-65b-preview-full-default-b6fc",
+   "20261110-073507-ripple-65b-preview-full-default-236d"
+  ],
+  "trials": 1176,
+  "start": 1794270011.31,
+  "end": 1794314882.013
+ },
+ {
+  "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-novita-20261111-1542",
+  "endpoint": "deepseek-ai/DeepSeek-V4.1-Flash:novita",
+  "runs": [
+   "20261111-154047-deepseek-v4-1-flash-full-low-22d6",
+   "20261111-154038-deepseek-v4-1-flash-full-low-eec6",
+   "20261111-154029-deepseek-v4-1-flash-full-low-c55d"
+  ],
+  "trials": 12,
+  "start": 1794411736.304,
+  "end": 1794412841.609
+ }
+]

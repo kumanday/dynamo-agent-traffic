@@ -1,0 +1,94 @@
+{
+ "source": "meters/20261111-161111-flint-full-default-14a1.jsonl.gz",
+ "trace": "stats2/20261111-161111-flint-full-default-14a1.jsonl",
+ "hashes": "lower",
+ "pacing": "closed",
+ "blockSize": 64,
+ "plays": 6,
+ "requests": 905,
+ "peakConcurrentPlays": 5,
+ "spanHours": 1.14,
+ "inputTokens": 93644729,
+ "outputTokens": 589854,
+ "providerCachedTokens": 92976401,
+ "reusedTokens": 92471744,
+ "lowerReuseTokens": 92500070,
+ "upperReuseTokens": 92540470,
+ "providerCachedRatio": 0.9929,
+ "traceReuseRatio": 0.9875,
+ "upperReuseRatio": 0.9882,
+ "providerShortfallTokens": 40400,
+ "callsWithShortfall": 4,
+ "streams": 11,
+ "forks": 5,
+ "parallelForks": 3,
+ "resets": 2,
+ "joins": 1,
+ "sharedPrefixTokens": {
+  "lower": {
+   "opencode@2.2.6": 1328,
+   "hermes@v0.22.1": 2983,
+   "mini-swe-agent@2.4.6": 2
+  },
+  "upper": {
+   "opencode@2.2.6": 1328,
+   "hermes@v0.22.1": 3,
+   "mini-swe-agent@2.4.6": 2
+  }
+ },
+ "byHarness": {
+  "opencode@2.2.6|RecursiveSI/flint": {
+   "calls": 339,
+   "input": 34792582,
+   "output": 218712,
+   "providerCached": 34603946,
+   "lowerReuse": 34403730,
+   "upperReuse": 34407652,
+   "traceReuse": 34392576,
+   "providerShortfall": 3922,
+   "callsShortfall": 2,
+   "plays": 3
+  },
+  "hermes@v0.22.1|RecursiveSI/flint": {
+   "calls": 440,
+   "input": 47490673,
+   "output": 294178,
+   "providerCached": 47092644,
+   "lowerReuse": 46882729,
+   "upperReuse": 46919207,
+   "traceReuse": 46869440,
+   "providerShortfall": 36478,
+   "callsShortfall": 2,
+   "plays": 2
+  },
+  "mini-swe-agent@2.4.6|RecursiveSI/flint": {
+   "calls": 126,
+   "input": 11361474,
+   "output": 76964,
+   "providerCached": 11279811,
+   "lowerReuse": 11213611,
+   "upperReuse": 11213611,
+   "traceReuse": 11209728,
+   "providerShortfall": 0,
+   "callsShortfall": 0,
+   "plays": 1
+  }
+ },
+ "model": [
+  "huggingface/RecursiveSI/flint",
+  "openai/RecursiveSI/flint"
+ ],
+ "meanInput": 103475,
+ "medianInput": 108198,
+ "meanOutput": 652,
+ "header": {
+  "schema": "dynamo.agentic_mooncake",
+  "version": 2,
+  "block_size": 64,
+  "hash_id_scope": "local",
+  "source": {
+   "format": "harness_leaderboard_hlb_meter",
+   "digest": "sha256:97d6458eda6d94ad1a4e026d35e3359dd2a80894a6a1484814f8e9ad6db6f8cd"
+  }
+ }
+}

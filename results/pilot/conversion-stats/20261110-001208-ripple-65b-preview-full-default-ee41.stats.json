@@ -1,0 +1,65 @@
+{
+ "source": "meters/20261110-001208-ripple-65b-preview-full-default-ee41.jsonl.gz",
+ "trace": "stats2/20261110-001208-ripple-65b-preview-full-default-ee41.jsonl",
+ "hashes": "lower",
+ "pacing": "closed",
+ "blockSize": 64,
+ "plays": 222,
+ "requests": 10369,
+ "peakConcurrentPlays": 22,
+ "spanHours": 5.506,
+ "inputTokens": 786794243,
+ "outputTokens": 16056986,
+ "providerCachedTokens": 769501056,
+ "reusedTokens": 759075136,
+ "lowerReuseTokens": 759366935,
+ "upperReuseTokens": 763229052,
+ "providerCachedRatio": 0.978,
+ "traceReuseRatio": 0.9648,
+ "upperReuseRatio": 0.97,
+ "providerShortfallTokens": 3862117,
+ "callsWithShortfall": 248,
+ "streams": 380,
+ "forks": 158,
+ "parallelForks": 0,
+ "resets": 158,
+ "joins": 9,
+ "sharedPrefixTokens": {
+  "lower": {
+   "hermes@v0.22.1": 12160
+  },
+  "upper": {
+   "hermes@v0.22.1": 8192
+  }
+ },
+ "byHarness": {
+  "hermes@v0.22.1|ricursiveAI/Ripple-65B-Preview": {
+   "calls": 10369,
+   "input": 786794243,
+   "output": 16056986,
+   "providerCached": 769501056,
+   "lowerReuse": 759366935,
+   "upperReuse": 763229052,
+   "traceReuse": 759075136,
+   "providerShortfall": 3862117,
+   "callsShortfall": 248,
+   "plays": 222
+  }
+ },
+ "model": [
+  "openai/ricursiveAI/Ripple-65B-Preview"
+ ],
+ "meanInput": 75879,
+ "medianInput": 65137,
+ "meanOutput": 1549,
+ "header": {
+  "schema": "dynamo.agentic_mooncake",
+  "version": 2,
+  "block_size": 64,
+  "hash_id_scope": "local",
+  "source": {
+   "format": "harness_leaderboard_hlb_meter",
+   "digest": "sha256:5c0098345b4a02c081224f4e8c4c8c6021e5de04c8d0530b10eddefe0d38e9f8"
+  }
+ }
+}

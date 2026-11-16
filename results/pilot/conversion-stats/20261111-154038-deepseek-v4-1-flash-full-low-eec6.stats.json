@@ -1,0 +1,65 @@
+{
+ "source": "meters/20261111-154038-deepseek-v4-1-flash-full-low-eec6.jsonl.gz",
+ "trace": "stats2/20261111-154038-deepseek-v4-1-flash-full-low-eec6.jsonl",
+ "hashes": "lower",
+ "pacing": "closed",
+ "blockSize": 64,
+ "plays": 3,
+ "requests": 165,
+ "peakConcurrentPlays": 3,
+ "spanHours": 0.261,
+ "inputTokens": 11461401,
+ "outputTokens": 121226,
+ "providerCachedTokens": 11118464,
+ "reusedTokens": 11118464,
+ "lowerReuseTokens": 11118464,
+ "upperReuseTokens": 11178126,
+ "providerCachedRatio": 0.9701,
+ "traceReuseRatio": 0.9701,
+ "upperReuseRatio": 0.9753,
+ "providerShortfallTokens": 59662,
+ "callsWithShortfall": 3,
+ "streams": 5,
+ "forks": 2,
+ "parallelForks": 0,
+ "resets": 2,
+ "joins": 2,
+ "sharedPrefixTokens": {
+  "lower": {
+   "kimi-code@2.2.0": 21760
+  },
+  "upper": {
+   "kimi-code@2.2.0": 21248
+  }
+ },
+ "byHarness": {
+  "kimi-code@2.2.0|deepseek-ai/DeepSeek-V4.1-Flash:novita": {
+   "calls": 165,
+   "input": 11461401,
+   "output": 121226,
+   "providerCached": 11118464,
+   "lowerReuse": 11118464,
+   "upperReuse": 11178126,
+   "traceReuse": 11118464,
+   "providerShortfall": 59662,
+   "callsShortfall": 3,
+   "plays": 3
+  }
+ },
+ "model": [
+  "deepseek-ai/DeepSeek-V4.1-Flash:novita"
+ ],
+ "meanInput": 69463,
+ "medianInput": 53877,
+ "meanOutput": 735,
+ "header": {
+  "schema": "dynamo.agentic_mooncake",
+  "version": 2,
+  "block_size": 64,
+  "hash_id_scope": "local",
+  "source": {
+   "format": "harness_leaderboard_hlb_meter",
+   "digest": "sha256:9057b453e59f481a9196810f121a5e59aa3fee2e73d60187dd9092e1827f7bf8"
+  }
+ }
+}

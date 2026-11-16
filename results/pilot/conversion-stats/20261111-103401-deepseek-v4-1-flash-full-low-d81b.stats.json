@@ -1,0 +1,65 @@
+{
+ "source": "meters/20261111-103401-deepseek-v4-1-flash-full-low-d81b.jsonl.gz",
+ "trace": "stats2/20261111-103401-deepseek-v4-1-flash-full-low-d81b.jsonl",
+ "hashes": "lower",
+ "pacing": "closed",
+ "blockSize": 64,
+ "plays": 124,
+ "requests": 5728,
+ "peakConcurrentPlays": 15,
+ "spanHours": 2.181,
+ "inputTokens": 529324617,
+ "outputTokens": 4774493,
+ "providerCachedTokens": 520034816,
+ "reusedTokens": 518795520,
+ "lowerReuseTokens": 518826450,
+ "upperReuseTokens": 519692834,
+ "providerCachedRatio": 0.9824,
+ "traceReuseRatio": 0.9801,
+ "upperReuseRatio": 0.9818,
+ "providerShortfallTokens": 866384,
+ "callsWithShortfall": 58,
+ "streams": 231,
+ "forks": 107,
+ "parallelForks": 0,
+ "resets": 107,
+ "joins": 0,
+ "sharedPrefixTokens": {
+  "lower": {
+   "hermes@v0.22.1": 17408
+  },
+  "upper": {
+   "hermes@v0.22.1": 12928
+  }
+ },
+ "byHarness": {
+  "hermes@v0.22.1|deepseek-ai/DeepSeek-V4.1-Flash:deepinfra": {
+   "calls": 5728,
+   "input": 529324617,
+   "output": 4774493,
+   "providerCached": 520034816,
+   "lowerReuse": 518826450,
+   "upperReuse": 519692834,
+   "traceReuse": 518795520,
+   "providerShortfall": 866384,
+   "callsShortfall": 58,
+   "plays": 124
+  }
+ },
+ "model": [
+  "openai/deepseek-ai/DeepSeek-V4.1-Flash:deepinfra"
+ ],
+ "meanInput": 92410,
+ "medianInput": 89487.0,
+ "meanOutput": 834,
+ "header": {
+  "schema": "dynamo.agentic_mooncake",
+  "version": 2,
+  "block_size": 64,
+  "hash_id_scope": "local",
+  "source": {
+   "format": "harness_leaderboard_hlb_meter",
+   "digest": "sha256:56873f14647c1217d1978ddce7c88bcf6b4f39af73ea111cd95d833af181cfec"
+  }
+ }
+}

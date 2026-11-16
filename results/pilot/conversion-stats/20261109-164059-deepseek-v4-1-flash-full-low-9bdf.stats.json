@@ -1,0 +1,108 @@
+{
+ "source": "meters/20261109-164059-deepseek-v4-1-flash-full-low-9bdf.jsonl.gz",
+ "trace": "stats2/20261109-164059-deepseek-v4-1-flash-full-low-9bdf.jsonl",
+ "hashes": "lower",
+ "pacing": "closed",
+ "blockSize": 64,
+ "plays": 133,
+ "requests": 16261,
+ "peakConcurrentPlays": 23,
+ "spanHours": 7.823,
+ "inputTokens": 1698149094,
+ "outputTokens": 11492019,
+ "providerCachedTokens": 1677314560,
+ "reusedTokens": 1675300736,
+ "lowerReuseTokens": 1675399997,
+ "upperReuseTokens": 1677040282,
+ "providerCachedRatio": 0.9877,
+ "traceReuseRatio": 0.9865,
+ "upperReuseRatio": 0.9876,
+ "providerShortfallTokens": 1640285,
+ "callsWithShortfall": 115,
+ "streams": 146,
+ "forks": 13,
+ "parallelForks": 3,
+ "resets": 10,
+ "joins": 14,
+ "sharedPrefixTokens": {
+  "lower": {
+   "mini-swe-agent@2.4.6": 1536,
+   "pi@1.2.0": 2688,
+   "claude-code@2.1.300": 16000,
+   "codex@0.162.1": 6144
+  },
+  "upper": {
+   "mini-swe-agent@2.4.6": 1408,
+   "pi@1.2.0": 2048,
+   "claude-code@2.1.300": 13440,
+   "codex@0.162.1": 3840
+  }
+ },
+ "byHarness": {
+  "mini-swe-agent@2.4.6|deepseek-ai/DeepSeek-V4.1-Flash:deepinfra": {
+   "calls": 8841,
+   "input": 962375740,
+   "output": 6276982,
+   "providerCached": 951137920,
+   "lowerReuse": 949947837,
+   "upperReuse": 950476743,
+   "traceReuse": 949884800,
+   "providerShortfall": 528906,
+   "callsShortfall": 64,
+   "plays": 69
+  },
+  "pi@1.2.0|deepseek-ai/DeepSeek-V4.1-Flash:deepinfra": {
+   "calls": 5827,
+   "input": 585675844,
+   "output": 4272961,
+   "providerCached": 578190208,
+   "lowerReuse": 577548623,
+   "upperReuse": 578237558,
+   "traceReuse": 577518848,
+   "providerShortfall": 688935,
+   "callsShortfall": 9,
+   "plays": 50
+  },
+  "claude-code@2.1.300|deepseek-ai/DeepSeek-V4.1-Flash:deepinfra": {
+   "calls": 1267,
+   "input": 117136741,
+   "output": 775012,
+   "providerCached": 115253504,
+   "lowerReuse": 115253504,
+   "upperReuse": 115667587,
+   "traceReuse": 115253504,
+   "providerShortfall": 414083,
+   "callsShortfall": 42,
+   "plays": 12
+  },
+  "codex@0.162.1|deepseek-ai/DeepSeek-V4.1-Flash:deepinfra": {
+   "calls": 326,
+   "input": 32960769,
+   "output": 167064,
+   "providerCached": 32732928,
+   "lowerReuse": 32650033,
+   "upperReuse": 32658394,
+   "traceReuse": 32643584,
+   "providerShortfall": 8361,
+   "callsShortfall": 0,
+   "plays": 2
+  }
+ },
+ "model": [
+  "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+  "openai/deepseek-ai/DeepSeek-V4.1-Flash:deepinfra"
+ ],
+ "meanInput": 104431,
+ "medianInput": 102323,
+ "meanOutput": 707,
+ "header": {
+  "schema": "dynamo.agentic_mooncake",
+  "version": 2,
+  "block_size": 64,
+  "hash_id_scope": "local",
+  "source": {
+   "format": "harness_leaderboard_hlb_meter",
+   "digest": "sha256:e91edc829132505b7df0e83e5159c0d397327fb67a1d6fca7befec4677e0987e"
+  }
+ }
+}

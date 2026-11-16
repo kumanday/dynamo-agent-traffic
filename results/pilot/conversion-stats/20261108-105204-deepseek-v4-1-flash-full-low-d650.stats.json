@@ -1,0 +1,79 @@
+{
+ "source": "meters/20261108-105204-deepseek-v4-1-flash-full-low-d650.jsonl.gz",
+ "trace": "stats2/20261108-105204-deepseek-v4-1-flash-full-low-d650.jsonl",
+ "hashes": "lower",
+ "pacing": "closed",
+ "blockSize": 64,
+ "plays": 913,
+ "requests": 68298,
+ "peakConcurrentPlays": 30,
+ "spanHours": 12.829,
+ "inputTokens": 6412109951,
+ "outputTokens": 52116594,
+ "providerCachedTokens": 6330731008,
+ "reusedTokens": 6312655296,
+ "lowerReuseTokens": 6313304350,
+ "upperReuseTokens": 6317016543,
+ "providerCachedRatio": 0.9873,
+ "traceReuseRatio": 0.9845,
+ "upperReuseRatio": 0.9852,
+ "providerShortfallTokens": 3712193,
+ "callsWithShortfall": 83,
+ "streams": 1399,
+ "forks": 486,
+ "parallelForks": 481,
+ "resets": 5,
+ "joins": 121,
+ "sharedPrefixTokens": {
+  "lower": {
+   "fx@0.0.16": 10496,
+   "grok-build@1.0.77": 1536
+  },
+  "upper": {
+   "fx@0.0.16": 7168,
+   "grok-build@1.0.77": 1024
+  }
+ },
+ "byHarness": {
+  "fx@0.0.16|deepseek-ai/DeepSeek-V4.1-Flash:deepinfra": {
+   "calls": 31812,
+   "input": 2964366272,
+   "output": 25267780,
+   "providerCached": 2923032960,
+   "lowerReuse": 2916501693,
+   "upperReuse": 2918211616,
+   "traceReuse": 2916218816,
+   "providerShortfall": 1709923,
+   "callsShortfall": 71,
+   "plays": 457
+  },
+  "grok-build@1.0.77|deepseek-ai/DeepSeek-V4.1-Flash:deepinfra": {
+   "calls": 36486,
+   "input": 3447743679,
+   "output": 26848814,
+   "providerCached": 3407698048,
+   "lowerReuse": 3396802657,
+   "upperReuse": 3398804927,
+   "traceReuse": 3396436480,
+   "providerShortfall": 2002270,
+   "callsShortfall": 12,
+   "plays": 456
+  }
+ },
+ "model": [
+  "hlb/deepseek-ai/DeepSeek-V4.1-Flash:deepinfra"
+ ],
+ "meanInput": 93884,
+ "medianInput": 92426.0,
+ "meanOutput": 763,
+ "header": {
+  "schema": "dynamo.agentic_mooncake",
+  "version": 2,
+  "block_size": 64,
+  "hash_id_scope": "local",
+  "source": {
+   "format": "harness_leaderboard_hlb_meter",
+   "digest": "sha256:ba212571549956a5afcf4f765f77797e84c70f3579e235bf7298ccfb609d7ab5"
+  }
+ }
+}
