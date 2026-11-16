@@ -109,7 +109,7 @@ python3 scripts/endpoint_timeline.py meters --endpoint SUBSTRING
 
 ## Data and credits
 
-Study by [Kumanday Intelligence](https://github.com/kumanday).
+Study by [Leonardo Gonzalez](https://github.com/kumanday).
 
 The traffic comes from the [Harness Leaderboard dataset](https://huggingface.co/buckets/joelniklaus/harness-leaderboard) (`joelniklaus/harness-leaderboard`), which Joel Niklaus publishes with the [Harness Leaderboard](https://huggingface.co/spaces/joelniklaus/harness-leaderboard). The replay traces were built from each trial's per-call meter log and configuration. This repository holds aggregates derived from them: no meter logs, no per-call records and no prompt text. As of 2026-11-16 the bucket page states no licence, and the leaderboard's Space repository is tagged Apache-2.0.
 
@@ -117,4 +117,4 @@ The code, tables and page in this repository are under the [MIT License](LICENSE
 
 The simulator is NVIDIA's [Dynamo](https://github.com/ai-dynamo/dynamo) with [AISimulate](https://github.com/ai-dynamo/aisimulate).
 
-To cite: Kumanday Intelligence. "Dynamo replay of Harness Leaderboard agent traffic." Study completed 2026-11-14. https://kumanday.github.io/dynamo-agent-traffic/
+To cite: Leonardo Gonzalez. "Dynamo replay of Harness Leaderboard agent traffic." Study completed 2026-11-14. https://kumanday.github.io/dynamo-agent-traffic/
