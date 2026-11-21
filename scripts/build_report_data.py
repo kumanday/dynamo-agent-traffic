@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Build the report page's data files (docs/data/*.json) from the tables in results/.
+"""Build the report page's data files (report/data/*.json) from the tables in results/.
 
-Inputs: results/full/aggregate.json, units.csv, windows.json, index-summary.json, extract-summary.json,
-slice-check.json, results/pilot/sweep-summaries.json and endpoint-timeline.md.
+Inputs: results/full/aggregate.json, units.csv, windows.json, index-summary.json, assemble-summary.json,
+slice-check.json and endpoint-timeline.md, and results/pilot/sweep-summaries.json.
 Each output is {"source": [...], "rows": [...]}. Values keep more digits than the page prints;
 the page does the rounding.
 """
@@ -11,13 +11,14 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 RES = REPO / "results"
-OUT = REPO / "docs" / "data"
+OUT = REPO / "report" / "data"
 ROUTERS = [("rr", "Round-robin"), ("kv", "KV router, defaults"), ("kvp16", "KV router, prefill_load_scale 16"),
            ("aff", "KV router with session affinity")]
 FAMILIES = [("DeepSeek-V4.1-Flash", "family_deepseek", "DeepSeek-V4.1-Flash"),
             ("GLM-5.3-Flash (zai-org)", "family_glm", "GLM-5.3-Flash (zai-org)"),
             ("Ripple-65B-Preview", "family_ripple", "Ripple-65B-Preview"),
-            ("flint", "family_flint", "flint")]
+            ("flint", "family_flint", "flint"),
+            ("Inkling-2-Small", "family_inkling", "Inkling-2-Small (Together)")]
 SLA_SHARE = 0.99
 
 
@@ -30,7 +31,9 @@ def write(name, rows, inputs):
 agg = json.loads((RES / "full/aggregate.json").read_text())
 
 # Routers: one row per scope and router.
-scopes = [("all", "All 216 runs", agg["all"]), ("windows", "13 endpoint windows", agg["windows"]),
+FAMILIES = [f for f in FAMILIES if f[0] in agg["byFamily"]]
+scopes = [("all", f'All {agg["all"]["policies"]["aff"]["units"]} runs', agg["all"]),
+          ("windows", f'{agg["windows"]["policies"]["aff"]["units"]} endpoint windows', agg["windows"]),
           ("deepseek_native", "DeepSeek-V4.1-Flash native cross-check", agg["dsvcheck"])]
 scopes += [(sid, label, agg["byFamily"][fam]) for fam, sid, label in FAMILIES]
 rows = []
@@ -156,7 +159,7 @@ write("pilot", rows, ["results/pilot/sweep-summaries.json"])
 
 # Flint endpoint timeline, 30-minute buckets, 2026-11-09 16:00 to 2026-11-10 06:00 UTC.
 rows, section = [], None
-for line in (RES / "pilot/endpoint-timeline.md").read_text().splitlines():
+for line in (RES / "full/endpoint-timeline.md").read_text().splitlines():
     if line.startswith("### "):
         section = line[4:].strip()
         continue
@@ -164,30 +167,26 @@ for line in (RES / "pilot/endpoint-timeline.md").read_text().splitlines():
     if m and section and "flint" in section and "2026-11-09 16:00" <= m[1] <= "2026-11-10 06:00":
         rows.append(dict(bucket_start=m[1].replace(" ", "T") + ":00Z", active_trials=int(m[2]),
                          calls=int(m[3].replace(",", "")), provider_cached_pct=float(m[4]), reusable_pct=float(m[5])))
-write("timeline", rows, ["results/pilot/endpoint-timeline.md"])
+write("timeline", rows, ["results/full/endpoint-timeline.md"])
 
-# Trial directories and original executions per archive.
+# Trial directories and original executions in one listing of the bucket.
 idx = json.loads((RES / "full/index-summary.json").read_text())
-rows = []
-for src, label in (("base", "First snapshot of the bucket"), ("delta", "Objects published after it")):
-    x = idx[src]
-    rows.append(dict(archive=label, trial_dirs=x["trials"], originals=x["original"],
-                     copies=x["trials"] - x["original"] - x["withoutIdentity"], no_identity=x["withoutIdentity"]))
-rows.append(dict(archive="Total", **{k: sum(r[k] for r in rows) for k in ("trial_dirs", "originals", "copies", "no_identity")}))
+rows = [dict(archive=f'Bucket listed {idx["bucket"]["listingStarted"][:16].replace("T", " ")} UTC', trial_dirs=idx["trials"],
+             originals=idx["originals"], copies=idx["copies"], no_identity=idx["noIdentity"])]
 write("scope", rows, ["results/full/index-summary.json"])
 
 # Study totals: from trial directories to replays. One row.
-ext = json.loads((RES / "full/extract-summary.json").read_text())
+ext = json.loads((RES / "full/assemble-summary.json").read_text())
 tot, a, w = rows[-1], agg["all"]["policies"]["aff"], agg["windows"]["policies"]["aff"]
 write("study", [dict(trial_dirs=tot["trial_dirs"], originals=tot["originals"], copies=tot["copies"],
                      no_identity=tot["no_identity"], extracted_trials=ext["trials"], logged_calls=ext["calls"],
                      replayable_trials=a["trials"], originals_without_successful_call=tot["originals"] - a["trials"],
                      requests=a["requests"], runs=a["units"], windows=w["units"], window_trials=w["trials"],
                      window_requests=w["requests"], routers=len(ROUTERS), replays=replays)],
-      ["results/full/index-summary.json", "results/full/extract-summary.json", "results/full/aggregate.json",
+      ["results/full/index-summary.json", "results/full/assemble-summary.json", "results/full/aggregate.json",
        "results/full/units.csv"])
 
-# Slice check: runs with both a full replay and a recombined six-slice replay.
+# Slice check: runs with both a full replay and a recombined sliced replay.
 rows = []
 for c in json.loads((RES / "full/slice-check.json").read_text()):
     rows.append(dict(run=c["unit"], router=c["policy"], full_reuse_pct=round(100 * c["fullReuse"], 5),

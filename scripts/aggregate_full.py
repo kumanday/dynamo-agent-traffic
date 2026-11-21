@@ -25,7 +25,7 @@ SLA_SHARE = 0.99
 def family(served):
     s = served.lower()
     for key, name in (("glm-5.3-flash", "GLM-5.3-Flash (zai-org)"), ("deepseek-v4.1-flash", "DeepSeek-V4.1-Flash"),
-                      ("flint", "flint"), ("ripple", "Ripple-65B-Preview")):
+                      ("flint", "flint"), ("ripple", "Ripple-65B-Preview"), ("inkling", "Inkling-2-Small")):
         if key in s:
             return name
     return served

@@ -3,7 +3,7 @@
 
 The page draws its tables and figure titles in the browser, so the check reads the rendered page:
 
-    python3 -m http.server 8765 --directory docs &
+    python3 -m http.server 8765 --directory report &
     chrome --headless=new --virtual-time-budget=8000 --dump-dom http://127.0.0.1:8765/ > /tmp/report-dom.html
     python3 scripts/check_report_numbers.py /tmp/report-dom.html
 
@@ -129,7 +129,12 @@ check("Fig. 7 title: median run", num(found[0]) if found else None, float(med), 
 check("Fig. 7 title: 90th-percentile run", num(found[1]) if len(found) > 1 else None, float(p90), 0.05)
 title = page_text("title", "units")
 found = [int(x) for x in re.findall(r"\d+", title)]
-expected = [216 - 194, 216, 13 - 1, 13, 216 - 215, 13 - 13]
+meets = lambda r: [int(x) for x in r[3].split(" of ")]
+(kv_r, n_r), (aff_r, _), (kv_w, n_w), (aff_w, _) = meets(rows[1]), meets(rows[3]), meets(wrows[1]), meets(wrows[3])
+expected = [n_r - kv_r, n_r, n_w - kv_w, n_w] + ([n_r - aff_r, n_w - aff_w] if aff_r < n_r or aff_w < n_w else [])
+checks += 1
+if len(found) != len(expected):
+    failures.append(f"Fig. 4 title: {len(found)} numbers, expected {len(expected)}")
 for i, e in enumerate(expected):
     check(f"Fig. 4 title: value {i}", found[i] if len(found) > i else None, e, 0)
 title = page_text("title", "bars")
@@ -139,15 +144,15 @@ check("Fig. 3 title: windows", num(found[1]) if len(found) > 1 else None, num(wr
 hero = re.search(r'data-chart="hero".*?</svg>', dom, re.S)[0]
 for r in rows:
     shown_b = re.findall(r">([\d.]+)B<", hero)
-    check(f"cover figure: {r[0]} prefill", next((float(x) for x in shown_b if abs(float(x) - num(r[2])) <= 0.05), None), num(r[2]), 0.05)
+    check(f"cover figure: {r[0]} prefill", next((float(x) for x in shown_b if abs(float(x) - num(r[2])) <= 0.05 + 1e-9), None), num(r[2]), 0.05)
 
 # Headline values written in the prose.
 prose = strip(dom)
-patterns = dict(re.findall(r"([Yn]{4}) (\d+)", block))
 cached = re.search(r"Provider cached share over the same runs: ([\d.]+%)", block)[1]
 for what, text in (
-    ("default misses and affinity meets", f"In {int(patterns['nnYY']) + int(patterns['YnYY'])} runs the default router misses and affinity meets the SLA"),
-    ("default-router misses", f"misses the SLA on {216 - int(rows[1][3].split(' of ')[0])} of 216 runs"),
+    ("default-router misses", f"misses the SLA on {n_r - kv_r} of {n_r} runs"),
+    ("affinity misses", f"Affinity meets it on all {n_r}" if aff_r == n_r else f"against affinity's {n_r - aff_r}"),
+    ("default-router windows", f"meets the SLA in {kv_w} of {n_w} windows"),
     ("round-robin multiple", f"Round-robin prefills {num(rows[0][2]) / num(rows[3][2]):.1f}x what affinity does"),
     ("window gap", f"a {num(wrows[1][2]) / num(wrows[3][2]):.1f}x gap"),
     ("window requests inside the SLA", f"with {wrows[1][4]} of requests inside it"),
