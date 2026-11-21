@@ -18,7 +18,7 @@ The full-dataset replay: 216 runs, 13 endpoint windows and one native DeepSeek-V
 | `unit-stats.json` | Conversion statistics per unit: trials, requests, peak concurrent trials, token totals, provider cached share, reuse bounds, stream counts. |
 | `index-summary.json` | Trial directories, original executions and trials without an identity, for the first snapshot of the bucket (`base`) and the objects published after it (`delta`). |
 | `extract-summary.json` | Trials and calls extracted. `calls` counts every logged model call; 6,616,606 of them returned successfully with a non-empty prompt and are replayed. |
-| `replay-summaries.tgz` | `results/<unit>/<router>/summary.json` and `config.yaml` for every replay, including the 36 slice units (`chunk-<run>-cNN`). Trace paths are relative. |
+| `replay-summaries.tgz` | `results/<unit>/<router>/config.yaml` for every replay and `summary.json` for every replay that finished, including the 36 slice units (`chunk-<run>-cNN`). The KV router, `prefill_load_scale` 16 and affinity full replays of the sliced flint run have a configuration only; their results come from the slices. Trace paths are relative. |
 
 `units.csv` columns:
 
