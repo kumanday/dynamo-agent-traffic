@@ -1,0 +1,14 @@
+{
+ "source": [
+  "results/full/index-summary.json"
+ ],
+ "rows": [
+  {
+   "archive": "Bucket listed 2026-11-21 01:06 UTC",
+   "trial_dirs": 147952,
+   "originals": 70138,
+   "copies": 75082,
+   "no_identity": 2732
+  }
+ ]
+}

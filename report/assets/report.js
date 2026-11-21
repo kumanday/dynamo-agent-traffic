@@ -77,7 +77,7 @@
     r = Math.min(r, w / 2, h);
     return `M${x} ${base}v-${h - r}a${r} ${r} 0 0 1 ${r} -${r}h${w - 2 * r}a${r} ${r} 0 0 1 ${r} ${r}v${h - r}z`;
   };
-  // Keep a centred label inside [lo, hi] by switching its anchor at the edges.
+  // Keep a centered label inside [lo, hi] by switching its anchor at the edges.
   const clamp = (t, lo, hi) => {
     const x = +t.getAttribute('x'), w = t.getComputedTextLength();
     if (x - w / 2 < lo) { t.setAttribute('text-anchor', 'start'); t.setAttribute('x', lo); }
@@ -85,7 +85,7 @@
     return t;
   };
   const diamond = (x, y, r) => `M${x} ${y - r}l${r} ${r}l-${r} ${r}l-${r} -${r}z`;
-  // Mark shapes shared by the dot charts. Filled marks carry a ring in the surface colour.
+  // Mark shapes shared by the dot charts. Filled marks carry a ring in the surface color.
   const mark = (g, shape, x, y, color, opts = {}) => {
     const style = { dot: `fill:${color};stroke:${PAPER};stroke-width:2`, ring: `fill:${PAPER};stroke:${color};stroke-width:2.25`, dia: `fill:${color};stroke:${PAPER};stroke-width:1.5` }[shape];
     const n = shape === 'dia' ? el('path', { d: diamond(x, y, 6), style }, g) : el('circle', { cx: x, cy: y, r: shape === 'ring' ? 4.4 : 5, style }, g);
@@ -313,7 +313,7 @@
   }
 
   // Rows with one or more panels on a shared set of rows: dumbbells, dots and bars.
-  // cfg.rows: [{label, color?, mono?}], cfg.panels: [{title, domain, log, ticks, fmt, ref, marks(row), link, bar, text(row), tip(row)}]
+  // cfg.rows: [{label, color?, mono?}], cfg.panels: [{title, titleShort (used when the title does not fit), domain, log, ticks, fmt, ref, marks(row), link, bar, text(row), tip(row)}]
   function rowPanels(host, cfg) {
     const W = widthOf(host), rows = cfg.rows, n = cfg.panels.length;
     const side = W >= (cfg.wideAt || 680), across = side && !cfg.stack;
@@ -341,7 +341,8 @@
       const r0 = b.x0 + padL, r1 = b.x1 - padR;
       const x = p.log ? logScale(p.domain[0], p.domain[1], r0, r1) : lin(p.domain[0], p.domain[1], r0, r1);
       const yb = b.y0 + rows.length * rowH;
-      text(svg, b.x0, b.y0 - (hasRef ? 28 : 12), p.title, { class: 'head' });
+      const head = text(svg, b.x0, b.y0 - (hasRef ? 28 : 12), p.title, { class: 'head' });
+      if (p.titleShort && head.getComputedTextLength() > (across ? b.x1 : W) - b.x0) head.textContent = p.titleShort;
       const band = cfg.rowH || 30;
       const rule = (v, attrs) => {
         if (side) el('line', Object.assign({ x1: x(v), x2: x(v), y1: b.y0 + (attrs.style ? -5 : 0), y2: yb }, attrs), svg);
@@ -404,7 +405,7 @@
     rowPanels(host, {
       label: `Time to first token by router. All runs: ${a.map((r) => `${LABEL[r.router]} mean ${ms(r.mean_ttft_ms)}, median run p99 ${ms(r.median_unit_p99_ttft_ms)}`).join('; ')}.`,
       rows: ROUTERS.map((r) => ({ router: r, label: LABEL[r], color: COLOR[r] })), swatch: true, rowH: 34, stack: true,
-      panels: [panel('all', 'All 216 runs, mean / median p99', 'run'), panel('windows', '13 endpoint windows, mean / median p99', 'window')],
+      panels: [panel('all', `All ${int(D.study[0].runs)} runs, mean / median p99`, 'run'), panel('windows', `${int(D.study[0].windows)} endpoint windows, mean / median p99`, 'window')],
     });
   }
 
@@ -683,7 +684,7 @@
       label: `One DeepSeek run on two simulated targets. ${rows.map((r) => `${r.router_label}: prefill ${mInt(r.native_prefill_tokens / 1e6)} native and ${mInt(r.target_prefill_tokens / 1e6)} on the GLM-5.3-Flash target, p99 TTFT ${ms(r.native_ttft_p99_ms)} and ${ms(r.target_ttft_p99_ms)}`).join('; ')}.`,
       rows: rows.map((r) => Object.assign({ label: r.router_label, color: COLOR[r.router] }, r)), swatch: true, rowH: 32, wideAt: 620, stack: true,
       panels: [{
-        title: 'Prefill tokens, millions, with the multiple of affinity on the native target', domain: [0, pt[pt.length - 1]], ticks: pt, baseline: 0, fmt: int, link: true, textW: 136,
+        title: 'Prefill tokens, millions, with the multiple of affinity on the native target', titleShort: 'Prefill tokens, millions, native target', domain: [0, pt[pt.length - 1]], ticks: pt, baseline: 0, fmt: int, link: true, textW: 136,
         marks: (r) => [{ v: r.target_prefill_tokens / 1e6, color: r.color, shape: 'ring' }, { v: r.native_prefill_tokens / 1e6, color: r.color }],
         text: (r) => ratio(r.native_prefill_vs_affinity),
         tip: (r) => [['prefill, native target', mInt(r.native_prefill_tokens / 1e6)], ['affinity, native target', ratio(r.native_prefill_vs_affinity)], ['prefill, GLM-5.3-Flash target', mInt(r.target_prefill_tokens / 1e6)], ['affinity, GLM-5.3-Flash target', ratio(r.target_prefill_vs_affinity)]],
@@ -741,7 +742,7 @@
   function pipeline(host, D) {
     const s = D.study[0];
     const nodes = [
-      ['Public bucket', `${int(s.trial_dirs)} trial directories in the archived mirror`],
+      ['Public bucket', `${int(s.trial_dirs)} trial directories in one listing`],
       ['Original-trial selection', `${int(s.originals)} original executions, copies set aside`],
       ['Meter logs', `${int(s.requests)} successful model calls, no prompt text`],
       ['Trace conversion', 'streams, dependencies and prompt blocks per trial'],
@@ -975,7 +976,7 @@
     hero: (D) => `Prompt tokens recomputed across all ${routerRows(D, 'all')[0].units} runs, by router`,
     'hero-note': (D) => `Each block is the session-affinity total of ${bn(routerRows(D, 'all')[3].prefill_tokens_b)} tokens, so the blocks in a row count that router's multiple of it.`,
     bars: (D) => { const a = routerRows(D, 'all'), w = routerRows(D, 'windows'); return `The default KV router recomputes ${ratio(a[1].prefill_vs_affinity)} what session affinity does on single runs, and ${ratio(w[1].prefill_vs_affinity)} when concurrent runs are merged`; },
-    units: (D) => { const a = routerRows(D, 'all'), w = routerRows(D, 'windows'); return `The default KV router misses the SLA on ${a[1].units_missing_sla} of ${a[1].units} runs and ${w[1].units_missing_sla} of ${w[1].units} endpoint windows. Session affinity misses it on ${a[3].units_missing_sla} run and ${w[3].units_missing_sla} windows`; },
+    units: (D) => { const a = routerRows(D, 'all'), w = routerRows(D, 'windows'); return `The default KV router misses the SLA on ${a[1].units_missing_sla} of ${a[1].units} runs and ${w[1].units_missing_sla} of ${w[1].units} endpoint windows. ${a[3].units_missing_sla || w[3].units_missing_sla ? `Session affinity misses it on ${a[3].units_missing_sla} of the runs and ${w[3].units_missing_sla} of the windows` : 'Session affinity meets it on every run and window'}`; },
     latency: (D) => { const a = routerRows(D, 'all'), w = routerRows(D, 'windows'); return `The middle run's p99 time to first token is ${ms(a[1].median_unit_p99_ttft_ms)} with the default KV router and ${ms(a[3].median_unit_p99_ttft_ms)} with session affinity. In the endpoint windows it is ${ms(w[1].median_unit_p99_ttft_ms)} against ${ms(w[3].median_unit_p99_ttft_ms)}`; },
     heat: (D) => { const c = (r) => D.windows.filter((w) => w[`sla_${r}`] === 'meets').length, n = D.windows.length; return `With the default KV router, ${c('kv')} of ${n} endpoint windows keeps 99% of its requests inside the SLA. With prefill_load_scale 16 or session affinity, all ${c('aff')} do`; },
     ratio: (D) => { const s = routerRows(D, 'all')[1]; return `In the median run the default KV router prefills ${ratio(s.prefill_vs_affinity_run_median)} what affinity does, and in the 90th-percentile run ${ratio(s.prefill_vs_affinity_run_p90)}`; },
@@ -985,7 +986,7 @@
       return `The ${lo.length} runs that peak below ${cut} concurrent trials have a median gap of ${ratio(med(lo.map((r) => r.kv_vs_aff_prefill)))}. The ${hi.length} runs at ${cut} or more have a median gap of ${ratio(med(hi.map((r) => r.kv_vs_aff_prefill)))}`;
     },
     traffic: (D) => { const v = D.traffic.map((t) => t.kv_vs_aff_prefill), f = D.traffic.reduce((a, b) => (b.provider_cached_pct < a.provider_cached_pct ? b : a)); return `On every traffic source the default KV router prefills ${F1.format(Math.min(...v))}-${ratio(Math.max(...v))} what affinity does. The ${f.traffic} endpoint served ${pct(f.provider_cached_pct)} of prompt tokens from cache where simulated affinity reuses ${pct(f.aff_reuse_pct)}`; },
-    harness: (D) => `${D.harness.filter((h) => h.sla_kv < h.runs).length} of ${D.harness.length} harness versions have runs that miss the SLA with the default KV router. With session affinity, ${D.harness.filter((h) => h.sla_aff < h.runs).length} does`,
+    harness: (D) => `${D.harness.filter((h) => h.sla_kv < h.runs).length} of ${D.harness.length} harness versions have runs that miss the SLA with the default KV router. ${((n) => (n ? `With session affinity, ${n} ${n === 1 ? 'does' : 'do'}` : 'With session affinity, none does'))(D.harness.filter((h) => h.sla_aff < h.runs).length)}`,
     pilotfull: (D) => { const h = D.pilot.filter((r) => r.trace === 'hermes_run'), a = h.filter((r) => r.router === 'aff').sort((x, y) => x.gpus - y.gpus)[0], k = h.filter((r) => r.router === 'kv').sort((x, y) => y.gpus - x.gpus)[0]; return `On the Hermes run, session affinity on ${a.gpus} GPUs reaches a p99 TTFT of ${ms(a.ttft_p99_ms)}. The default KV router on ${k.gpus} GPUs reaches ${ms(k.ttft_p99_ms)}`; },
     timeline: (D) => `The flint endpoint's cached share fell to ${pct(Math.min(...D.timeline.map((r) => r.provider_cached_pct)))} while ${pct(Math.min(...D.timeline.map((r) => r.reusable_pct)))} or more of the prompt stayed reusable`,
     native: (D) => { const k = D.native.find((r) => r.router === 'kv'); return `On the native DeepSeek-V4.1-Flash target the default KV router prefills ${ratio(k.native_prefill_vs_affinity)} what affinity does, and ${ratio(k.target_prefill_vs_affinity)} on the GLM-5.3-Flash target`; },

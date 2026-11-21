@@ -1,0 +1,189 @@
+{
+ "source": [
+  "results/full/endpoint-timeline.md"
+ ],
+ "rows": [
+  {
+   "bucket_start": "2026-11-09T16:00:00Z",
+   "active_trials": 4,
+   "calls": 405,
+   "provider_cached_pct": 99.8,
+   "reusable_pct": 99.3
+  },
+  {
+   "bucket_start": "2026-11-09T17:00:00Z",
+   "active_trials": 9,
+   "calls": 707,
+   "provider_cached_pct": 97.9,
+   "reusable_pct": 96.5
+  },
+  {
+   "bucket_start": "2026-11-09T17:30:00Z",
+   "active_trials": 25,
+   "calls": 868,
+   "provider_cached_pct": 97.2,
+   "reusable_pct": 95.9
+  },
+  {
+   "bucket_start": "2026-11-09T18:00:00Z",
+   "active_trials": 39,
+   "calls": 2781,
+   "provider_cached_pct": 98.7,
+   "reusable_pct": 98.7
+  },
+  {
+   "bucket_start": "2026-11-09T18:30:00Z",
+   "active_trials": 17,
+   "calls": 738,
+   "provider_cached_pct": 93.8,
+   "reusable_pct": 98.4
+  },
+  {
+   "bucket_start": "2026-11-09T19:00:00Z",
+   "active_trials": 3,
+   "calls": 244,
+   "provider_cached_pct": 97.5,
+   "reusable_pct": 97.1
+  },
+  {
+   "bucket_start": "2026-11-09T19:30:00Z",
+   "active_trials": 9,
+   "calls": 525,
+   "provider_cached_pct": 98.9,
+   "reusable_pct": 98.3
+  },
+  {
+   "bucket_start": "2026-11-09T20:00:00Z",
+   "active_trials": 7,
+   "calls": 667,
+   "provider_cached_pct": 99.6,
+   "reusable_pct": 99.1
+  },
+  {
+   "bucket_start": "2026-11-09T20:30:00Z",
+   "active_trials": 4,
+   "calls": 217,
+   "provider_cached_pct": 98.9,
+   "reusable_pct": 98.7
+  },
+  {
+   "bucket_start": "2026-11-09T22:00:00Z",
+   "active_trials": 229,
+   "calls": 11257,
+   "provider_cached_pct": 98.2,
+   "reusable_pct": 97.5
+  },
+  {
+   "bucket_start": "2026-11-09T22:30:00Z",
+   "active_trials": 448,
+   "calls": 21138,
+   "provider_cached_pct": 88.0,
+   "reusable_pct": 98.0
+  },
+  {
+   "bucket_start": "2026-11-09T23:00:00Z",
+   "active_trials": 318,
+   "calls": 12013,
+   "provider_cached_pct": 68.2,
+   "reusable_pct": 98.8
+  },
+  {
+   "bucket_start": "2026-11-09T23:30:00Z",
+   "active_trials": 248,
+   "calls": 9593,
+   "provider_cached_pct": 64.5,
+   "reusable_pct": 98.9
+  },
+  {
+   "bucket_start": "2026-11-10T00:00:00Z",
+   "active_trials": 304,
+   "calls": 12696,
+   "provider_cached_pct": 64.4,
+   "reusable_pct": 98.5
+  },
+  {
+   "bucket_start": "2026-11-10T00:30:00Z",
+   "active_trials": 275,
+   "calls": 9151,
+   "provider_cached_pct": 49.6,
+   "reusable_pct": 99.0
+  },
+  {
+   "bucket_start": "2026-11-10T01:00:00Z",
+   "active_trials": 258,
+   "calls": 10996,
+   "provider_cached_pct": 68.2,
+   "reusable_pct": 99.0
+  },
+  {
+   "bucket_start": "2026-11-10T01:30:00Z",
+   "active_trials": 194,
+   "calls": 10475,
+   "provider_cached_pct": 79.2,
+   "reusable_pct": 99.2
+  },
+  {
+   "bucket_start": "2026-11-10T02:00:00Z",
+   "active_trials": 128,
+   "calls": 6015,
+   "provider_cached_pct": 69.6,
+   "reusable_pct": 99.4
+  },
+  {
+   "bucket_start": "2026-11-10T02:30:00Z",
+   "active_trials": 117,
+   "calls": 3276,
+   "provider_cached_pct": 51.0,
+   "reusable_pct": 99.4
+  },
+  {
+   "bucket_start": "2026-11-10T03:00:00Z",
+   "active_trials": 155,
+   "calls": 4595,
+   "provider_cached_pct": 60.2,
+   "reusable_pct": 98.1
+  },
+  {
+   "bucket_start": "2026-11-10T03:30:00Z",
+   "active_trials": 90,
+   "calls": 2292,
+   "provider_cached_pct": 30.9,
+   "reusable_pct": 98.9
+  },
+  {
+   "bucket_start": "2026-11-10T04:00:00Z",
+   "active_trials": 87,
+   "calls": 1841,
+   "provider_cached_pct": 20.8,
+   "reusable_pct": 99.3
+  },
+  {
+   "bucket_start": "2026-11-10T04:30:00Z",
+   "active_trials": 80,
+   "calls": 1635,
+   "provider_cached_pct": 13.9,
+   "reusable_pct": 99.4
+  },
+  {
+   "bucket_start": "2026-11-10T05:00:00Z",
+   "active_trials": 73,
+   "calls": 1438,
+   "provider_cached_pct": 19.8,
+   "reusable_pct": 99.5
+  },
+  {
+   "bucket_start": "2026-11-10T05:30:00Z",
+   "active_trials": 61,
+   "calls": 1539,
+   "provider_cached_pct": 54.8,
+   "reusable_pct": 99.5
+  },
+  {
+   "bucket_start": "2026-11-10T06:00:00Z",
+   "active_trials": 32,
+   "calls": 784,
+   "provider_cached_pct": 71.4,
+   "reusable_pct": 99.4
+  }
+ ]
+}

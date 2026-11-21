@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dynamo replay of Harness Leaderboard agent traffic</title>
+<meta name="description" content="Every original trial of the public Harness Leaderboard dataset, 6.9 million model calls, replayed through NVIDIA Dynamo's CPU simulator under four routers. The default KV router recomputes 3.0x the prompt tokens that session affinity does.">
+<link rel="canonical" href="https://adaptivesystems.institute/publications/dynamo-agent-traffic/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Besley:wght@400..800&family=Chivo+Mono:wght@300..600&family=Libre+Franklin:ital,wght@0,300..800;1,400..600&display=swap">
+<link rel="stylesheet" href="assets/report.css">
+</head>
+<body>
+
+<div class="topbar graphite">
+  <div class="wrap">
+    <a class="brand" href="#top">Dynamo replay</a>
+    <a class="simtag" href="#limits" title="Timing is modeled. Read the limits.">Simulation study</a>
+    <nav class="toc" aria-label="Contents">
+      <ul>
+        <li><a href="#summary">Summary</a></li>
+        <li><a href="#findings">Findings</a></li>
+        <li><a href="#limits">Limits</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#method">Method</a></li>
+        <li><a href="#maintainer-notes">Notes for maintainers</a></li>
+        <li><a href="#files">Tables and code</a></li>
+        <li><a href="#cite">How to cite</a></li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<header class="cover graphite">
+  <div class="wrap">
+    <h1 id="top">Dynamo replay of Harness Leaderboard agent traffic</h1>
+    <p class="standfirst"><b>A simulation study.</b> Every original trial of a public coding-agent benchmark, 6.9 million model calls, replayed through NVIDIA Dynamo's simulator under four routers. Timing is modeled and no request ran on a GPU, so read the <a href="#limits">limits</a> before using a number from this page.</p>
+    <p class="byline">
+      <span><a href="https://github.com/kumanday">Leonardo Gonzalez</a></span>
+      <span>Published <time datetime="2026-11-20">2026-11-20</time></span>
+      <span><a href="https://github.com/kumanday/dynamo-agent-traffic">Code and tables</a></span>
+    </p>
+    <div class="hero">
+      <div>
+        <span class="hero-num" data-fill="hero-ratio">3.0x</span>
+        <p class="hero-text">the prompt tokens that NVIDIA Dynamo's default KV router recomputes, relative to session affinity, on coding-agent traffic: 26.6B against 8.9B tokens in simulation.</p>
+      </div>
+      <figure class="fig hero-fig" id="fig-1">
+        <figcaption>
+          <h2 class="fig-t"><span class="fig-n">Fig. 1</span><span data-title="hero">Prompt tokens recomputed, by router</span></h2>
+        </figcaption>
+        <div class="chart" data-chart="hero"></div>
+        <p class="fig-d" data-title="hero-note">Each block is the session-affinity total, so the blocks in a row count that router's multiple of it.</p>
+      </figure>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section id="summary" class="row first" aria-labelledby="summary-h">
+  <div class="rail"><h2 id="summary-h">Summary</h2></div>
+  <div class="body">
+    <p>The <a href="https://huggingface.co/buckets/joelniklaus/harness-leaderboard">Harness Leaderboard</a> runs coding-agent harnesses on open-weights models and publishes a per-call log for every trial. This study took every original trial in that public dataset as listed on 2026-11-20, converted each one into a replayable agent session, and replayed all of them through Dynamo's CPU simulator (<code>aisimulate predict --stack dynamo</code>) under four routers. Every run replays on simulated GLM-5.3-Flash workers with two B300 GPUs each, and at least four workers.</p>
+    <p>The default KV router missed the latency target on 29 of 240 runs. Session affinity met it on all 240. Setting the KV router's <code>prefill_load_scale</code> to 16 brings it to 9.2B recomputed tokens and all 240 runs within the target. Timing comes from the simulator's operator-level model, and no request ran on a GPU: read the <a href="#limits">limits</a> before using a number from this page.</p>
+    <div class="ledger">
+      <div><b>70,138</b><span>original trials, 69,923 of them with at least one successful model call</span></div>
+      <div><b>6,947,564</b><span>model calls replayed under each router</span></div>
+      <div><b>240</b><span>leaderboard runs, plus 16 endpoint windows that merge concurrent runs</span></div>
+      <div><b>1,024</b><span>replays across the four routers</span></div>
+    </div>
+    <dl class="defs">
+      <dt>Prefill tokens</dt><dd>Prompt tokens a worker had to compute because they were not in its KV cache. The text calls them recomputed tokens.</dd>
+      <dt>Prefix reuse</dt><dd>The share of prompt tokens a worker served from its KV cache.</dd>
+      <dt>SLA</dt><dd>A replay meets the SLA when at least 99% of its requests get their first token within 2 s (TTFT) and stay within 50 ms between output tokens (ITL).</dd>
+    </dl>
+    <figure class="fig" id="fig-2">
+      <figcaption>
+        <h3 class="fig-t"><span class="fig-n">Fig. 2</span>The four routers differ in where they send a session's next call</h3>
+        <p class="fig-d">A schematic of one routing decision on four workers. The session's prompt prefix is cached on worker 2, which is also decoding two other long sessions. Worker 4 is idle.</p>
+      </figcaption>
+      <div class="panels p4">
+        <div>
+          <h4 class="ptitle"><span class="sw c-rr"></span>Round-robin</h4>
+          <div class="chart" data-chart="routing" data-router="rr"></div>
+          <p class="pdesc">Each request goes to the next worker in turn.</p>
+        </div>
+        <div>
+          <h4 class="ptitle"><span class="sw c-kv"></span>KV router, defaults</h4>
+          <div class="chart" data-chart="routing" data-router="kv"></div>
+          <p class="pdesc">Dynamo's KV router as shipped. It scores a worker by the prefill a request would need there plus the decode load already on it.</p>
+        </div>
+        <div>
+          <h4 class="ptitle"><span class="sw c-kvp16"></span>KV router, <code>prefill_load_scale</code> 16</h4>
+          <div class="chart" data-chart="routing" data-router="kvp16"></div>
+          <p class="pdesc">The same router with the prefill term weighted 16 times.</p>
+        </div>
+        <div>
+          <h4 class="ptitle"><span class="sw c-aff"></span>KV router with session affinity</h4>
+          <div class="chart" data-chart="routing" data-router="aff"></div>
+          <p class="pdesc">The KV router with <code>conversation_affinity</code> in session mode and a 300-second TTL, which keeps a session on the worker that already served it.</p>
+        </div>
+      </div>
+      <ul class="legend">
+        <li><span class="sw c-ink"></span>The session's cached prefix</li>
+        <li><span class="sw c-neutral"></span>Another session decoding on the worker</li>
+        <li><span class="sw out c-ink3"></span>Prefix recomputed on a new worker</li>
+      </ul>
+    </figure>
+  </div>
+</section>
+
+<div class="pair">
+  <section id="findings" class="panel" aria-labelledby="findings-h">
+    <h2 id="findings-h">Findings<a class="anchor" href="#findings" aria-label="Link to Findings">#</a></h2>
+    <ol>
+      <li id="finding-1"><p><b>The default KV router recomputes 3.0x the tokens that session affinity does.</b> Across the whole dataset it prefills 26.6B tokens against 8.9B and misses the SLA on 29 of 240 runs. Affinity meets it on all 240.</p></li>
+      <li id="finding-2"><p><b>The gap concentrates under load.</b> In the median run the default router prefills 1.6x what affinity does, and in the 90th-percentile run 3.2x. When runs that hit one endpoint at the same time are merged, the default KV router meets the SLA in 4 of 16 windows, with 90.3% of requests inside it. Affinity meets it in all 16 and prefills 2.5B tokens against the default router's 12.5B, a 5.0x gap.</p></li>
+      <li id="finding-3"><p><b>One parameter recovers most of it.</b> With <code>prefill_load_scale</code> 16, the KV router comes within 5% of affinity's prefill (9.2B against 8.9B) and meets the SLA on all 240 runs, as affinity does.</p></li>
+      <li id="finding-4"><p><b>Round-robin prefills 5.4x what affinity does</b> and meets the SLA in 3 of 16 endpoint windows, none above 130 concurrent trials, with a mean TTFT of 53.6 s.</p></li>
+      <li id="finding-5"><p><b>The ordering holds across traffic sources and harnesses.</b> Hermes meets the SLA on 19 of 27 runs with the default KV router and on all 27 with affinity. DeepSeek Harness goes from 17 to 20 of 20, OpenCode 2.2.6 from 17 to 19 of 19, and Grok Build from 6 to 9 of 9.</p></li>
+      <li id="finding-6"><p><b>Simulated affinity reuses far more than the real endpoints did.</b> Over the same runs, the providers served 91.8% of prompt tokens from cache, and 71.8% of flint traffic. The simulated deployment with affinity reuses 98.6%.</p></li>
+      <li id="finding-7"><p><b>A native DeepSeek-V4.1-Flash replay ranks the routers the same way.</b> One DeepSeek run replayed on simulated DeepSeek-V4.1-Flash: default-router prefill is 3.1x affinity's (508M against 162M tokens), and p99 TTFT is 2.6 s against 571 ms. Its simulated decode speed fails the inter-token SLA under every router.</p></li>
+    </ol>
+  </section>
+
+  <section id="limits" class="panel limits" aria-labelledby="limits-h">
+    <h2 id="limits-h">Limits<a class="anchor" href="#limits" aria-label="Link to Limits">#</a></h2>
+    <ol>
+      <li id="limit-1"><p><b>The timing is modeled.</b> AISimulate rates agentic replay as functional only. Every latency here comes from its operator-level model on measured B300 kernel data. No request ran on a GPU, so treat TTFT, ITL and SLA counts as simulator output that a hardware run still has to confirm.</p></li>
+      <li id="limit-2"><p><b>Four of the five models are projected onto GLM-5.3-Flash.</b> Every run replays on one target: GLM-5.3-Flash FP8 on vLLM 0.31.0, two B300 GPUs per worker. Traffic recorded on DeepSeek-V4.1-Flash, flint, Inkling-2-Small and Ripple-65B-Preview keeps its recorded token counts and takes GLM-5.3-Flash's timing. GLM-5.3-Flash keeps little KV cache per token, so a dense-attention model would run out of KV capacity sooner.</p></li>
+      <li id="limit-3"><p><b>Each run has one pool size.</b> The four routers serve a run on the same number of GPUs, so the comparison shows recomputed tokens and SLA attainment at a fixed size. How many GPUs each router would need is measured only for the two runs in the <a href="#pool-size">pool-size section</a>.</p></li>
+      <li id="limit-4"><p><b>Prompt blocks are synthesized.</b> The converter reads no prompt text. Blocks are rebuilt from token counts on the assumption that a context grows by appending. Each call's output counts as new prefill in the next call under every router.</p></li>
+      <li id="limit-5"><p><b>Pacing is closed-loop.</b> Each agent waits for its simulated completions and keeps its recorded tool gaps, so a faster or slower simulated server moves the agent's next call with it. The replay does not reproduce the recorded arrival times.</p></li>
+      <li id="limit-6"><p><b>Endpoint windows are a selected, overlapping set.</b> Of 43 groups of overlapping runs, 16 were replayed: those where merged concurrency rose well above any single run, plus all four flint groups. Their trials also appear in the per-run results, so the two sets of totals cannot be added.</p></li>
+      <li id="limit-7"><p><b>The provider logs show outcomes only.</b> Cached-token counts come from each provider's own reporting. The logs say nothing about the providers' hardware, pool sizes or routing.</p></li>
+    </ol>
+  </section>
+</div>
+
+<section id="results" aria-labelledby="results-h">
+  <div class="row major">
+    <div class="rail"><h2 id="results-h">Results<a class="anchor" href="#results" aria-label="Link to Results">#</a></h2></div>
+    <div class="body">
+      <p>All 240 runs cover 69,923 trials and 6,947,564 requests per router. The 16 endpoint windows cover 24,472 trials and 2,171,700 requests per router. Every replay completed all of its requests.</p>
+      <p class="cav">Every latency and SLA count below is simulator output on a GLM-5.3-Flash target. See limits <a href="#limit-1">1</a> and <a href="#limit-2">2</a>.</p>
+      <ul class="legend routerkey" aria-label="Router colors">
+        <li><span class="sw c-rr"></span>Round-robin</li>
+        <li><span class="sw c-kv"></span>KV router, defaults</li>
+        <li><span class="sw c-kvp16"></span>KV router, prefill_load_scale 16</li>
+        <li><span class="sw c-aff"></span>KV router with session affinity</li>
+      </ul>
+    </div>
+  </div>
+
+  <section id="all-runs" class="row" aria-labelledby="all-runs-h">
+    <div class="rail"><h3 id="all-runs-h">All runs and endpoint windows<a class="anchor" href="#all-runs" aria-label="Link to All runs and endpoint windows">#</a></h3></div>
+    <div class="body">
+      <figure class="fig" id="fig-3">
+        <figcaption>
+          <h4 class="fig-t"><span class="fig-n">Fig. 3</span><span data-title="bars">Prefill tokens by router</span></h4>
+          <p class="fig-d">Prefill tokens in billions on one scale, with the number of replays that meet the SLA. The endpoint windows repeat trials from the runs, so the two panels cannot be added.</p>
+        </figcaption>
+        <div class="panels p2">
+          <div>
+            <h4 class="ptitle" id="all-runs-chart">All 240 leaderboard runs</h4>
+            <p class="pdesc">Each run replayed by itself.</p>
+            <div class="chart" data-chart="bars" data-scope="all"></div>
+          </div>
+          <div>
+            <h4 class="ptitle" id="endpoint-windows">16 endpoint windows</h4>
+            <p class="pdesc">Runs that loaded the same provider endpoint at the same time, merged into one replay.</p>
+            <div class="chart" data-chart="bars" data-scope="windows"></div>
+          </div>
+        </div>
+        <details class="tbl"><summary><span class="show">Show table</span><span class="hide">Hide table</span></summary>
+          <div class="tablewrap"><table data-table="routers"><thead></thead><tbody></tbody></table></div>
+        </details>
+      </figure>
+
+      <figure class="fig" id="fig-4">
+        <figcaption>
+          <h4 class="fig-t"><span class="fig-n">Fig. 4</span><span data-title="units">Replays meeting the SLA, by router</span></h4>
+          <p class="fig-d">One square per replay, in the same position under every router. Runs and windows are ordered by peak concurrent trials, lowest first, so the misses that load causes sit toward the right.</p>
+        </figcaption>
+        <div class="panels p31">
+          <div>
+            <h4 class="ptitle">All 240 leaderboard runs</h4>
+            <div class="chart" data-chart="units" data-scope="all"></div>
+          </div>
+          <div>
+            <h4 class="ptitle">16 endpoint windows</h4>
+            <div class="chart" data-chart="units" data-scope="windows"></div>
+          </div>
+        </div>
+        <ul class="legend">
+          <li><span class="sw c-rr"></span><span class="sw c-kv"></span><span class="sw c-kvp16"></span><span class="sw c-aff"></span>Meets the SLA, in the router's color</li>
+          <li><span class="sw c-ink"></span>Misses the SLA</li>
+        </ul>
+        <details class="tbl"><summary><span class="show">Show table</span><span class="hide">Hide table</span></summary>
+          <div class="tablewrap"><table data-table="slacounts"><thead></thead><tbody></tbody></table></div>
+          <p class="note">The outcome of each run under each router is in the per-run table under <a href="#fig-8">Fig. 8</a>, and each window is under <a href="#fig-6">Fig. 6</a>.</p>
+        </details>
+      </figure>
+
+      <figure class="fig" id="fig-5">
+        <figcaption>
+          <h4 class="fig-t"><span class="fig-n">Fig. 5</span><span data-title="latency">Time to first token, by router</span></h4>
+          <p class="fig-d">Mean TTFT over all requests, and the 99th-percentile TTFT of the middle run or window. Logarithmic scale, with the 2 s bound of the SLA marked.</p>
+        </figcaption>
+        <div class="chart" data-chart="latency"></div>
+        <ul class="legend">
+          <li><span class="sw dot c-ink"></span>Mean TTFT</li>
+          <li><span class="sw ring c-ink"></span>Median p99 TTFT</li>
+          <li>Marks take the router's color</li>
+        </ul>
+        <p class="cav">Modeled timing. <a href="#limit-1">Limit 1</a></p>
+        <details class="tbl"><summary><span class="show">Show table</span><span class="hide">Hide table</span></summary>
+          <div class="tablewrap"><table data-table="latency"><thead></thead><tbody></tbody></table></div>
+        </details>
+        <p class="note">Round-robin's mean TTFT is dominated by the replays where its queues collapse. Median p99 TTFT is the 99th-percentile time to first token of the middle run or window.</p>
+      </figure>
+
+      <p>The KV router's cost adds <code>prefill_load_scale</code> times the uncached prefill blocks to the decode blocks already active on a worker. An active agent request carries about 100k tokens of context, roughly 1,500 blocks of 64 tokens. A worker that holds a request's cached prefix but serves one or two more long sessions therefore scores worse than a worker that has to recompute the whole prompt, and the router gives up the cached prefix. GLM-5.3-Flash's linear and sparse attention also makes long-context decode cheaper than that block count implies.</p>
+
+      <figure class="fig" id="fig-6">
+        <figcaption>
+          <h4 class="fig-t" id="per-window"><span class="fig-n">Fig. 6</span><span data-title="heat">Each endpoint window</span><a class="anchor" href="#per-window" aria-label="Link to Each endpoint window">#</a></h4>
+          <p class="fig-d">Share of requests meeting the SLA in each window, by router. A window meets the SLA at 99.0% or more: those cells carry a check, and cells below it print their share. Start is the first call of the window in UTC.</p>
+        </figcaption>
+        <div class="chart" data-chart="heat"></div>
+        <details class="tbl"><summary><span class="show">Show table</span><span class="hide">Hide table</span></summary>
+          <div class="tablewrap"><table data-table="windows"><thead></thead><tbody></tbody></table></div>
+          <p class="note">Requests meeting the SLA, by router. A window meets the SLA at 99.0% or more; cells below that are marked. Start is the first call of the window in UTC.</p>
+        </details>
+      </figure>
+    </div>
+  </section>
+
+  <section id="load" class="row" aria-labelledby="load-h">
+    <div class="rail"><h3 id="load-h">The gap grows with load<a class="anchor" href="#load" aria-label="Link to The gap grows with load">#</a></h3></div>
+    <div class="body">
+      <figure class="fig" id="fig-7">
+        <figcaption>
+          <h4 class="fig-t"><span class="fig-n">Fig. 7</span><span data-title="ratio">Default-router prefill relative to affinity, per run</span></h4>
+          <p class="fig-d">The 240 runs, binned by default-router prefill divided by affinity prefill. At 1x the two routers recompute the same number of tokens.</p>
+        </figcaption>
+        <div class="chart" data-chart="ratio"></div>
+        <ul class="legend">
+          <li><span class="sw c-kv"></span>Runs where the default KV router meets the SLA</li>
+          <li><span class="sw c-ink"></span>Runs where it misses the SLA</li>
+        </ul>
+        <p class="note">The value for each run is in the table under <a href="#fig-8">Fig. 8</a>.</p>
+      </figure>
+
+      <figure class="fig" id="fig-8">
+        <figcaption>
+          <h4 class="fig-t"><span class="fig-n">Fig. 8</span><span data-title="scatter">The gap against peak concurrency</span></h4>
+          <p class="fig-d">Each mark is one of the 240 runs. Vertical: default-router prefill divided by affinity prefill, where 1x means equal. Horizontal: peak concurrent agent trials in the run. All but one run replays on four workers.</p>
+        </figcaption>
+        <div class="chart" data-chart="scatter"></div>
+        <ul class="legend">
+          <li><span class="sw dot c-kv"></span>Default KV router meets the SLA</li>
+          <li><span class="sw dia c-ink"></span>Default KV router misses the SLA</li>
+        </ul>
+        <details class="tbl"><summary><span class="show">Show table of all 240 runs</span><span class="hide">Hide table</span></summary>
+          <div class="tablewrap tall"><table data-table="runs"><thead></thead><tbody></tbody></table></div>
+          <p class="note">Share of requests meeting the SLA under each router; cells below 99.0% are marked.</p>
+        </details>
+      </figure>
+      <p class="note">Per-run values are in <a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/results/full/units.csv">results/full/units.csv</a> and <a href="data/runs.json">data/runs.json</a>.</p>
+    </div>
+  </section>
+
+  <section id="traffic-source" class="row" aria-labelledby="traffic-source-h">
+    <div class="rail"><h3 id="traffic-source-h">By traffic source<a class="anchor" href="#traffic-source" aria-label="Link to By traffic source">#</a></h3></div>
+    <div class="body">
+      <figure class="fig" id="fig-9">
+        <figcaption>
+          <h4 class="fig-t"><span class="fig-n">Fig. 9</span><span data-title="traffic">Default KV router against session affinity, by traffic source</span></h4>
+          <p class="fig-d">The five model families the runs were recorded on. All traffic replays on GLM-5.3-Flash. Provider cached is the share of prompt tokens the real endpoint served from its own cache, from the leaderboard's per-call logs.</p>
+        </figcaption>
+        <div class="chart" data-chart="traffic"></div>
+        <ul class="legend">
+          <li><span class="sw dot c-kv"></span>KV router, defaults</li>
+          <li><span class="sw dot c-aff"></span>KV router with session affinity</li>
+          <li><span class="sw ring c-ink"></span>Recorded at the provider</li>
+        </ul>
+        <details class="tbl"><summary><span class="show">Show table</span><span class="hide">Hide table</span></summary>
+          <div class="tablewrap"><table data-table="traffic"><thead></thead><tbody></tbody></table></div>
+          <p class="note">Runs meeting the SLA under each router; cells where a router misses it on at least one run are marked. Provider cached is the share of prompt tokens the real endpoint served from its own cache, from the leaderboard's per-call logs. All traffic replays on GLM-5.3-Flash.</p>
+        </details>
+      </figure>
+    </div>
+  </section>
+
+  <section id="harness" class="row" aria-labelledby="harness-h">
+    <div class="rail"><h3 id="harness-h">By harness<a class="anchor" href="#harness" aria-label="Link to By harness">#</a></h3></div>
+    <div class="body">
+      <figure class="fig" id="fig-10">
+        <figcaption>
+          <h4 class="fig-t"><span class="fig-n">Fig. 10</span><span data-title="harness">Default KV router against session affinity, by harness</span></h4>
+          <p class="fig-d">Harness versions ordered by the share of runs that session affinity brings inside the SLA. A run is assigned to the harness version that made most of its calls.</p>
+        </figcaption>
+        <div class="chart" data-chart="harness"></div>
+        <ul class="legend">
+          <li><span class="sw dot c-kv"></span>KV router, defaults</li>
+          <li><span class="sw dot c-aff"></span>KV router with session affinity</li>
+        </ul>
+        <details class="tbl"><summary><span class="show">Show table</span><span class="hide">Hide table</span></summary>
+          <div class="tablewrap"><table data-table="harness"><thead></thead><tbody></tbody></table></div>
+          <p class="note">Runs meeting the SLA under each router, and prefill tokens in billions. A run is assigned to the harness version that made most of its calls. Cells where a router misses the SLA on at least one run are marked.</p>
+        </details>
+      </figure>
+    </div>
+  </section>
+
+  <section id="pool-size" class="row" aria-labelledby="pool-size-h">
+    <div class="rail"><h3 id="pool-size-h">Pool size and GPU count<a class="anchor" href="#pool-size" aria-label="Link to Pool size and GPU count">#</a></h3></div>
+    <div class="body">
+      <figure class="fig" id="fig-11">
+        <figcaption>
+          <h4 class="fig-t"><span class="fig-n">Fig. 11</span>Round-robin loses prefix reuse with every doubling of the pool, and session affinity keeps it</h4>
+          <p class="fig-d">Prefix reuse by worker count on the first 100 trials of two pilot runs. Each worker is 2 GPUs. Affinity was not run at 4 workers.</p>
+        </figcaption>
+        <div class="panels p2">
+          <div>
+            <h4 class="ptitle" id="pool-hermes">Hermes, first 100 trials</h4>
+            <div class="chart" data-chart="pool" data-trace="hermes_slice"></div>
+          </div>
+          <div>
+            <h4 class="ptitle" id="pool-openclaw">OpenClaw, first 100 trials</h4>
+            <div class="chart" data-chart="pool" data-trace="openclaw_slice"></div>
+          </div>
+        </div>
+        <ul class="legend">
+          <li><span class="sw line c-rr"></span>Round-robin</li>
+          <li><span class="sw line c-kv"></span>KV router, defaults</li>
+          <li><span class="sw line c-aff"></span>KV router with session affinity</li>
+        </ul>
+        <details class="tbl" id="pool-slices"><summary><span class="show">Show table: prefix reuse on the 100-trial slices</span><span class="hide">Hide table</span></summary>
+          <div class="tablewrap"><table data-table="poolslices"><thead></thead><tbody></tbody></table></div>
+        </details>
+      </figure>
+
+      <p>Before the full replay, 39 pilot replays varied the pool size from 4 to 32 workers on two runs and on the first 100 trials of each: a Hermes run recorded on flint (526 trials, 84,444 requests, 273 trials at peak) and an OpenClaw run recorded on GLM-5.3-Flash (528 trials, 92,744 requests, 155 trials at peak). Both replay on the GLM-5.3-Flash target. These pilot traces leave out trials on 22 tasks that a separate analysis was holding back at the time, about 11% of each run's trials.</p>
+      <ul class="plain">
+        <li><b>Session affinity serves the Hermes run on half the GPUs.</b> On 8 GPUs with affinity, p99 TTFT is 889 ms, prefill is 130.4M tokens and the median trial takes 51.4 minutes. On 16 GPUs, the default KV router gives 5.0 s, 838.1M tokens and 54.9 minutes.</li>
+        <li><b>More workers make the default KV router worse on the OpenClaw run.</b> Prefill rises from 157.4M tokens on 4 workers to 276.9M on 8. With affinity it stays at 41.5M and 41.6M.</li>
+        <li><b>Round-robin loses reuse with every doubling of the pool.</b> From 4 to 32 workers on the 100-trial slices, its prefill grows from 18.7M to 125.5M tokens for OpenClaw and from 76.8M to 457.3M for Hermes. Affinity holds at 5.2M and at 19.6M to 21.0M.</li>
+        <li><b>Raising <code>prefill_load_scale</code> closes most of the gap on the Hermes run.</b> Prefix reuse goes from 90.0% at the default to 96.3% at 4 and 98.0% at 16, against affinity's 98.6%.</li>
+        <li><b>The reuse bound matters.</b> A trace of the OpenClaw run that treats the provider's own cache misses as prompt changes doubles prefill under the default KV router: 337.7M against 157.4M tokens.</li>
+      </ul>
+
+      <figure class="fig" id="fig-12">
+        <figcaption>
+          <h4 class="fig-t"><span class="fig-n">Fig. 12</span><span data-title="pilotfull">The two pilot runs in full, by pool size and router</span></h4>
+          <p class="fig-d">The 99th-percentile TTFT on a logarithmic scale with the 2 s bound marked, and prefill tokens in millions. The <code>prefill_load_scale</code> settings were run on 8 GPUs only.</p>
+        </figcaption>
+        <div class="panels">
+          <div>
+            <h4 class="ptitle" id="pilot-hermes">Hermes run on flint, full trace<a class="anchor" href="#pilot-hermes" aria-label="Link to Hermes run">#</a></h4>
+            <div class="chart" data-chart="pilotfull" data-trace="hermes_run"></div>
+            <details class="tbl"><summary><span class="show">Show table</span><span class="hide">Hide table</span></summary>
+              <div class="tablewrap"><table data-table="pilot" data-trace="hermes_run"><thead></thead><tbody></tbody></table></div>
+            </details>
+            <p class="note">For context, the flint endpoint's recorded median trial took 48.5 minutes, with a p99 time to first byte of 51.8 seconds. Its hardware is unknown, so that record does not calibrate the simulator.</p>
+          </div>
+          <div>
+            <h4 class="ptitle" id="pilot-openclaw">OpenClaw run on GLM-5.3-Flash, full trace<a class="anchor" href="#pilot-openclaw" aria-label="Link to OpenClaw run">#</a></h4>
+            <div class="chart" data-chart="pilotfull" data-trace="openclaw_run"></div>
+            <details class="tbl"><summary><span class="show">Show table</span><span class="hide">Hide table</span></summary>
+              <div class="tablewrap"><table data-table="pilot" data-trace="openclaw_run"><thead></thead><tbody></tbody></table></div>
+            </details>
+          </div>
+        </div>
+        <ul class="legend">
+          <li><span class="sw c-rr"></span>Round-robin</li>
+          <li><span class="sw c-kv"></span>KV router, defaults</li>
+          <li><span class="sw c-kvp16" style="opacity:0.5"></span>KV router, prefill_load_scale 4</li>
+          <li><span class="sw c-kvp16"></span>KV router, prefill_load_scale 16</li>
+          <li><span class="sw c-aff"></span>KV router with session affinity</li>
+        </ul>
+        <p class="cav">Modeled timing. <a href="#limit-1">Limit 1</a></p>
+      </figure>
+    </div>
+  </section>
+
+  <section id="endpoint-cache" class="row" aria-labelledby="endpoint-cache-h">
+    <div class="rail"><h3 id="endpoint-cache-h">A real endpoint losing its cache under load<a class="anchor" href="#endpoint-cache" aria-label="Link to A real endpoint losing its cache under load">#</a></h3></div>
+    <div class="body">
+      <figure class="fig" id="fig-13">
+        <figcaption>
+          <h4 class="fig-t"><span class="fig-n">Fig. 13</span><span data-title="timeline">The flint endpoint's cached share over one night</span></h4>
+          <p class="fig-d">flint endpoint, 30-minute buckets, 2026-11-09 16:00 to 2026-11-10 06:00 UTC. Top: share of prompt tokens the provider served from cache, and the share an append-only context could reuse. Bottom: trials with a call in flight or between calls. The trial count covers only part of the endpoint's traffic, so it is a lower bound.</p>
+        </figcaption>
+        <div class="chart" data-chart="timeline"></div>
+        <ul class="legend">
+          <li><span class="sw line c-ink"></span>Served from cache by the provider</li>
+          <li><span class="sw line c-neutral"></span>Reusable with an append-only context</li>
+          <li><span class="sw c-neutral"></span>Active trials</li>
+        </ul>
+        <details class="tbl"><summary><span class="show">Show table</span><span class="hide">Hide table</span></summary>
+          <div class="tablewrap tall"><table data-table="timeline"><thead></thead><tbody></tbody></table></div>
+        </details>
+      </figure>
+      <p>The per-call logs record how many prompt tokens each provider served from its own cache. On DeepInfra's DeepSeek-V4.1-Flash endpoint, all 15 harness versions got 97.2-99.1% of prompt tokens from cache, and the provider recomputed at most 0.9% of the prefix an append-only context could reuse. On the Ripple-65B-Preview endpoint it recomputed 0.1-6.0% by harness, and on zai-org's GLM-5.3-Flash endpoint 0.1-21.4%, the most for Qwen Code. The flint endpoint recomputed far more: Kimi Code on flint got 53.1% of prompt tokens from cache against 99.0% reusable, and Hermes on flint got 73.2%.</p>
+      <p>The flint endpoint shows when that happened. Through 22:00 UTC on 2026-11-09, with up to 229 trials active, it served 93.8-99.8% of prompt tokens from cache. At 22:30 two runs overlapped and active trials reached 448; the cached share fell to 88.0%. It stayed between 49.6% and 79.2% until 03:00, then fell to 13.9% at 04:30 with 80 trials active. The reusable share stayed between 95.9% and 99.5% throughout. The logs cannot show the provider's internals. The pattern is consistent with a pool that grew under load and routes without regard to cached prefixes.</p>
+      <p class="note">The buckets are in <a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/results/full/endpoint-timeline.md">results/full/endpoint-timeline.md</a>, and the per-harness table in <a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/results/full/provider-cache-gap.md">results/full/provider-cache-gap.md</a>. Both cover all 70,138 original trials.</p>
+    </div>
+  </section>
+
+  <section id="native-check" class="row" aria-labelledby="native-check-h">
+    <div class="rail"><h3 id="native-check-h">Native DeepSeek-V4.1-Flash cross-check<a class="anchor" href="#native-check" aria-label="Link to Native cross-check">#</a></h3></div>
+    <div class="body">
+      <figure class="fig" id="fig-14">
+        <figcaption>
+          <h4 class="fig-t"><span class="fig-n">Fig. 14</span><span data-title="native">One run on two simulated targets</span></h4>
+          <p class="fig-d" data-title="native-d">The same DeepSeek run replayed on simulated DeepSeek-V4.1-Flash and on the GLM-5.3-Flash target used everywhere else on this page. Prefill tokens in millions, and the 99th-percentile TTFT with the 2 s bound marked.</p>
+        </figcaption>
+        <div class="chart" data-chart="native"></div>
+        <ul class="legend">
+          <li><span class="sw dot c-ink"></span>Native DeepSeek-V4.1-Flash target</li>
+          <li><span class="sw ring c-ink"></span>GLM-5.3-Flash target</li>
+          <li>Marks take the router's color</li>
+        </ul>
+        <p class="cav">Modeled timing. <a href="#limit-1">Limit 1</a></p>
+        <details class="tbl"><summary><span class="show">Show table</span><span class="hide">Hide table</span></summary>
+          <div class="tablewrap"><table data-table="native"><thead></thead><tbody></tbody></table></div>
+          <p class="note">The native replay. The same run on the GLM-5.3-Flash target is in the per-run table under <a href="#fig-8">Fig. 8</a>.</p>
+        </details>
+      </figure>
+      <p>Run <code>20261108-105222-deepseek-v4-1-flash-full-high-f9c1</code> (1,170 trials, 96,583 requests, 38 trials at peak) also replayed on simulated DeepSeek-V4.1-Flash itself: four workers of four B300 GPUs. The routers rank the same way as on the GLM-5.3-Flash target. Simulated decode averages 57-62 ms per token under every router, above the 50 ms bound, so 1.2-1.4% of requests meet the SLA. That is why the main replay projects DeepSeek traffic onto GLM-5.3-Flash.</p>
+    </div>
+  </section>
+
+  <section id="slice-check" class="row" aria-labelledby="slice-check-h">
+    <div class="rail"><h3 id="slice-check-h">Slice check<a class="anchor" href="#slice-check" aria-label="Link to Slice check">#</a></h3></div>
+    <div class="body">
+      <figure class="fig" id="fig-15">
+        <figcaption>
+          <h4 class="fig-t"><span class="fig-n">Fig. 15</span><span data-title="slices">Sliced replays against full replays</span></h4>
+          <p class="fig-d">Three runs that have both a full replay and a replay recombined from six slices. Each dot is one router: the sliced value relative to the full value, where 0% means the two agree.</p>
+        </figcaption>
+        <div class="chart" data-chart="slices"></div>
+        <ul class="legend">
+          <li><span class="sw dot c-rr"></span>Round-robin</li>
+          <li><span class="sw dot c-kv"></span>KV router, defaults</li>
+          <li><span class="sw dot c-kvp16"></span>KV router, prefill_load_scale 16</li>
+          <li><span class="sw dot c-aff"></span>KV router with session affinity</li>
+        </ul>
+        <details class="tbl"><summary><span class="show">Show table</span><span class="hide">Hide table</span></summary>
+          <div class="tablewrap"><table data-table="slices"><thead></thead><tbody></tbody></table></div>
+        </details>
+      </figure>
+      <p>A run predicted to take more than 40 minutes per replay is split into consecutive slices of trials and recombined. 14 runs in the results above use recombined slices, 2 to 12 each. Three long runs at low concurrency have both a full replay and a six-slice replay. On those three, the sliced and full replays agree within 0.1 points of prefix reuse, 3.9% of prefill and 0.1 points of SLA attainment. Sliced p99 TTFT runs up to 25% higher because it takes the worst slice.</p>
+    </div>
+  </section>
+</section>
+
+<section id="method" aria-labelledby="method-h">
+  <div class="row major">
+    <div class="rail"><h2 id="method-h">Method<a class="anchor" href="#method" aria-label="Link to Method">#</a></h2></div>
+    <div class="body">
+      <figure class="fig" id="fig-16">
+        <figcaption>
+          <h3 class="fig-t"><span class="fig-n">Fig. 16</span>From the public bucket to the tables on this page</h3>
+          <p class="fig-d">The pipeline, with what each stage keeps. The sections below describe each stage.</p>
+        </figcaption>
+        <div class="chart" data-chart="pipeline"></div>
+      </figure>
+    </div>
+  </div>
+
+  <section id="data" class="row" aria-labelledby="data-h">
+    <div class="rail"><h3 id="data-h">Data<a class="anchor" href="#data" aria-label="Link to Data">#</a></h3></div>
+    <div class="body">
+      <p>The Harness Leaderboard is Joel Niklaus's public benchmark of coding-agent harnesses on open-weights models. Trials in its bucket carry a meter log (<code>agent/hlb-meter.jsonl</code>) with one row per model call: start time, time to first byte, latency, and input, cached, output and reasoning tokens. The replay traces are built from those logs and each trial's <code>config.json</code> alone. No prompt text, trajectory content or task result goes into a trace.</p>
+      <p>The data comes from one listing of the bucket on 2026-11-20, between 01:06 and 01:23 UTC on 2026-11-21. Original trials that were already originals in the 2026-11-12 listing were taken from that pass; the other 8,022 were read from the bucket. The listing holds runs with IDs dated 2026-10-16 to 2026-11-20. They call five endpoint families: DeepSeek-V4.1-Flash (91 runs), GLM-5.3-Flash served by zai-org (90), Ripple-65B-Preview (29), flint (28) and Inkling-2-Small (2).</p>
+      <figure class="fig" id="fig-17">
+        <figcaption>
+          <h4 class="fig-t"><span class="fig-n">Fig. 17</span><span data-title="calendar">Runs by the date in their ID, for each endpoint family</span></h4>
+          <p class="fig-d">Number of runs per day, by the date at the start of each run ID. One row per endpoint family, on one scale.</p>
+        </figcaption>
+        <div class="chart" data-chart="calendar"></div>
+        <details class="tbl"><summary><span class="show">Show table</span><span class="hide">Hide table</span></summary>
+          <div class="tablewrap"><table data-table="calendar"><thead></thead><tbody></tbody></table></div>
+        </details>
+      </figure>
+    </div>
+  </section>
+
+  <section id="trial-identity" class="row" aria-labelledby="trial-identity-h">
+    <div class="rail"><h3 id="trial-identity-h">Trial identity<a class="anchor" href="#trial-identity" aria-label="Link to Trial identity">#</a></h3></div>
+    <div class="body">
+      <p>Leaderboard runs reuse trials from earlier runs, so a run directory lists trials that did not execute in that run, and a copied trial's meter log carries the original run's timestamps. Replaying copies would count the same traffic several times. A trial's identity is the Xet hash of its meter log, or of its trajectory when the meter log is missing or under 256 bytes. The first trial that holds an identity, in run ID order, is the original.</p>
+      <figure class="fig" id="fig-18">
+        <figcaption>
+          <h4 class="fig-t"><span class="fig-n">Fig. 18</span><span data-title="funnel">From trial directories to replayable trials</span></h4>
+          <p class="fig-d">Every trial directory in the bucket listing, split by identity, and the original executions split by whether they made a successful model call. One scale.</p>
+        </figcaption>
+        <div class="chart" data-chart="funnel"></div>
+        <details class="tbl"><summary><span class="show">Show table</span><span class="hide">Hide table</span></summary>
+          <div class="tablewrap"><table data-table="scope"><thead></thead><tbody></tbody></table></div>
+        </details>
+      </figure>
+      <p>Every original has a meter log. The 70,138 originals span 240 runs and hold 6,947,564 successful calls. 215 of them made no successful call, which leaves 69,923 replayable trials.</p>
+    </div>
+  </section>
+
+  <section id="trace-conversion" class="row" aria-labelledby="trace-conversion-h">
+    <div class="rail"><h3 id="trace-conversion-h">Trace conversion<a class="anchor" href="#trace-conversion" aria-label="Link to Trace conversion">#</a></h3></div>
+    <div class="body">
+      <p><a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/scripts/hlb_to_agentic.py">hlb_to_agentic.py</a> converts a run's meter logs to Dynamo's agentic Mooncake v2 trace format (<code>schema: dynamo.agentic_mooncake</code>, <code>version: 2</code>, 64-token blocks).</p>
+      <ul class="plain">
+        <li><b>Plays and requests.</b> Each trial is one play and each successful call is one request, with <code>recorded_api_time_ms</code> from the logged latency.</li>
+        <li><b>Streams.</b> A call continues the idle stream whose last prompt it extends. A call that starts while that stream is busy, or whose prompt is shorter than every stream's (a compaction or a subagent), opens a new stream. Each stream is one session. In the 15,017 trials of the pilot extraction, calls overlap in at most 5% of cases (Oh My Pi) and prompts shrink in about 1%.</li>
+        <li><b>Dependencies.</b> A stream's next call depends on the completion of its previous call, delayed by the recorded gap, which is tool and harness time. A call also joins another stream that finished after its own predecessor. A new stream spawns from the latest completed call, or from the dispatch of an in-flight call.</li>
+        <li><b>Pacing.</b> Dependent requests are released on their dependencies alone, so an agent's next call moves with the simulated server's latency.</li>
+        <li><b>Prompt blocks.</b> Block hashes are built from token counts. A call reuses the whole prompt of its parent when it extends it, which models an append-only context. A trial's first call draws from one prefix chain shared by all trials of the same harness version: the system prompt and tool definitions.</li>
+      </ul>
+      <p>The append-only assumption is an upper bound on reuse, and it is the replay input. On DeepInfra's DeepSeek-V4.1-Flash endpoint the provider's cached share lands within a point of that bound for all 15 harness versions, which confirms that these harnesses grow their context by appending. The converter can also build a lower bound, where a call reuses only as many leading blocks as the provider reported cached. That bound encodes the provider's own cache misses as if the prompts had changed.</p>
+    </div>
+  </section>
+
+  <section id="replay-design" class="row" aria-labelledby="replay-design-h">
+    <div class="rail"><h3 id="replay-design-h">Replay design<a class="anchor" href="#replay-design" aria-label="Link to Replay design">#</a></h3></div>
+    <div class="body">
+      <ul class="plain">
+        <li><b>Target.</b> Every run replays on GLM-5.3-Flash FP8 served by vLLM 0.31.0 on B300 SXM, two GPUs per aggregated worker, with default KV capacity (90% memory fraction). GLM-5.3-Flash traffic replays natively. AISimulate has no model for flint or Ripple-65B-Preview, so their traffic is projected onto GLM-5.3-Flash. DeepSeek-V4.1-Flash traffic is projected too. Its measured B300 tables do not cover agent-sized attention shapes; the first miss was one request extending an 8,192-token cached prefix by 178 tokens. In AISimulate's <code>HYBRID</code> mode the missing shapes are priced with speed-of-light estimates, which put decode at 57-92 ms per token against DeepInfra's recorded 5.8 ms median, so every request would miss the inter-token bound. One DeepSeek run replays natively as a <a href="#native-check">cross-check</a>.</li>
+        <li><b>Pool size.</b> Workers = max(4, ceil(peak concurrent trials / 50)). Four workers are one 8-GPU node, so every run below 200 concurrent trials gets one node and a real routing decision. 992 of the 1,024 replays used four workers and the rest five to eight.</li>
+        <li><b>Endpoint windows.</b> <a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/scripts/make_windows.py">make_windows.py</a> groups runs by the endpoint they called and merges runs whose active spans overlapped, which rebuilds the load each endpoint carried.</li>
+        <li><b>Compute.</b> A unit whose original trials had not changed since the 2026-11-12 listing keeps its replay from that pass; a rebuilt replay matches the stored one field for field. The other 544 replays, slices included, ran in two and a half hours on one 88-vCPU and two 176-vCPU machines, one core per replay. Simulation time tracks decode steps more than request count.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="routers" class="row" aria-labelledby="routers-h">
+    <div class="rail"><h3 id="routers-h">Routers<a class="anchor" href="#routers" aria-label="Link to Routers">#</a></h3></div>
+    <div class="body">
+      <p>Each replay sets one of four router configurations on the same base configuration:</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th class="l">Router</th><th class="l">Simulator setting</th></tr></thead>
+        <tbody>
+          <tr><td class="l"><span class="sw c-rr"></span>Round-robin</td><td class="l wrap"><code>router.policy=round_robin</code></td></tr>
+          <tr><td class="l"><span class="sw c-kv"></span>KV router, defaults</td><td class="l wrap"><code>router.policy=kv_router</code></td></tr>
+          <tr><td class="l"><span class="sw c-kvp16"></span>KV router, prefill_load_scale 16</td><td class="l wrap"><code>router.policy=kv_router</code>, <code>router.prefill_load_scale=16</code></td></tr>
+          <tr><td class="l"><span class="sw c-aff"></span>KV router with session affinity</td><td class="l wrap"><code>router.policy=kv_router</code>, <code>router.conversation_affinity={mode: session, ttl_seconds: 300}</code></td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section id="sla" class="row" aria-labelledby="sla-h">
+    <div class="rail"><h3 id="sla-h">SLA definition<a class="anchor" href="#sla" aria-label="Link to SLA definition">#</a></h3></div>
+    <div class="body">
+      <p>The base configuration sets <code>evaluation.sla</code> to <code>ttft_ms: 2000</code> and <code>itl_ms: 50</code>. AISimulate counts the requests that meet both bounds (its goodput count). A replay meets the SLA when at least 99% of its requests do. "Runs meeting SLA" counts replays, and "requests meeting SLA" is the share of all requests in a group.</p>
+    </div>
+  </section>
+
+  <section id="simulator" class="row" aria-labelledby="simulator-h">
+    <div class="rail"><h3 id="simulator-h">Simulator<a class="anchor" href="#simulator" aria-label="Link to Simulator">#</a></h3></div>
+    <div class="body">
+      <p>The replays ran on Dynamo commit <code>3e84909a</code> (ai-dynamo 1.7.0) with the AISimulate release it pins, <code>0.13.0.dev202610290000000087</code>. Dynamo's Python bindings were built with <code>--features ais-forward-pass</code>, which operator-level timing needs. The configuration sets <code>estimation_mode: op_level</code> and <code>enable_shared_layer: false</code>. The published GLM-5.3-Flash whole-forward profiles are 360-point calibration grids, and agent prefills fall outside them: the first failure was one request prefilling 7,962 new tokens on a short cached prefix. Operator-level timing prices any shape from per-kernel measurements. The base configuration is <a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/scripts/sim/glm-b300-op.yaml">scripts/sim/glm-b300-op.yaml</a>.</p>
+    </div>
+  </section>
+</section>
+
+<section id="maintainer-notes" class="row major" aria-labelledby="maintainer-notes-h">
+  <div class="rail"><h2 id="maintainer-notes-h">Notes for Dynamo and AISimulate maintainers<a class="anchor" href="#maintainer-notes" aria-label="Link to Notes for maintainers">#</a></h2></div>
+  <div class="body">
+    <p>The work turned up four technical points, written up in <a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/docs/upstream-notes.md">upstream-notes.md</a>. The issues and pull request filed from them are listed in the repository's <a href="https://github.com/kumanday/dynamo-agent-traffic#upstream">Upstream section</a>.</p>
+    <ul class="plain">
+      <li>Dynamo's replay runner does not advertise engine model controls, so <code>--stack dynamo</code> rejects <code>kvcache_quant_mode</code> and <code>fmha_quant_mode</code>. A small patch forwards them.</li>
+      <li>The KV router's default cost gives up long cached prefixes on agent traffic, with the numbers from this study and three possible directions.</li>
+      <li>Harness Leaderboard meter logs convert to agentic Mooncake v2 traces, with a description of the converter.</li>
+      <li>The <code>aisimulate predict</code> supervisor used about 41% of a core per replay in a 160-replay sweep, SIGTERM left execution processes running, and the 60-second initialization timeout was too short for large traces.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="files" class="row major" aria-labelledby="files-h">
+  <div class="rail"><h2 id="files-h">Tables and code<a class="anchor" href="#files" aria-label="Link to Tables and code">#</a></h2></div>
+  <div class="body">
+    <ul class="plain">
+      <li><a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/results/full/RESULTS.md">results/full/RESULTS.md</a>: every table of the full replay, including each traffic source under all four routers.</li>
+      <li><a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/results/full/units.csv">results/full/units.csv</a>: one row per run or window and router. <a href="https://github.com/kumanday/dynamo-agent-traffic/tree/main/results/full">results/full</a> also holds the aggregates as JSON, the provider cache tables, the endpoint timeline and every replay's summary and configuration.</li>
+      <li><a href="https://github.com/kumanday/dynamo-agent-traffic/tree/main/results/pilot">results/pilot</a>: the 39 pilot replays, with the provider cache tables and endpoint timeline of the pilot extraction.</li>
+      <li><a href="https://github.com/kumanday/dynamo-agent-traffic/tree/main/scripts">scripts</a>: the pipeline, from the public bucket to these tables.</li>
+      <li><a href="https://github.com/kumanday/dynamo-agent-traffic/tree/main/report/data">report/data</a>: the JSON files this page draws from, built from the tables by <a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/scripts/build_report_data.py">build_report_data.py</a>.</li>
+    </ul>
+    <p class="note">The repository holds aggregates only. It contains no meter logs, no per-call records and no prompt text. The code, tables and page are under the <a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/LICENSE">MIT License</a>. The dataset stays under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>.</p>
+  </div>
+</section>
+
+<section id="cite" class="row major" aria-labelledby="cite-h">
+  <div class="rail"><h2 id="cite-h">How to cite or link<a class="anchor" href="#cite" aria-label="Link to How to cite or link">#</a></h2></div>
+  <div class="body">
+    <p class="cite">Leonardo Gonzalez. "Dynamo replay of Harness Leaderboard agent traffic." Adaptive Systems Research Institute, 2026-11-20. https://adaptivesystems.institute/publications/dynamo-agent-traffic/</p>
+    <p>Every heading on this page has a stable anchor. Link to a section by its id, for example <a href="#limits">https://adaptivesystems.institute/publications/dynamo-agent-traffic/#limits</a>, or to one finding or limit, for example <a href="#finding-3">#finding-3</a> and <a href="#limit-2">#limit-2</a>. Figures are numbered and have anchors too, for example <a href="#fig-7">#fig-7</a>.</p>
+  </div>
+</section>
+
+<section id="credits" class="row major" aria-labelledby="credits-h">
+  <div class="rail"><h2 id="credits-h">Credits<a class="anchor" href="#credits" aria-label="Link to Credits">#</a></h2></div>
+  <div class="body">
+    <p>Study by <a href="https://github.com/kumanday">Leonardo Gonzalez</a>. The traffic comes from the <a href="https://huggingface.co/buckets/joelniklaus/harness-leaderboard">Harness Leaderboard dataset</a> (<code>joelniklaus/harness-leaderboard</code>), which Joel Niklaus publishes with the <a href="https://huggingface.co/spaces/joelniklaus/harness-leaderboard">Harness Leaderboard</a> under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>. The simulator is NVIDIA's <a href="https://github.com/ai-dynamo/dynamo">Dynamo</a> with <a href="https://github.com/ai-dynamo/aisim">AISimulate</a>.</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-foot wrap">
+  <span><a href="https://github.com/kumanday">Leonardo Gonzalez</a></span>
+  <span>Published 2026-11-20</span>
+  <span><a href="https://github.com/kumanday/dynamo-agent-traffic">github.com/kumanday/dynamo-agent-traffic</a></span>
+</footer>
+
+<noscript><p>The charts and tables on this page are drawn from the JSON files in data/ and need JavaScript. Every table is also in results/full/RESULTS.md in the repository.</p></noscript>
+
+<script src="assets/report.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+cff-version: 1.2.0
+message: "If you use this study, its code or its results, please cite it as below."
+type: software
+title: "Dynamo replay of Harness Leaderboard agent traffic"
+abstract: >-
+  Every original trial of the Harness Leaderboard dataset as listed on
+  2026-11-20 (240 runs, 69,923 replayable trials, 6,947,564 model calls),
+  converted to agentic Mooncake v2 traces and replayed through NVIDIA Dynamo's
+  simulator under four routers on B300 TP2 workers. In simulation, the default
+  KV router prefills 26.6B tokens and misses a 2 s TTFT / 50 ms ITL SLA on 29
+  runs; session affinity prefills 8.9B tokens and meets it on all 240. The
+  timing is modeled, and no request ran on a GPU.
+authors:
+  - family-names: Gonzalez
+    given-names: Leonardo
+date-released: 2026-11-20
+license: MIT
+repository-code: "https://github.com/kumanday/dynamo-agent-traffic"
+url: "https://adaptivesystems.institute/publications/dynamo-agent-traffic/"
+keywords:
+  - NVIDIA Dynamo
+  - LLM inference
+  - KV cache
+  - prefix caching
+  - request routing
+  - coding agents
+  - trace replay
+  - simulation
+references:
+  - type: data
+    title: "Harness Leaderboard"
+    authors:
+      - family-names: Niklaus
+        given-names: Joel
+    url: "https://huggingface.co/spaces/joelniklaus/harness-leaderboard"
+    repository: "https://huggingface.co/buckets/joelniklaus/harness-leaderboard"
+    license: Apache-2.0
+  - type: software
+    title: "Dynamo"
+    authors:
+      - name: "NVIDIA Corporation"
+    repository-code: "https://github.com/ai-dynamo/dynamo"
+    license: Apache-2.0
+  - type: software
+    title: "AISimulate"
+    authors:
+      - name: "NVIDIA Corporation"
+    repository-code: "https://github.com/ai-dynamo/aisim"
+    license: Apache-2.0

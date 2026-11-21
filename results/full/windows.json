@@ -4,9 +4,20 @@
   "endpoint": "zai-org/GLM-5.3-Flash:zai-org",
   "runs": [
    "20261018-191100-glm-5-3-flash-full-low-3c31",
-   "20261018-191102-glm-5-3-flash-full-high-0df9"
+   "20261018-191102-glm-5-3-flash-full-high-0df9",
+   "20261016-172936-glm-5-3-flash-smoke-0c8d",
+   "20261016-172935-glm-5-3-flash-smoke-b2d4",
+   "20261016-173803-glm-5-3-flash-smoke-6872",
+   "20261016-173804-glm-5-3-flash-smoke-7670",
+   "20261017-075832-glm-5-3-flash-smoke-max-b30f",
+   "20261017-102534-glm-5-3-flash-pilot-low-a5dc",
+   "20261017-102536-glm-5-3-flash-pilot-high-6e21",
+   "20261017-211004-glm-5-3-flash-smoke-high-0771",
+   "20261017-211003-glm-5-3-flash-smoke-low-b5b8",
+   "20261018-015149-glm-5-3-flash-pilot-high-d5c1",
+   "20261018-015148-glm-5-3-flash-pilot-low-3420"
   ],
-  "trials": 8567,
+  "trials": 8981,
   "start": 1792171801.476,
   "end": 1792453799.876
  },
@@ -20,6 +31,17 @@
   "trials": 26,
   "start": 1792755349.531,
   "end": 1792775045.44
+ },
+ {
+  "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261027-1636",
+  "endpoint": "zai-org/GLM-5.3-Flash:zai-org",
+  "runs": [
+   "20261027-163448-glm-5-3-flash-full-high-55ed",
+   "20261027-163446-glm-5-3-flash-full-low-789a"
+  ],
+  "trials": 761,
+  "start": 1793118980.525,
+  "end": 1793123327.745
  },
  {
   "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261029-1014",
@@ -53,14 +75,12 @@
    "20261107-174211-glm-5-3-flash-smoke-low-94ee",
    "20261107-183414-glm-5-3-flash-full-high-38f4",
    "20261107-183314-glm-5-3-flash-full-low-b96c",
-   "20261107-190253-glm-5-3-flash-full-low-ca3e",
-   "20261107-190354-glm-5-3-flash-full-high-17a2",
    "20261107-202939-glm-5-3-flash-smoke-low-eedb",
    "20261107-205835-glm-5-3-flash-full-low-de4d",
    "20261107-205922-glm-5-3-flash-full-high-f31a",
    "20261107-222408-glm-5-3-flash-smoke-low-e03d"
   ],
-  "trials": 3904,
+  "trials": 2706,
   "start": 1794052814.689,
   "end": 1794103833.211
  },
@@ -70,11 +90,10 @@
   "runs": [
    "20261108-063145-glm-5-3-flash-full-low-74a5",
    "20261108-063149-glm-5-3-flash-full-high-3057",
-   "20261108-064417-glm-5-3-flash-pilot-low-a1ee",
    "20261108-064404-glm-5-3-flash-pilot-low-71d5",
    "20261108-064415-glm-5-3-flash-smoke-low-2e0b"
   ],
-  "trials": 2447,
+  "trials": 2397,
   "start": 1794119555.639,
   "end": 1794141924.013
  },
@@ -95,19 +114,16 @@
   "runs": [
    "20261109-093716-glm-5-3-flash-full-high-eb54",
    "20261109-093711-glm-5-3-flash-full-low-bfde",
-   "20261109-100621-glm-5-3-flash-smoke-low-f8da",
-   "20261109-115559-glm-5-3-flash-full-high-5230",
    "20261109-110747-glm-5-3-flash-full-high-3cc9",
    "20261109-113239-glm-5-3-flash-full-high-e1b4",
    "20261109-113343-glm-5-3-flash-full-low-d4d8",
    "20261109-111048-glm-5-3-flash-full-low-e58b",
-   "20261109-131828-glm-5-3-flash-full-low-fa07",
    "20261109-152017-glm-5-3-flash-full-low-8deb",
    "20261109-152128-glm-5-3-flash-full-low-54c5",
    "20261109-152132-glm-5-3-flash-full-high-9f93",
    "20261109-152901-glm-5-3-flash-full-high-ccf0"
   ],
-  "trials": 2765,
+  "trials": 1566,
   "start": 1794217129.481,
   "end": 1794241974.4520001
  },
@@ -119,39 +135,22 @@
    "20261109-164158-glm-5-3-flash-full-high-d293",
    "20261109-165223-glm-5-3-flash-full-high-6f80",
    "20261109-165214-glm-5-3-flash-full-low-c6f3",
-   "20261109-170028-glm-5-3-flash-full-high-3bef",
    "20261109-165241-glm-5-3-flash-full-high-ebdd",
-   "20261109-170023-glm-5-3-flash-full-low-cbc6",
    "20261109-165232-glm-5-3-flash-full-low-9d42",
    "20261109-190139-glm-5-3-flash-full-low-1560",
    "20261109-190150-glm-5-3-flash-full-high-6dde",
    "20261109-220819-glm-5-3-flash-full-low-a654",
-   "20261109-220856-glm-5-3-flash-full-low-f9f9",
-   "20261109-220911-glm-5-3-flash-full-high-8c20",
-   "20261109-220936-glm-5-3-flash-full-high-1eda",
    "20261109-220831-glm-5-3-flash-full-high-5a07",
    "20261109-221014-glm-5-3-flash-full-high-3c08",
    "20261109-220954-glm-5-3-flash-full-low-f313",
-   "20261109-220922-glm-5-3-flash-full-low-887d",
    "20261109-192407-glm-5-3-flash-full-high-2936",
    "20261109-232842-glm-5-3-flash-full-high-8a28",
    "20261109-234930-glm-5-3-flash-full-low-1ace",
    "20261110-004920-glm-5-3-flash-full-high-4268"
   ],
-  "trials": 3697,
+  "trials": 3636,
   "start": 1794242593.635,
   "end": 1794275557.825
- },
- {
-  "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261110-0814",
-  "endpoint": "zai-org/GLM-5.3-Flash:zai-org",
-  "runs": [
-   "20261110-081223-glm-5-3-flash-full-low-efe6",
-   "20261110-082921-glm-5-3-flash-full-high-8e46"
-  ],
-  "trials": 4,
-  "start": 1794298454.617,
-  "end": 1794304907.027
  },
  {
   "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261110-2353",
@@ -187,13 +186,57 @@
   "end": 1794439509.304
  },
  {
+  "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261114-1022",
+  "endpoint": "zai-org/GLM-5.3-Flash:zai-org",
+  "runs": [
+   "20261114-100600-glm-5-3-flash-full-low-60b4",
+   "20261114-100617-glm-5-3-flash-full-high-2e5b"
+  ],
+  "trials": 25,
+  "start": 1794651724.472,
+  "end": 1794658389.914
+ },
+ {
+  "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261114-1241",
+  "endpoint": "zai-org/GLM-5.3-Flash:zai-org",
+  "runs": [
+   "20261114-123940-glm-5-3-flash-full-low-28f8",
+   "20261114-123950-glm-5-3-flash-full-high-de45"
+  ],
+  "trials": 23,
+  "start": 1794660075.971,
+  "end": 1794665193.604
+ },
+ {
+  "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261115-2320",
+  "endpoint": "zai-org/GLM-5.3-Flash:zai-org",
+  "runs": [
+   "20261115-231906-glm-5-3-flash-full-low-a898",
+   "20261115-231927-glm-5-3-flash-full-high-32b6"
+  ],
+  "trials": 1190,
+  "start": 1794784858.043,
+  "end": 1794803133.46
+ },
+ {
+  "unit": "endpoint-zai-org-glm-5-3-flash-zai-org-20261119-1129",
+  "endpoint": "zai-org/GLM-5.3-Flash:zai-org",
+  "runs": [
+   "20261119-112815-glm-5-3-flash-full-high-a160",
+   "20261119-112903-glm-5-3-flash-full-low-4089"
+  ],
+  "trials": 36,
+  "start": 1795087758.159,
+  "end": 1795093238.5019999
+ },
+ {
   "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-deepinfra-20261019-0254",
   "endpoint": "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
   "runs": [
    "20261020-011837-deepseek-v4-1-flash-full-low-7d5f",
    "20261020-011839-deepseek-v4-1-flash-full-high-23dc"
   ],
-  "trials": 8268,
+  "trials": 8282,
   "start": 1792378459.203,
   "end": 1792635636.361
  },
@@ -204,7 +247,7 @@
    "20261023-065049-deepseek-v4-1-flash-full-high-3d35",
    "20261023-065046-deepseek-v4-1-flash-full-low-92cb"
   ],
-  "trials": 19,
+  "trials": 20,
   "start": 1792740736.099,
   "end": 1792743004.277
  },
@@ -260,15 +303,13 @@
    "20261107-115718-deepseek-v4-1-flash-full-high-ee33",
    "20261107-183515-deepseek-v4-1-flash-full-low-573e",
    "20261107-183615-deepseek-v4-1-flash-full-high-4765",
-   "20261107-190454-deepseek-v4-1-flash-full-low-f967",
    "20261107-131035-deepseek-v4-1-flash-smoke-max-00eb",
-   "20261107-190514-deepseek-v4-1-flash-full-high-c6aa",
    "20261107-210227-deepseek-v4-1-flash-full-high-341e",
    "20261107-210054-deepseek-v4-1-flash-full-low-a24b"
   ],
-  "trials": 1017,
+  "trials": 666,
   "start": 1794052831.313,
-  "end": 1794125144.5909998
+  "end": 1794124642.567
  },
  {
   "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-deepinfra-20261108-0915",
@@ -278,8 +319,6 @@
    "20261108-081256-deepseek-v4-1-flash-full-high-9df8",
    "20261108-081736-deepseek-v4-1-flash-full-high-d38d",
    "20261108-081551-deepseek-v4-1-flash-full-low-6c62",
-   "20261108-081952-deepseek-v4-1-flash-full-low-1e11",
-   "20261108-091527-deepseek-v4-1-flash-full-high-f9b1",
    "20261109-010940-deepseek-v4-1-flash-full-low-2547",
    "20261109-071012-deepseek-v4-1-flash-full-low-e0fc",
    "20261108-105204-deepseek-v4-1-flash-full-low-d650",
@@ -295,17 +334,11 @@
    "20261109-153709-deepseek-v4-1-flash-full-high-88e5",
    "20261109-174434-deepseek-v4-1-flash-full-low-afa3",
    "20261109-164117-deepseek-v4-1-flash-full-low-6672",
-   "20261109-111741-deepseek-v4-1-flash-full-high-40d6",
-   "20261109-111633-deepseek-v4-1-flash-full-low-bd89",
    "20261109-164104-deepseek-v4-1-flash-full-high-1a2f",
    "20261109-213916-deepseek-v4-1-flash-full-high-80fb",
    "20261109-220732-deepseek-v4-1-flash-full-low-d1a0",
    "20261109-223043-deepseek-v4-1-flash-full-high-695c",
-   "20261109-131915-deepseek-v4-1-flash-full-low-826a",
-   "20261109-132029-deepseek-v4-1-flash-full-high-7a07",
    "20261110-015037-deepseek-v4-1-flash-full-low-b146",
-   "20261109-210159-deepseek-v4-1-flash-full-low-a243",
-   "20261109-210211-deepseek-v4-1-flash-full-high-b12b",
    "20261109-161104-deepseek-v4-1-flash-full-low-0241",
    "20261109-161119-deepseek-v4-1-flash-full-high-acfd",
    "20261109-165543-deepseek-v4-1-flash-full-low-2d3d",
@@ -314,13 +347,11 @@
    "20261109-165657-deepseek-v4-1-flash-full-high-dae8",
    "20261109-165717-deepseek-v4-1-flash-full-low-4528",
    "20261109-165739-deepseek-v4-1-flash-full-high-de3f",
-   "20261110-080304-deepseek-v4-1-flash-full-high-5f69",
-   "20261110-081246-deepseek-v4-1-flash-full-low-eb5d",
    "20261110-083114-deepseek-v4-1-flash-full-high-af88",
    "20261110-083056-deepseek-v4-1-flash-full-low-0db4",
    "20261110-100133-deepseek-v4-1-flash-full-high-7357"
   ],
-  "trials": 8410,
+  "trials": 6293,
   "start": 1794129311.354,
   "end": 1794334122.75
  },
@@ -374,14 +405,11 @@
    "20261111-210609-deepseek-v4-1-flash-full-high-d4ef",
    "20261111-212259-deepseek-v4-1-flash-full-low-8ee8",
    "20261111-212119-deepseek-v4-1-flash-full-low-4e9d",
-   "20261111-212954-deepseek-v4-1-flash-full-low-88f1",
-   "20261111-213110-deepseek-v4-1-flash-full-high-c542",
-   "20261111-213146-deepseek-v4-1-flash-full-high-f721",
-   "20261111-213222-deepseek-v4-1-flash-full-low-cbe2"
+   "20261111-212954-deepseek-v4-1-flash-full-low-88f1"
   ],
-  "trials": 18,
+  "trials": 10,
   "start": 1794431375.221,
-  "end": 1794434726.315
+  "end": 1794433783.9889998
  },
  {
   "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-deepinfra-20261111-2226",
@@ -395,54 +423,96 @@
   "end": 1794440362.9950001
  },
  {
+  "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-deepinfra-20261115-2256",
+  "endpoint": "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+  "runs": [
+   "20261115-225425-deepseek-v4-1-flash-smoke-low-de32",
+   "20261115-225448-deepseek-v4-1-flash-smoke-high-a0c3"
+  ],
+  "trials": 12,
+  "start": 1794783367.283,
+  "end": 1794784615.336
+ },
+ {
+  "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-deepinfra-20261115-2323",
+  "endpoint": "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+  "runs": [
+   "20261115-232049-deepseek-v4-1-flash-full-low-74f3",
+   "20261115-232113-deepseek-v4-1-flash-full-high-d77f"
+  ],
+  "trials": 1176,
+  "start": 1794784995.803,
+  "end": 1794809571.678
+ },
+ {
+  "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-deepinfra-20261119-1126",
+  "endpoint": "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+  "runs": [
+   "20261119-112610-deepseek-v4-1-flash-full-high-0dd2",
+   "20261119-112649-deepseek-v4-1-flash-full-low-279d"
+  ],
+  "trials": 37,
+  "start": 1795087614.666,
+  "end": 1795093633.631
+ },
+ {
+  "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-deepinfra-20261119-1809",
+  "endpoint": "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+  "runs": [
+   "20261119-180846-deepseek-v4-1-flash-full-low-056c",
+   "20261119-180911-deepseek-v4-1-flash-full-high-f610"
+  ],
+  "trials": 14,
+  "start": 1795111791.69,
+  "end": 1795113729.254
+ },
+ {
   "unit": "endpoint-recursivesi-flint-20261107-1211",
   "endpoint": "RecursiveSI/flint",
   "runs": [
    "20261107-120231-flint-full-default-c62d",
    "20261107-190835-flint-full-default-3496",
-   "20261107-203634-flint-full-default-f98d",
    "20261108-063020-flint-full-default-9473"
   ],
-  "trials": 1895,
+  "trials": 1259,
   "start": 1794053518.408,
   "end": 1794145535.832
  },
  {
-  "unit": "endpoint-recursivesi-flint-20261108-1625",
+  "unit": "endpoint-recursivesi-flint-20261109-1713",
   "endpoint": "RecursiveSI/flint",
   "runs": [
-   "20261108-161905-flint-full-default-50fc",
-   "20261108-222008-flint-full-default-8c99"
-  ],
-  "trials": 1275,
-  "start": 1794155136.378,
-  "end": 1794202733.395
- },
- {
-  "unit": "endpoint-recursivesi-flint-20261109-0947",
-  "endpoint": "RecursiveSI/flint",
-  "runs": [
-   "20261109-093753-flint-full-default-e893",
-   "20261109-134300-flint-full-default-3e3a"
-  ],
-  "trials": 940,
-  "start": 1794217660.207,
-  "end": 1794242353.0479999
- },
- {
-  "unit": "endpoint-recursivesi-flint-20261109-1648",
-  "endpoint": "RecursiveSI/flint",
-  "runs": [
-   "20261109-163846-flint-full-default-0086",
    "20261109-170159-flint-full-default-61c2",
    "20261109-174517-flint-full-default-18c2",
    "20261109-193018-flint-full-default-6c10",
    "20261109-214507-flint-full-default-f9d0",
    "20261110-000042-flint-full-default-608f"
   ],
-  "trials": 1200,
-  "start": 1794242925.552,
+  "trials": 847,
+  "start": 1794244386.094,
   "end": 1794292515.974
+ },
+ {
+  "unit": "endpoint-recursivesi-flint-20261117-0907",
+  "endpoint": "RecursiveSI/flint",
+  "runs": [
+   "20261117-085218-flint-full-default-1880",
+   "20261117-161848-flint-full-default-9aa7"
+  ],
+  "trials": 643,
+  "start": 1794906470.717,
+  "end": 1794939850.7919998
+ },
+ {
+  "unit": "endpoint-recursivesi-flint-20261118-0813",
+  "endpoint": "RecursiveSI/flint",
+  "runs": [
+   "20261118-075805-flint-full-default-6ec4",
+   "20261118-081801-flint-full-default-abf2"
+  ],
+  "trials": 19,
+  "start": 1794989587.864,
+  "end": 1794992002.0479999
  },
  {
   "unit": "endpoint-ricursiveai-ripple-65b-preview-20261106-1743",
@@ -451,12 +521,11 @@
    "20261106-173114-ripple-65b-preview-full-default-0cf6",
    "20261107-163736-ripple-65b-preview-full-default-6412",
    "20261108-140249-ripple-65b-preview-full-default-0de0",
-   "20261108-223800-ripple-65b-preview-full-default-2f63",
-   "20261109-071139-ripple-65b-preview-full-default-cea2"
+   "20261108-223800-ripple-65b-preview-full-default-2f63"
   ],
-  "trials": 4856,
+  "trials": 4244,
   "start": 1793987008.826,
-  "end": 1794236904.963
+  "end": 1794231268.119
  },
  {
   "unit": "endpoint-ricursiveai-ripple-65b-preview-20261110-0020",
@@ -473,6 +542,19 @@
   "end": 1794314882.013
  },
  {
+  "unit": "endpoint-ricursiveai-ripple-65b-preview-20261115-1415",
+  "endpoint": "ricursiveAI/Ripple-65B-Preview",
+  "runs": [
+   "20261115-140852-ripple-65b-preview-full-default-6320",
+   "20261115-141419-ripple-65b-preview-pilot-default-10a4",
+   "20261115-210123-ripple-65b-preview-full-default-8980",
+   "20261115-230345-ripple-65b-preview-full-default-a57c"
+  ],
+  "trials": 1345,
+  "start": 1794752126.037,
+  "end": 1794835785.3500001
+ },
+ {
   "unit": "endpoint-deepseek-ai-deepseek-v4-1-flash-novita-20261111-1542",
   "endpoint": "deepseek-ai/DeepSeek-V4.1-Flash:novita",
   "runs": [
@@ -483,5 +565,16 @@
   "trials": 12,
   "start": 1794411736.304,
   "end": 1794412841.609
+ },
+ {
+  "unit": "endpoint-thinkingmachines-inkling-2-small-together-20261112-2233",
+  "endpoint": "thinkingmachines/Inkling-2-Small:together",
+  "runs": [
+   "20261112-223156-inkling-2-small-smoke-low-0c3c",
+   "20261112-223204-inkling-2-small-smoke-high-126a"
+  ],
+  "trials": 144,
+  "start": 1794522813.229,
+  "end": 1794538413.19
  }
 ]

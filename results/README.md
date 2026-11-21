@@ -6,19 +6,21 @@ Router codes: `rr` round-robin, `kv` KV router with defaults, `kvp4` and `kvp16`
 
 ## full/
 
-The full-dataset replay: 216 runs, 13 endpoint windows and one native DeepSeek-V4.1-Flash cross-check, each under four routers.
+The full-dataset replay: 240 runs, 16 endpoint windows and one native DeepSeek-V4.1-Flash cross-check, each under four routers.
 
 | File | Contents |
 | --- | --- |
 | `RESULTS.md` | Every table: all runs, each traffic source, each harness, the slice check, the endpoint windows and the native cross-check. Written by `scripts/aggregate_full.py`. |
 | `units.csv` | One row per unit and router. Columns below. |
 | `aggregate.json` | The totals behind `RESULTS.md`, by scope, with the list of units in each. |
-| `windows.json` | All 33 groups of runs that overlapped on one endpoint. The 13 that were replayed are the `window` rows of `units.csv`. |
-| `slice-check.json` | Full against six-slice replays for the five runs that have both. |
+| `windows.json` | All 43 groups of runs that overlapped on one endpoint. The 16 that were replayed are the `window` rows of `units.csv`. |
+| `slice-check.json` | Full against six-slice replays for the three runs that have both. |
 | `unit-stats.json` | Conversion statistics per unit: trials, requests, peak concurrent trials, token totals, provider cached share, reuse bounds, stream counts. |
-| `index-summary.json` | Trial directories, original executions and trials without an identity, for the first snapshot of the bucket (`base`) and the objects published after it (`delta`). |
-| `extract-summary.json` | Trials and calls extracted. `calls` counts every logged model call; 6,616,606 of them returned successfully with a non-empty prompt and are replayed. |
-| `replay-summaries.tgz` | `results/<unit>/<router>/config.yaml` for every replay and `summary.json` for every replay that finished, including the 36 slice units (`chunk-<run>-cNN`). The KV router, `prefill_load_scale` 16 and affinity full replays of the sliced flint run have a configuration only; their results come from the slices. Trace paths are relative. |
+| `index-summary.json` | The bucket listing (start and end time, size and file count) and, over it, trial directories, original executions, copies and trials without an identity. `runStatus` counts runs whose originals are new, unchanged, changed or removed against the 2026-11-12 pass. |
+| `assemble-summary.json` | Runs, original trials and calls in the meter files. `bySource` splits the trials into those taken from the 2026-11-12 pass (`previous`) and those read from the bucket (`fetched`). `calls` counts every logged model call; 6,947,564 of them returned successfully with a non-empty prompt and are replayed. |
+| `provider-cache-gap.md`, `provider-cache-gap-by-run.md` | Provider cached share against the append-only reusable prefix, by harness, model and provider, over all original trials. Written by `scripts/provider_gap.py`. |
+| `endpoint-timeline.md` | Provider cached share and active trials in 30-minute buckets for the flint and Ripple-65B-Preview endpoints, over all original trials. Written by `scripts/endpoint_timeline.py`. |
+| `replay-summaries.tgz` | `results/<unit>/<router>/config.yaml` for every replay and `summary.json` for every replay, including the 94 slice units (`chunk-<run>-cNN`). Trace paths are relative. |
 
 `units.csv` columns:
 
@@ -35,9 +37,9 @@ The full-dataset replay: 216 runs, 13 endpoint windows and one native DeepSeek-V
 | `goodput`, `goodputShare`, `completed` | Requests meeting 2 s TTFT and 50 ms ITL, their share, and completed requests. A unit meets the SLA at a share of 0.99 or more. |
 | `trialP50Min`, `trialP90Min` | Simulated trial duration in minutes. |
 | `gpuHours`, `wallSeconds` | Simulated GPU-hours, and the wall time of the replay itself. |
-| `replayedAs` | `full`, or `6 slices` for the run recombined from slices. |
+| `replayedAs` | `full`, or `N slices` for a run recombined from N slices. |
 
-The `sealed` counts in `index-summary.json` and `extract-summary.json` are trials on 22 tasks that a separate analysis kept unopened while the pilot ran. The full replay includes them.
+`sealedTrials` in `assemble-summary.json` counts trials on 22 tasks that a separate analysis kept unopened while the pilot ran. The full replay includes them.
 
 ## pilot/
 

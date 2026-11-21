@@ -1,0 +1,11 @@
+{
+ "runs": 240,
+ "trials": 70138,
+ "calls": 6947585,
+ "bySource": {
+  "previous": 62116,
+  "fetched": 8022
+ },
+ "lackingContent": 0,
+ "sealedTrials": 7544
+}

@@ -1,4 +1,4 @@
-/* Report page styles. Colour carries one of three meanings: a router (the four --r-* hues),
+/* Report page styles. Color carries one of three meanings: a router (the four --r-* hues),
    a caveat (the amber --cav-* family) or nothing (ink and paper). */
 :root {
   color-scheme: light;
@@ -178,7 +178,7 @@ dl.defs dd { margin: 0; color: var(--ink-2); }
 .panel li b { font-weight: 650; }
 .panel.limits code, .panel code { background: color-mix(in srgb, var(--ink) 9%, transparent); }
 
-/* Caveat marker used wherever a figure shows modelled timing */
+/* Caveat marker used wherever a figure shows modeled timing */
 .cav { position: relative; align-self: flex-start; font-size: 13.5px; line-height: 1.4; color: var(--ink); background: var(--cav-bg); padding: 5px 11px 5px 28px; border-radius: 3px; }
 .cav::before { content: ""; position: absolute; left: 11px; top: 10px; width: 8px; height: 8px; background: var(--cav-mark); transform: rotate(45deg); }
 

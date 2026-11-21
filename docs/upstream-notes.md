@@ -1,6 +1,6 @@
 # Technical notes for Dynamo and AISimulate maintainers
 
-Four observations from replaying Harness Leaderboard agent traffic through `aisimulate predict --stack dynamo`. The study and its limits are described in the [report](https://kumanday.github.io/dynamo-agent-traffic/docs/).
+Four observations from replaying Harness Leaderboard agent traffic through `aisimulate predict --stack dynamo`. The study and its limits are described in the [report](https://adaptivesystems.institute/publications/dynamo-agent-traffic/).
 
 Everything here was observed on Dynamo `3e84909a` (ai-dynamo 1.7.0) with the AISimulate release it pins, `0.13.0.dev202610290000000087`. The issue or pull request filed for each note is linked from the [README's Upstream section](../README.md#upstream).
 
@@ -33,7 +33,7 @@ Open question: does the Dynamo mocker apply every control in `ENGINE_MODEL_CONTR
 
 ## 2. Dynamo: the KV router gives up cached prefixes on long-context agent traffic
 
-Under load, the default KV router cost abandons 100k-token cached prefixes. On 6.6M agent requests, session affinity or `prefill_load_scale` 16 cuts prefill to about a third and SLA misses from 22 runs to 1.
+Under load, the default KV router cost abandons 100k-token cached prefixes. On 6.9M agent requests, session affinity or `prefill_load_scale` 16 cuts prefill to about a third and SLA misses from 29 runs to none.
 
 Setup: `aisimulate predict --stack dynamo`, GLM-5.3-Flash FP8 on B300 TP2 workers, vLLM 0.31.0, operator-level timing. The pilot traffic is two full Harness Leaderboard runs converted to agentic Mooncake v2 from per-call proxy logs: 84,444 and 92,744 requests, 526-528 coding-agent trials, 155-273 trials at peak, mean prompt about 100k tokens, closed-loop pacing with recorded tool gaps.
 
@@ -49,16 +49,16 @@ Hermes run, 4 workers (8 GPUs):
 
 With affinity, 8 GPUs beat the default KV router on 16 GPUs: p99 TTFT 889 ms against 5.0 s, and 130.4M against 838.1M prefill tokens. On the OpenClaw run, going from 4 to 8 workers raises default-router prefill from 157.4M to 276.9M tokens, while affinity stays at 41.5M and 41.6M.
 
-Across the whole leaderboard (216 runs, 68,905 trials, 6,616,606 requests per router, each run on at least one 8-GPU node):
+Across the whole leaderboard (240 runs, 69,923 trials, 6,947,564 requests per router, each run on at least one 8-GPU node):
 
 | Router | Prefill tokens | Runs meeting SLA | Endpoint windows meeting SLA |
 | --- | ---: | ---: | ---: |
-| Round-robin | 49.2B | 201 of 216 | 0 of 13 |
-| KV router (defaults) | 25.5B | 194 of 216 | 1 of 13 |
-| KV router, `prefill_load_scale` 16 | 8.7B | 215 of 216 | 13 of 13 |
-| KV router + session affinity | 8.3B | 215 of 216 | 13 of 13 |
+| Round-robin | 47.8B | 220 of 240 | 3 of 16 |
+| KV router (defaults) | 26.6B | 211 of 240 | 4 of 16 |
+| KV router, `prefill_load_scale` 16 | 9.2B | 240 of 240 | 16 of 16 |
+| KV router + session affinity | 8.9B | 240 of 240 | 16 of 16 |
 
-A replay meets the SLA when at least 99% of its requests are within 2 s TTFT and 50 ms ITL. In 21 runs the default router misses the SLA where affinity meets it, and no run goes the other way. The endpoint windows merge runs that loaded the same provider endpoint at the same time.
+A replay meets the SLA when at least 99% of its requests are within 2 s TTFT and 50 ms ITL. Affinity meets the SLA in all 240 runs, including the 29 the default router misses. The endpoint windows merge runs that loaded the same provider endpoint at the same time.
 
 Mechanism: the cost adds `prefill_load_scale × adjusted_prefill_blocks` to `potential_decode_blocks`. An active agent request carries about 1,500 blocks of context, so one or two extra long sessions on the cache-holding worker outweigh recomputing the whole prompt elsewhere. For hybrid or sparse-attention models such as GLM-5.3-Flash, decode cost also grows more slowly with context than the block count suggests.
 
@@ -80,7 +80,7 @@ The public `joelniklaus/harness-leaderboard` bucket records every model call of 
 - `hash_ids` synthesized from token counts, either append-only or bounded by the provider's cached count, with a shared per-harness system-prompt chain
 - `recorded_api_time_ms` from the logged latency
 
-Validation: on DeepInfra's DeepSeek-V4.1-Flash endpoint, the provider's cached share is within 0.5 points of the append-only reuse for all 12 harnesses. The converted OpenClaw run reproduces the provider's 98.8% cached share in the lower-bound trace and replays end to end on the Dynamo stack.
+Validation: on DeepInfra's DeepSeek-V4.1-Flash endpoint, the provider's cached share is within a point of the append-only reuse for all 15 harness versions. The converted OpenClaw run reproduces the provider's 98.8% cached share in the lower-bound trace and replays end to end on the Dynamo stack.
 
 AISimulate's documentation says trace converters belong in AISimulate. This converter is a single file with no dependency outside the Python standard library.
 

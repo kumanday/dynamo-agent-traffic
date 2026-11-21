@@ -1,21 +1,28 @@
 {
- "base": {
-  "trials": 79499,
-  "original": 52650,
-  "sealed": 8659,
-  "originalWithMeter": 52650,
-  "originalSealedWithMeter": 5730,
-  "withoutIdentity": 2351,
-  "runs": 110
+ "bucket": {
+  "listingStarted": "2026-11-21T01:06:15Z",
+  "listingFinished": "2026-11-21T01:23:31Z",
+  "before": {
+   "updatedAt": "2026-11-21T01:06:04.484Z",
+   "size": 882392014197,
+   "totalFiles": 6711239
+  },
+  "after": {
+   "error": "HTTP Error 429: Too Many Requests"
+  }
  },
- "delta": {
-  "trials": 69690,
-  "original": 16938,
-  "sealed": 7840,
-  "originalWithMeter": 16938,
-  "originalSealedWithMeter": 1921,
-  "withoutIdentity": 750,
-  "runs": 123
+ "trials": 147952,
+ "originals": 70138,
+ "originalsWithMeter": 70138,
+ "copies": 75082,
+ "noIdentity": 2732,
+ "runsWithOriginals": 240,
+ "runStatus": {
+  "new": 60,
+  "unchanged": 172,
+  "changed": 8,
+  "removed": 36
  },
- "runsInBoth": 11
+ "toFetch": 8022,
+ "reusedFromOld": 62116
 }
