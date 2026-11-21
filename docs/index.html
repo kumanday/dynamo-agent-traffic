@@ -571,7 +571,7 @@
 <section id="maintainer-notes" class="row major" aria-labelledby="maintainer-notes-h">
   <div class="rail"><h2 id="maintainer-notes-h">Notes for Dynamo and AISimulate maintainers<a class="anchor" href="#maintainer-notes" aria-label="Link to Notes for maintainers">#</a></h2></div>
   <div class="body">
-    <p>The work turned up four technical points, written up in <a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/docs/upstream-notes.md">upstream-notes.md</a>:</p>
+    <p>The work turned up four technical points, written up in <a href="https://github.com/kumanday/dynamo-agent-traffic/blob/main/docs/upstream-notes.md">upstream-notes.md</a>. The issues and pull request filed from them are listed in the repository's <a href="https://github.com/kumanday/dynamo-agent-traffic#upstream">Upstream section</a>.</p>
     <ul class="plain">
       <li>Dynamo's replay runner does not advertise engine model controls, so <code>--stack dynamo</code> rejects <code>kvcache_quant_mode</code> and <code>fmha_quant_mode</code>. A small patch forwards them.</li>
       <li>The KV router's default cost gives up long cached prefixes on agent traffic, with the numbers from this study and three possible directions.</li>

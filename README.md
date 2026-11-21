@@ -52,6 +52,19 @@ python3 -m http.server --directory docs
 
 `scripts/check_report_numbers.py` compares the numbers on the rendered page with `results/full/RESULTS.md`. Its docstring has the two commands that dump the rendered page for it.
 
+## Upstream
+
+The four observations in [docs/upstream-notes.md](docs/upstream-notes.md) go to the Dynamo and AISimulate projects as issues and one pull request. This table carries the link to each once it is filed.
+
+<!-- Replace "not yet filed" with the issue or pull request URL. -->
+
+| Observation | Project | Issue or pull request |
+| --- | --- | --- |
+| 1. The replay runner rejects engine model controls | [ai-dynamo/dynamo](https://github.com/ai-dynamo/dynamo) | not yet filed |
+| 2. The KV router gives up cached prefixes on long-context agent traffic | [ai-dynamo/dynamo](https://github.com/ai-dynamo/dynamo) | not yet filed |
+| 3. Harness Leaderboard meter logs as an agentic trace source | [ai-dynamo/aisim](https://github.com/ai-dynamo/aisim) | not yet filed |
+| 4. CLI supervisor cost and orphaned execution processes | [ai-dynamo/aisim](https://github.com/ai-dynamo/aisim) | not yet filed |
+
 ## How the pipeline runs
 
 The scripts read an archived mirror of the public bucket, kept in a Cloud Storage bucket in the layout `scripts/delta_ingest.py` writes: `source-manifest.tar.zst`, then `archive/shard-NNNNN.tar.zst` files whose members are `raw/<path in the public bucket>`, plus a shard ledger. The mirror has two parts. The base archive is a first snapshot of the bucket. The delta archive holds the objects published after it, which `delta_ingest.py` finds by listing the bucket again and keeping objects whose path and Xet hash are missing from the base manifest. The script that wrote the base archive is not in this repository; it produced the same layout.

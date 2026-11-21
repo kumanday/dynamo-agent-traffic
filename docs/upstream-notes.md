@@ -2,7 +2,7 @@
 
 Four observations from replaying Harness Leaderboard agent traffic through `aisimulate predict --stack dynamo`. The study and its limits are described in the [report](https://kumanday.github.io/dynamo-agent-traffic/docs/).
 
-Everything here was observed on Dynamo `3e84909a` (ai-dynamo 1.7.0) with the AISimulate release it pins, `0.13.0.dev202610290000000087`.
+Everything here was observed on Dynamo `3e84909a` (ai-dynamo 1.7.0) with the AISimulate release it pins, `0.13.0.dev202610290000000087`. The issue or pull request filed for each note is linked from the [README's Upstream section](../README.md#upstream).
 
 ## 1. Dynamo: the replay runner rejects engine model controls
 
