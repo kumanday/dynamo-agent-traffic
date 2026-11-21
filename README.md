@@ -2,7 +2,7 @@
 
 Every original trial of the public [Harness Leaderboard dataset](https://huggingface.co/buckets/joelniklaus/harness-leaderboard), 69,588 trials and 6,616,606 model calls, replayed through NVIDIA Dynamo's CPU simulator (`aisimulate predict --stack dynamo`) under four routers. The study was completed on 2026-11-14.
 
-Report: https://kumanday.github.io/dynamo-agent-traffic/
+Report: https://kumanday.github.io/dynamo-agent-traffic/docs/
 
 The default KV router recomputes 3.1x the prompt tokens that session affinity does (25.5B against 8.3B). Setting `prefill_load_scale` to 16 recovers nearly all of it (8.7B).
 
@@ -118,6 +118,6 @@ The traffic comes from the [Harness Leaderboard dataset](https://huggingface.co/
 
 The code, tables and page in this repository are under the [MIT License](LICENSE). The dataset is its publisher's and keeps its own terms.
 
-The simulator is NVIDIA's [Dynamo](https://github.com/ai-dynamo/dynamo) with [AISimulate](https://github.com/ai-dynamo/aisimulate).
+The simulator is NVIDIA's [Dynamo](https://github.com/ai-dynamo/dynamo) with [AISimulate](https://github.com/ai-dynamo/aisim), whose repository was renamed from `ai-dynamo/aisimulate` after the study ran.
 
-To cite: Leonardo Gonzalez. "Dynamo replay of Harness Leaderboard agent traffic." Study completed 2026-11-14. https://kumanday.github.io/dynamo-agent-traffic/
+To cite: Leonardo Gonzalez. "Dynamo replay of Harness Leaderboard agent traffic." Study completed 2026-11-14. https://kumanday.github.io/dynamo-agent-traffic/docs/

@@ -1,6 +1,6 @@
 # Technical notes for Dynamo and AISimulate maintainers
 
-Four observations from replaying Harness Leaderboard agent traffic through `aisimulate predict --stack dynamo`. The study and its limits are described in the [report](https://kumanday.github.io/dynamo-agent-traffic/).
+Four observations from replaying Harness Leaderboard agent traffic through `aisimulate predict --stack dynamo`. The study and its limits are described in the [report](https://kumanday.github.io/dynamo-agent-traffic/docs/).
 
 Everything here was observed on Dynamo `3e84909a` (ai-dynamo 1.7.0) with the AISimulate release it pins, `0.13.0.dev202610290000000087`.
 
