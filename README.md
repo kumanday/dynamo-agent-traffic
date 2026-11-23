@@ -54,16 +54,14 @@ python3 -m http.server --directory report
 
 ## Upstream
 
-The four observations in [docs/upstream-notes.md](docs/upstream-notes.md) go to the Dynamo and AISimulate projects as issues and one pull request. This table carries the link to each once it is filed.
-
-<!-- Replace "not yet filed" with the issue or pull request URL. -->
+The four observations in [docs/upstream-notes.md](docs/upstream-notes.md) are filed with the Dynamo and AISimulate projects as issues and one pull request. The study is also posted as a [Show and tell discussion](https://github.com/ai-dynamo/dynamo/discussions/19369).
 
 | Observation | Project | Issue or pull request |
 | --- | --- | --- |
-| 1. The replay runner rejects engine model controls | [ai-dynamo/dynamo](https://github.com/ai-dynamo/dynamo) | not yet filed |
-| 2. The KV router gives up cached prefixes on long-context agent traffic | [ai-dynamo/dynamo](https://github.com/ai-dynamo/dynamo) | not yet filed |
-| 3. Harness Leaderboard meter logs as an agentic trace source | [ai-dynamo/aisim](https://github.com/ai-dynamo/aisim) | not yet filed |
-| 4. CLI supervisor cost and orphaned execution processes | [ai-dynamo/aisim](https://github.com/ai-dynamo/aisim) | not yet filed |
+| 1. The replay runner rejects engine model controls | [ai-dynamo/dynamo](https://github.com/ai-dynamo/dynamo) | Issue [#19368](https://github.com/ai-dynamo/dynamo/issues/19368), pull request [#19370](https://github.com/ai-dynamo/dynamo/pull/19370) |
+| 2. The KV router gives up cached prefixes on long-context agent traffic | [ai-dynamo/dynamo](https://github.com/ai-dynamo/dynamo) | [Comment on issue #16194](https://github.com/ai-dynamo/dynamo/issues/16194#issuecomment-7089779666) |
+| 3. Harness Leaderboard meter logs as an agentic trace source | [ai-dynamo/aisim](https://github.com/ai-dynamo/aisim) | Issue [#1001](https://github.com/ai-dynamo/aisim/issues/1001) |
+| 4. CLI supervisor cost and orphaned execution processes | [ai-dynamo/aisim](https://github.com/ai-dynamo/aisim) | Issues [#999](https://github.com/ai-dynamo/aisim/issues/999) and [#1000](https://github.com/ai-dynamo/aisim/issues/1000) |
 
 ## How the pipeline runs
 
